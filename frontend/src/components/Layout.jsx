@@ -26,8 +26,8 @@ export const Layout = ({ children }) => {
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex md:flex-col md:w-64 bg-white border-r border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-            Gestão Suporte
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+            Suporte Safe2Go
           </h1>
           <p className="text-sm text-gray-500 mt-1">Sistema de Gerenciamento</p>
         </div>
