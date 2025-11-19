@@ -1,9 +1,12 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Cases from './pages/Cases';
 import SupportPanel from './pages/SupportPanel';
+import Login from './pages/Login';
 import Layout from './components/Layout';
+import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider } from './context/AuthContext';
 import { Toaster } from './components/ui/sonner';
 import './App.css';
 
@@ -11,15 +14,44 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Layout>
+        <AuthProvider>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/cases" element={<Cases />} />
-            <Route path="/support" element={<SupportPanel />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/cases"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <Cases />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/support"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <SupportPanel />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-        </Layout>
+          <Toaster position="top-right" richColors />
+        </AuthProvider>
       </BrowserRouter>
-      <Toaster position="top-right" richColors />
     </div>
   );
 }
