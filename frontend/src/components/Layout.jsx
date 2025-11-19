@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, Headphones, Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, FileText, Headphones, Menu, X, LogOut, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Button } from './ui/button';
 
 export const Layout = ({ children }) => {
   const location = useLocation();
