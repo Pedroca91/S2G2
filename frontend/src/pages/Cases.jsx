@@ -320,7 +320,11 @@ export const Cases = () => {
                     </span>
                     <span
                       className={`badge ${
-                        caseItem.status === 'Concluído' ? 'badge-success' : 'badge-pending'
+                        caseItem.status === 'Concluído' 
+                          ? 'badge-success' 
+                          : caseItem.status === 'Aguardando resposta do cliente'
+                          ? 'badge-waiting'
+                          : 'badge-pending'
                       }`}
                       data-testid={`case-status-${caseItem.id}`}
                     >
