@@ -50,12 +50,12 @@ export const Dashboard = () => {
       const pageHeight = pdf.internal.pageSize.getHeight();
       
       // Header
-      pdf.setFillColor(37, 99, 235);
+      pdf.setFillColor(147, 51, 234);
       pdf.rect(0, 0, pageWidth, 40, 'F');
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(24);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Relatório Semanal de Suporte', pageWidth / 2, 20, { align: 'center' });
+      pdf.text('Relatório Semanal - Safe2Go', pageWidth / 2, 20, { align: 'center' });
       
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
@@ -107,7 +107,7 @@ export const Dashboard = () => {
         );
       }
       
-      pdf.save(`relatorio-suporte-${today.replace(/\//g, '-')}.pdf`);
+      pdf.save(`relatorio-safe2go-${today.replace(/\//g, '-')}.pdf`);
       toast.success('PDF gerado com sucesso!');
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
@@ -135,7 +135,7 @@ export const Dashboard = () => {
         <Button
           onClick={generatePDF}
           data-testid="generate-pdf-btn"
-          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg"
+          className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg"
         >
           <Download className="w-4 h-4 mr-2" />
           Gerar Relatório PDF
@@ -146,8 +146,8 @@ export const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="stat-card" data-testid="total-cases-card">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-100 rounded-xl">
-              <FileText className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-purple-100 rounded-xl">
+              <FileText className="w-6 h-6 text-purple-600" />
             </div>
             <TrendingUp className="w-5 h-5 text-gray-400" />
           </div>

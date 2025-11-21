@@ -42,7 +42,7 @@ export const Layout = ({ children }) => {
                 data-testid={`nav-${item.name.toLowerCase().replace(' ', '-')}`}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                   isActive
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30'
+                    ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
@@ -79,8 +79,8 @@ export const Layout = ({ children }) => {
           <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white">
             <div className="p-6 border-b border-gray-200 flex justify-between items-center">
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                  Gestão Suporte
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+                  Suporte Safe2Go
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">Sistema de Gerenciamento</p>
               </div>
@@ -99,7 +99,7 @@ export const Layout = ({ children }) => {
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       isActive
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30'
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30'
                         : 'text-gray-600 hover:bg-gray-50'
                     }`}
                   >
@@ -140,8 +140,8 @@ export const Layout = ({ children }) => {
           <button onClick={() => setSidebarOpen(true)} className="text-gray-600">
             <Menu className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-            Gestão Suporte
+          <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+            Suporte Safe2Go
           </h1>
           <div className="w-6" />
         </header>

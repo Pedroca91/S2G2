@@ -147,7 +147,7 @@ export const Cases = () => {
           <DialogTrigger asChild>
             <Button
               data-testid="add-case-btn"
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg"
+              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
               Novo Caso
@@ -313,7 +313,7 @@ export const Cases = () => {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
+                    <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-lg">
                       {caseItem.jira_id}
                     </span>
                     <span
