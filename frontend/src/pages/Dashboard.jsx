@@ -15,6 +15,7 @@ export const Dashboard = () => {
     total_cases: 0,
     completed_cases: 0,
     pending_cases: 0,
+    waiting_client_cases: 0,
     completion_percentage: 0,
   });
   const [chartData, setChartData] = useState([]);
