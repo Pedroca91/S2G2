@@ -147,7 +147,7 @@ export const Dashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <div className="stat-card" data-testid="total-cases-card">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-purple-100 rounded-xl">
@@ -177,6 +177,16 @@ export const Dashboard = () => {
           </div>
           <p className="text-sm text-gray-600 mb-1">Casos Pendentes</p>
           <p className="text-3xl font-bold text-yellow-600">{stats.pending_cases}</p>
+        </div>
+
+        <div className="stat-card" data-testid="waiting-client-cases-card">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-blue-100 rounded-xl">
+              <Clock className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 mb-1">Aguardando Cliente</p>
+          <p className="text-3xl font-bold text-blue-600">{stats.waiting_client_cases}</p>
         </div>
 
         <div className="stat-card" data-testid="completion-percentage-card">
