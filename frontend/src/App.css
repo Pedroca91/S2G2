@@ -105,6 +105,11 @@ h1, h2, h3, h4, h5, h6 {
   color: #92400e;
 }
 
+.badge-waiting {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
 .card {
   background: white;
   border-radius: 16px;
