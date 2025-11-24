@@ -113,6 +113,7 @@ export const Cases = () => {
       description: caseItem.description,
       responsible: caseItem.responsible,
       status: caseItem.status,
+      seguradora: caseItem.seguradora || '',
     });
     setDialogOpen(true);
   };
