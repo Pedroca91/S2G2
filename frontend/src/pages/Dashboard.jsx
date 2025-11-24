@@ -215,6 +215,23 @@ export const Dashboard = () => {
         </div>
       </div>
 
+      {/* Casos por Seguradora */}
+      {Object.keys(stats.cases_by_seguradora).length > 0 && (
+        <div className="card mb-6" data-testid="seguradoras-stats">
+          <h3 className="text-lg font-semibold mb-4">Casos por Seguradora</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {Object.entries(stats.cases_by_seguradora).map(([seguradora, count]) => (
+              <div key={seguradora} className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl">
+                <div>
+                  <p className="text-sm text-gray-600">{seguradora}</p>
+                  <p className="text-2xl font-bold text-purple-600">{count}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Charts */}
       <div id="dashboard-charts" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bar Chart */}
