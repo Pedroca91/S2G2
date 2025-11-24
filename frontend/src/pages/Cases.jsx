@@ -361,8 +361,13 @@ export const Cases = () => {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{caseItem.title}</h3>
                   <p className="text-sm text-gray-600 mb-2">{caseItem.description}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                     <span>Responsável: <strong>{caseItem.responsible}</strong></span>
+                    {caseItem.seguradora && (
+                      <span className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs font-medium">
+                        {caseItem.seguradora}
+                      </span>
+                    )}
                     <span>Aberto: {new Date(caseItem.opened_date).toLocaleDateString('pt-BR')}</span>
                   </div>
                 </div>
