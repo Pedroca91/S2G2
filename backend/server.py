@@ -69,6 +69,7 @@ class CaseCreate(BaseModel):
     description: str
     responsible: str
     status: str = "Pendente"
+    seguradora: Optional[str] = None
     opened_date: Optional[datetime] = None
     closed_date: Optional[datetime] = None
 
