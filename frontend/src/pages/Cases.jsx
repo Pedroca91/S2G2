@@ -34,6 +34,13 @@ export const Cases = () => {
 
   useEffect(() => {
     fetchCases();
+    
+    // Aplicar filtro da URL se existir
+    const statusFromUrl = searchParams.get('status');
+    if (statusFromUrl) {
+      setStatusFilter(statusFromUrl);
+      toast.info(`Filtrando por: ${statusFromUrl}`);
+    }
   }, []);
 
   // Recarregar casos quando a página receber foco
