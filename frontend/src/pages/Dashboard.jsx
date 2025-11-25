@@ -169,7 +169,11 @@ export const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <div className="stat-card" data-testid="total-cases-card">
+        <div 
+          className="stat-card cursor-pointer" 
+          data-testid="total-cases-card"
+          onClick={() => navigate('/cases')}
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-purple-100 rounded-xl">
               <FileText className="w-6 h-6 text-purple-600" />
@@ -180,7 +184,11 @@ export const Dashboard = () => {
           <p className="text-3xl font-bold text-gray-900">{stats.total_cases}</p>
         </div>
 
-        <div className="stat-card" data-testid="completed-cases-card">
+        <div 
+          className="stat-card cursor-pointer" 
+          data-testid="completed-cases-card"
+          onClick={() => handleCardClick('Concluído')}
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-green-100 rounded-xl">
               <CheckCircle2 className="w-6 h-6 text-green-600" />
@@ -190,7 +198,11 @@ export const Dashboard = () => {
           <p className="text-3xl font-bold text-green-600">{stats.completed_cases}</p>
         </div>
 
-        <div className="stat-card" data-testid="pending-cases-card">
+        <div 
+          className="stat-card cursor-pointer" 
+          data-testid="pending-cases-card"
+          onClick={() => handleCardClick('Pendente')}
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-yellow-100 rounded-xl">
               <Clock className="w-6 h-6 text-yellow-600" />
@@ -200,7 +212,11 @@ export const Dashboard = () => {
           <p className="text-3xl font-bold text-yellow-600">{stats.pending_cases}</p>
         </div>
 
-        <div className="stat-card" data-testid="waiting-client-cases-card">
+        <div 
+          className="stat-card cursor-pointer" 
+          data-testid="waiting-client-cases-card"
+          onClick={() => handleCardClick('Aguardando resposta do cliente')}
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-blue-100 rounded-xl">
               <Clock className="w-6 h-6 text-blue-600" />
