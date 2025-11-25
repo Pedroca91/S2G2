@@ -48,6 +48,10 @@ export const Dashboard = () => {
     }
   };
 
+  const handleCardClick = (status) => {
+    navigate(`/cases?status=${status}`);
+  };
+
   const generatePDF = async () => {
     try {
       toast.info('Gerando PDF...');
