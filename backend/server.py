@@ -387,6 +387,139 @@ async def get_chart_data():
     
     return chart_data
 
+# Analytics - Casos Recorrentes
+@api_router.get("/cases/analytics/recurrent", response_model=List[RecurrentCaseAnalysis])
+async def get_recurrent_cases():
+    """Analisa casos recorrentes por categoria"""
+    # Buscar todos os casos
+    all_cases = await db.cases.find({}, {"_id": 0}).to_list(1000)
+    
+    # Agrupar por categoria
+    category_groups = {}
+    total_cases = len(all_cases)
+    
+    for case in all_cases:
+        category = case.get('category', 'Não categorizado')
+        if category not in category_groups:
+            category_groups[category] = []
+        category_groups[category].append(case)
+    
+    # Criar análise
+    analysis = []
+    for category, cases in category_groups.items():
+        count = len(cases)
+        percentage = (count / total_cases * 100) if total_cases > 0 else 0
+        
+        # Sugestão de automação baseada na quantidade
+        if count >= 5:
+            suggestion = f"🔴 CRÍTICO: {count} casos recorrentes. Automação URGENTE recomendada!"
+        elif count >= 3:
+            suggestion = f"🟡 ATENÇÃO: {count} casos. Considerar automação."
+        else:
+            suggestion = f"🟢 {count} caso(s). Monitorar evolução."
+        
+        # Converter datetime fields
+        for case in cases:
+            if isinstance(case.get('opened_date'), str):
+                case['opened_date'] = datetime.fromisoformat(case['opened_date'])
+            if case.get('closed_date') and isinstance(case['closed_date'], str):
+                case['closed_date'] = datetime.fromisoformat(case['closed_date'])
+            if isinstance(case.get('created_at'), str):
+                case['created_at'] = datetime.fromisoformat(case['created_at'])
+        
+        analysis.append(RecurrentCaseAnalysis(
+            category=category,
+            count=count,
+            cases=cases[:5],  # Mostrar apenas os 5 primeiros
+            percentage=round(percentage, 1),
+            suggestion=suggestion
+        ))
+    
+    # Ordenar por quantidade (maior primeiro)
+    analysis.sort(key=lambda x: x.count, reverse=True)
+    
+    return analysis
+
+@api_router.get("/cases/categories", response_model=List[CategoryStats])
+async def get_categories():
+    """Lista todas as categorias com estatísticas"""
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$category",
+                "count": {"$sum": 1},
+                "statuses": {"$push": "$status"}
+            }
+        },
+        {"$sort": {"count": -1}}
+    ]
+    
+    results = await db.cases.aggregate(pipeline).to_list(100)
+    
+    category_stats = []
+    for result in results:
+        category = result['_id'] if result['_id'] else 'Não categorizado'
+        statuses = result['statuses']
+        
+        # Contar status
+        status_breakdown = {}
+        for status in statuses:
+            status_breakdown[status] = status_breakdown.get(status, 0) + 1
+        
+        category_stats.append(CategoryStats(
+            category=category,
+            count=result['count'],
+            status_breakdown=status_breakdown
+        ))
+    
+    return category_stats
+
+@api_router.get("/cases/similar/{case_id}", response_model=List[SimilarCase])
+async def get_similar_cases(case_id: str, limit: int = 5):
+    """Encontra casos similares baseado em keywords e categoria"""
+    # Buscar o caso original
+    case = await db.cases.find_one({"id": case_id}, {"_id": 0})
+    if not case:
+        raise HTTPException(status_code=404, detail="Caso não encontrado")
+    
+    case_keywords = set(case.get('keywords', []))
+    case_category = case.get('category')
+    
+    # Buscar casos similares
+    all_cases = await db.cases.find({"id": {"$ne": case_id}}, {"_id": 0}).to_list(1000)
+    
+    similar_cases = []
+    for other_case in all_cases:
+        other_keywords = set(other_case.get('keywords', []))
+        other_category = other_case.get('category')
+        
+        # Calcular score de similaridade
+        matching_keywords = case_keywords.intersection(other_keywords)
+        keyword_score = len(matching_keywords) / max(len(case_keywords), 1) if case_keywords else 0
+        category_score = 0.5 if case_category == other_category else 0
+        
+        total_score = (keyword_score * 0.7) + (category_score * 0.3)
+        
+        if total_score > 0:
+            # Convert datetime fields
+            if isinstance(other_case.get('opened_date'), str):
+                other_case['opened_date'] = datetime.fromisoformat(other_case['opened_date'])
+            if other_case.get('closed_date') and isinstance(other_case['closed_date'], str):
+                other_case['closed_date'] = datetime.fromisoformat(other_case['closed_date'])
+            if isinstance(other_case.get('created_at'), str):
+                other_case['created_at'] = datetime.fromisoformat(other_case['created_at'])
+            
+            similar_cases.append(SimilarCase(
+                case=Case(**other_case),
+                similarity_score=round(total_score * 100, 1),
+                matching_keywords=list(matching_keywords)
+            ))
+    
+    # Ordenar por score
+    similar_cases.sort(key=lambda x: x.similarity_score, reverse=True)
+    
+    return similar_cases[:limit]
+
 # Webhook do Jira
 @api_router.post("/webhooks/jira")
 async def jira_webhook(payload: dict):
