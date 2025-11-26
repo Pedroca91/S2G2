@@ -38,7 +38,7 @@ Ativado ✅
 
 **URL do WebHook:**
 ```
-https://casetracker-9.preview.emergentagent.com/api/webhooks/jira
+https://repo-visualizer-4.preview.emergentagent.com/api/webhooks/jira
 ```
 
 **Descrição:**
@@ -138,7 +138,7 @@ safe2go-webhook-secret-2025
 
 1. Crie um novo caso no Jira
 2. Aguarde 2-3 segundos
-3. Acesse o Safe2Go: https://casetracker-9.preview.emergentagent.com/
+3. Acesse o Safe2Go: https://repo-visualizer-4.preview.emergentagent.com/
 4. Vá em **Casos**
 5. Verifique se o novo caso apareceu
 
@@ -223,7 +223,7 @@ send_email(
    ```
 2. Teste o endpoint manualmente:
    ```bash
-   curl -X POST https://casetracker-9.preview.emergentagent.com/api/webhooks/jira \
+   curl -X POST https://repo-visualizer-4.preview.emergentagent.com/api/webhooks/jira \
      -H "Content-Type: application/json" \
      -H "X-Webhook-Secret: safe2go-webhook-secret-2025" \
      -d '{"webhookEvent":"jira:issue_created","issue":{"key":"TEST-1","fields":{"summary":"Teste"}}}'
@@ -302,7 +302,7 @@ Quando o Jira envia um webhook, o payload é assim:
 
 **Endpoint do WebHook:**
 ```
-POST https://casetracker-9.preview.emergentagent.com/api/webhooks/jira
+POST https://repo-visualizer-4.preview.emergentagent.com/api/webhooks/jira
 ```
 
 **Última atualização:** Novembro 2025

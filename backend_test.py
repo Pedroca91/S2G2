@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import uuid
 
 class SupportSystemTester:
-    def __init__(self, base_url="https://casetracker-9.preview.emergentagent.com"):
+    def __init__(self, base_url="https://repo-visualizer-4.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
