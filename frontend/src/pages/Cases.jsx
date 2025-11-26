@@ -512,6 +512,23 @@ export const Cases = () => {
               </SelectContent>
             </Select>
           </div>
+          <div>
+            <Label htmlFor="seguradora-filter" className="flex items-center gap-2 mb-2">
+              <Filter className="w-4 h-4" />
+              Seguradora
+            </Label>
+            <Select value={seguradoraFilter} onValueChange={setSeguradoraFilter}>
+              <SelectTrigger id="seguradora-filter" data-testid="seguradora-filter">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                <SelectItem value="AVLA">AVLA</SelectItem>
+                <SelectItem value="ESSOR">ESSOR</SelectItem>
+                <SelectItem value="DAYCOVAL">DAYCOVAL</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
