@@ -56,6 +56,10 @@ export const Dashboard = () => {
     try {
       toast.info('Gerando PDF...');
       
+      // Buscar dados de categorias
+      const categoryResponse = await axios.get(`${API}/cases/categories`);
+      const categoryData = categoryResponse.data;
+      
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
@@ -100,7 +104,61 @@ export const Dashboard = () => {
         yPos += 10;
       });
       
-      // Chart capture
+      // Distribuição por Categoria
+      yPos += 10;
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Distribuição por Categoria:', 20, yPos);
+      yPos += 10;
+      
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      
+      // Criar gráfico de barras manualmente
+      const maxCount = Math.max(...categoryData.map(c => c.count));
+      const barMaxWidth = 130; // Largura máxima da barra
+      
+      categoryData.slice(0, 8).forEach((category, index) => {
+        const barWidth = (category.count / maxCount) * barMaxWidth;
+        const percentage = ((category.count / stats.total_cases) * 100).toFixed(1);
+        
+        // Alternar cores
+        const colors = [
+          [239, 68, 68],    // red
+          [249, 115, 22],   // orange
+          [245, 158, 11],   // amber
+          [234, 179, 8],    // yellow
+          [132, 204, 22],   // lime
+          [34, 197, 94],    // green
+          [20, 184, 166],   // teal
+          [14, 165, 233],   // sky
+        ];
+        const color = colors[index % colors.length];
+        
+        // Desenhar barra
+        pdf.setFillColor(...color);
+        pdf.rect(20, yPos, barWidth, 6, 'F');
+        
+        // Nome da categoria e quantidade
+        pdf.setTextColor(30, 41, 59);
+        const categoryName = category.category.length > 25 
+          ? category.category.substring(0, 25) + '...' 
+          : category.category;
+        pdf.text(categoryName, 155, yPos + 4);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(`${category.count} (${percentage}%)`, 20 + barWidth + 5, yPos + 4);
+        pdf.setFont('helvetica', 'normal');
+        
+        yPos += 10;
+        
+        // Adicionar nova página se necessário
+        if (yPos > pageHeight - 30 && index < categoryData.length - 1) {
+          pdf.addPage();
+          yPos = 20;
+        }
+      });
+      
+      // Chart capture - Gráficos da Última Semana
       const chartElement = document.getElementById('dashboard-charts');
       if (chartElement) {
         const canvas = await html2canvas(chartElement, {
@@ -112,6 +170,7 @@ export const Dashboard = () => {
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
         pdf.addPage();
+        pdf.setTextColor(30, 41, 59);
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
         pdf.text('Gráficos da Última Semana', 20, 20);
