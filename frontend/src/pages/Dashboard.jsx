@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { FileText, CheckCircle2, Clock, TrendingUp, Download } from 'lucide-react';
+import { FileText, CheckCircle2, Clock, TrendingUp, Download, Wifi } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { playNotificationSound } from '../utils/notification';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -23,6 +25,23 @@ export const Dashboard = () => {
   });
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // WebSocket handler
+  const handleWebSocketMessage = (data) => {
+    if (data.type === 'new_case' || data.type === 'case_updated') {
+      // Recarregar estatísticas quando houver mudança
+      fetchDashboardData();
+      
+      if (data.type === 'new_case') {
+        playNotificationSound();
+        toast.success('📊 Dashboard atualizado', {
+          description: 'Novo caso adicionado ao sistema'
+        });
+      }
+    }
+  };
+
+  const { isConnected } = useWebSocket(handleWebSocketMessage);
 
   useEffect(() => {
     fetchDashboardData();
