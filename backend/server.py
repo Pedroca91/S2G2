@@ -121,6 +121,23 @@ class ChartData(BaseModel):
     completed: int
     pending: int
 
+class RecurrentCaseAnalysis(BaseModel):
+    category: str
+    count: int
+    cases: List[dict] = []
+    percentage: float
+    suggestion: str
+
+class CategoryStats(BaseModel):
+    category: str
+    count: int
+    status_breakdown: dict = {}
+
+class SimilarCase(BaseModel):
+    case: Case
+    similarity_score: float
+    matching_keywords: List[str]
+
 class JiraWebhookPayload(BaseModel):
     webhookEvent: str
     issue: dict
