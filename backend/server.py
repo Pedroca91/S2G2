@@ -59,6 +59,8 @@ class Case(BaseModel):
     responsible: str
     status: str  # Concluído, Pendente
     seguradora: Optional[str] = None  # AVLA, DAYCOVAL, ESSOR
+    category: Optional[str] = None  # Categoria do erro (ex: Reprocessamento, Erro Corretor, Nova Lei)
+    keywords: List[str] = []  # Palavras-chave para busca de similaridade
     opened_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     closed_date: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -70,6 +72,8 @@ class CaseCreate(BaseModel):
     responsible: str
     status: str = "Pendente"
     seguradora: Optional[str] = None
+    category: Optional[str] = None
+    keywords: List[str] = []
     opened_date: Optional[datetime] = None
     closed_date: Optional[datetime] = None
 
@@ -80,6 +84,8 @@ class CaseUpdate(BaseModel):
     responsible: Optional[str] = None
     status: Optional[str] = None
     seguradora: Optional[str] = None
+    category: Optional[str] = None
+    keywords: Optional[List[str]] = None
     opened_date: Optional[datetime] = None
     closed_date: Optional[datetime] = None
 
