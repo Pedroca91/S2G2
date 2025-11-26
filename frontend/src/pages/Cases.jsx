@@ -308,6 +308,23 @@ export const Cases = () => {
                   <span>Desconectado</span>
                 </div>
               )}
+              
+              {/* Botão para habilitar som */}
+              {!soundEnabled && isConnected && (
+                <button
+                  onClick={enableSound}
+                  className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded-full text-xs font-medium transition-colors"
+                  title="Clique para ativar notificações sonoras"
+                >
+                  🔔 Ativar Som
+                </button>
+              )}
+              
+              {soundEnabled && (
+                <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                  🔔 Som Ativo
+                </div>
+              )}
             </div>
           </div>
           <p className="page-subtitle">Gerencie todos os casos de suporte</p>
