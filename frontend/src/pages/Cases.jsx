@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, Search, Edit, Trash2, Filter } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Filter, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { playNotificationSound, showBrowserNotification, requestNotificationPermission } from '../utils/notification';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -23,6 +25,7 @@ export const Cases = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [responsibleFilter, setResponsibleFilter] = useState('all');
+  const [newCaseIds, setNewCaseIds] = useState(new Set());
   const [formData, setFormData] = useState({
     jira_id: '',
     title: '',
@@ -31,6 +34,60 @@ export const Cases = () => {
     status: 'Pendente',
     seguradora: '',
   });
+
+  // WebSocket handler
+  const handleWebSocketMessage = (data) => {
+    if (data.type === 'new_case') {
+      console.log('🆕 Novo caso recebido via WebSocket:', data.case);
+      
+      // Adicionar novo caso à lista
+      setCases(prevCases => [data.case, ...prevCases]);
+      
+      // Marcar como novo
+      setNewCaseIds(prev => new Set([...prev, data.case.id]));
+      
+      // Remover badge "NOVO" após 30 segundos
+      setTimeout(() => {
+        setNewCaseIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(data.case.id);
+          return newSet;
+        });
+      }, 30000);
+      
+      // Tocar som
+      playNotificationSound();
+      
+      // Mostrar toast
+      toast.success('🆕 Novo caso do Jira!', {
+        description: `${data.case.jira_id}: ${data.case.title}`,
+        duration: 5000
+      });
+      
+      // Notificação do navegador
+      showBrowserNotification('Novo Caso Safe2Go', {
+        body: `${data.case.jira_id}: ${data.case.title}`,
+        tag: data.case.id
+      });
+    } else if (data.type === 'case_updated') {
+      console.log('🔄 Caso atualizado via WebSocket:', data.case_id);
+      
+      // Recarregar casos
+      fetchCases();
+      
+      // Mostrar toast
+      toast.info('🔄 Caso atualizado', {
+        description: `${data.case_id} foi atualizado`
+      });
+    }
+  };
+
+  const { isConnected } = useWebSocket(handleWebSocketMessage);
+
+  // Solicitar permissão de notificação ao montar
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
 
   useEffect(() => {
     fetchCases();
