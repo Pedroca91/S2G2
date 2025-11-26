@@ -48,17 +48,29 @@ class ConnectionManager:
     
     async def broadcast(self, message: dict):
         """Envia mensagem para todos os clientes conectados"""
+        logger.info(f"📡 Broadcasting mensagem para {len(self.active_connections)} conexões: {message.get('type')}")
+        
+        if len(self.active_connections) == 0:
+            logger.warning("⚠️ Nenhuma conexão WebSocket ativa para broadcast")
+            return
+        
         disconnected = set()
+        success_count = 0
+        
         for connection in self.active_connections:
             try:
                 await connection.send_json(message)
+                success_count += 1
+                logger.info(f"✅ Mensagem enviada com sucesso para 1 conexão")
             except Exception as e:
-                logger.error(f"Erro ao enviar mensagem WebSocket: {e}")
+                logger.error(f"❌ Erro ao enviar mensagem WebSocket: {e}")
                 disconnected.add(connection)
         
         # Remover conexões com erro
         for conn in disconnected:
             self.active_connections.discard(conn)
+        
+        logger.info(f"📊 Broadcast concluído: {success_count} sucessos, {len(disconnected)} falhas")
 
 manager = ConnectionManager()
 
