@@ -80,12 +80,20 @@ class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     email: str
+    role: str = "cliente"  # "cliente" ou "administrador"
+    status: str = "pendente"  # "pendente", "aprovado", "rejeitado"
+    phone: Optional[str] = None
+    company: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    approved_at: Optional[datetime] = None
+    approved_by: Optional[str] = None
 
 class UserRegister(BaseModel):
     name: str
     email: str
     password: str
+    phone: Optional[str] = None
+    company: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: str
