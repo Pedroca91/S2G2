@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Plus, Search, Edit, Trash2, Filter, Wifi, WifiOff, Eye, Info } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Filter, Eye, Info } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -36,63 +36,6 @@ export const Cases = () => {
     status: 'Pendente',
     seguradora: '',
   });
-
-
-  // Função melhorada para tocar som
-  const playSound = () => {
-    if (!soundEnabled || !audioContextRef.current) {
-      console.log('Som não habilitado ainda');
-      return;
-    }
-
-    try {
-      const ctx = audioContextRef.current;
-      
-      // Primeiro tom (800Hz)
-      const osc1 = ctx.createOscillator();
-      const gain1 = ctx.createGain();
-      
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      
-      osc1.type = 'sine';
-      osc1.frequency.value = 800;
-      gain1.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-      
-      osc1.start(ctx.currentTime);
-      osc1.stop(ctx.currentTime + 0.3);
-      
-      // Segundo tom (1000Hz) - após 100ms
-      setTimeout(() => {
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        
-        osc2.type = 'sine';
-        osc2.frequency.value = 1000;
-        gain2.gain.setValueAtTime(0.3, ctx.currentTime);
-        gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-        
-        osc2.start(ctx.currentTime);
-        osc2.stop(ctx.currentTime + 0.2);
-      }, 100);
-      
-      console.log('🔔 Som tocado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao tocar som:', error);
-    }
-  };
-
-  // WebSocket handler
-
-
-  // Solicitar permissão de notificação ao montar
-  useEffect(() => {
-    requestNotificationPermission();
-  }, []);
 
   useEffect(() => {
     fetchCases();
