@@ -183,7 +183,7 @@ export const NewTicket = () => {
                     <SelectValue placeholder="Selecione uma seguradora" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Nenhuma</SelectItem>
+                    <SelectItem value="none">Nenhuma</SelectItem>
                     <SelectItem value="AVLA">AVLA</SelectItem>
                     <SelectItem value="ESSOR">ESSOR</SelectItem>
                     <SelectItem value="DAYCOVAL">DAYCOVAL</SelectItem>
