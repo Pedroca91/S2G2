@@ -486,6 +486,147 @@ async def delete_user(
     
     return {"message": "Usuário deletado com sucesso", "user_id": user_id}
 
+# Comments Routes
+@api_router.post("/cases/{case_id}/comments", response_model=Comment)
+async def create_comment(
+    case_id: str,
+    comment_data: CommentCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Adicionar comentário a um chamado"""
+    # Verificar se caso existe
+    case = await db.cases.find_one({'id': case_id})
+    if not case:
+        raise HTTPException(status_code=404, detail="Chamado não encontrado")
+    
+    # Criar comentário
+    comment = Comment(
+        case_id=case_id,
+        user_id=current_user['id'],
+        user_name=current_user['name'],
+        content=comment_data.content,
+        is_internal=comment_data.is_internal
+    )
+    
+    comment_doc = comment.model_dump()
+    comment_doc['created_at'] = comment_doc['created_at'].isoformat()
+    
+    await db.comments.insert_one(comment_doc)
+    
+    # Atualizar timestamp do caso
+    await db.cases.update_one(
+        {'id': case_id},
+        {'$set': {'updated_at': datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Criar notificação
+    # Se cliente comentou, notificar admin
+    # Se admin comentou e não é interno, notificar cliente (criador do caso)
+    if not comment_data.is_internal:
+        if current_user['role'] == 'cliente':
+            # Cliente comentou, notificar admin
+            admins = await db.users.find({'role': 'administrador'}, {'_id': 0, 'id': 1}).to_list(100)
+            for admin in admins:
+                notification = Notification(
+                    user_id=admin['id'],
+                    case_id=case_id,
+                    case_title=case['title'],
+                    message=f"O chamado #{case.get('jira_id', case_id[:8])} recebeu uma nova resposta do cliente.",
+                    type="new_comment"
+                )
+                notif_doc = notification.model_dump()
+                notif_doc['created_at'] = notif_doc['created_at'].isoformat()
+                await db.notifications.insert_one(notif_doc)
+        else:
+            # Admin respondeu, notificar criador do caso
+            if case.get('creator_id'):
+                notification = Notification(
+                    user_id=case['creator_id'],
+                    case_id=case_id,
+                    case_title=case['title'],
+                    message=f"Seu chamado #{case.get('jira_id', case_id[:8])} recebeu uma nova resposta do suporte.",
+                    type="new_comment"
+                )
+                notif_doc = notification.model_dump()
+                notif_doc['created_at'] = notif_doc['created_at'].isoformat()
+                await db.notifications.insert_one(notif_doc)
+                
+                # Broadcast via WebSocket
+                await manager.broadcast({
+                    "type": "new_notification",
+                    "user_id": case['creator_id'],
+                    "case_id": case_id,
+                    "message": notification.message
+                })
+    
+    logger.info(f"Comentário adicionado no caso {case_id} por {current_user['name']}")
+    
+    return comment
+
+@api_router.get("/cases/{case_id}/comments", response_model=List[Comment])
+async def get_comments(
+    case_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Listar comentários de um chamado"""
+    # Se é cliente, não mostrar comentários internos
+    query = {'case_id': case_id}
+    if current_user['role'] == 'cliente':
+        query['is_internal'] = False
+    
+    comments = await db.comments.find(query, {'_id': 0}).sort('created_at', 1).to_list(1000)
+    
+    for comment in comments:
+        if isinstance(comment.get('created_at'), str):
+            comment['created_at'] = datetime.fromisoformat(comment['created_at'])
+    
+    return [Comment(**comment) for comment in comments]
+
+# Notifications Routes
+@api_router.get("/notifications", response_model=List[Notification])
+async def get_notifications(
+    unread_only: bool = False,
+    current_user: dict = Depends(get_current_user)
+):
+    """Listar notificações do usuário"""
+    query = {'user_id': current_user['id']}
+    if unread_only:
+        query['read'] = False
+    
+    notifications = await db.notifications.find(query, {'_id': 0}).sort('created_at', -1).limit(50).to_list(50)
+    
+    for notif in notifications:
+        if isinstance(notif.get('created_at'), str):
+            notif['created_at'] = datetime.fromisoformat(notif['created_at'])
+    
+    return [Notification(**notif) for notif in notifications]
+
+@api_router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(
+    notification_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Marcar notificação como lida"""
+    result = await db.notifications.update_one(
+        {'id': notification_id, 'user_id': current_user['id']},
+        {'$set': {'read': True}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Notificação não encontrada")
+    
+    return {"message": "Notificação marcada como lida"}
+
+@api_router.post("/notifications/read-all")
+async def mark_all_notifications_read(current_user: dict = Depends(get_current_user)):
+    """Marcar todas as notificações como lidas"""
+    await db.notifications.update_many(
+        {'user_id': current_user['id'], 'read': False},
+        {'$set': {'read': True}}
+    )
+    
+    return {"message": "Todas as notificações marcadas como lidas"}
+
 # Cases CRUD
 @api_router.post("/cases", response_model=Case)
 async def create_case(case: CaseCreate):
