@@ -214,6 +214,164 @@ const CaseDetails = () => {
                 Chamado #{caseData.jira_id || caseData.id?.substring(0, 8)}
               </p>
             </div>
+            
+            {isAdmin && (
+              <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={openEditDialog}
+                    className="flex items-center gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Editar Caso
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Editar Caso</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleEditSubmit} className="space-y-4 mt-4">
+                    <div>
+                      <Label htmlFor="edit_jira_id">ID do Jira</Label>
+                      <Input
+                        id="edit_jira_id"
+                        value={editFormData.jira_id}
+                        onChange={(e) => setEditFormData({ ...editFormData, jira_id: e.target.value })}
+                        placeholder="Ex: SUP-123"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit_title">Título</Label>
+                      <Input
+                        id="edit_title"
+                        value={editFormData.title}
+                        onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+                        required
+                        placeholder="Título do caso"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit_description">Descrição</Label>
+                      <Textarea
+                        id="edit_description"
+                        value={editFormData.description}
+                        onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                        required
+                        placeholder="Descreva o caso"
+                        rows={4}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit_responsible">Responsável</Label>
+                      <Input
+                        id="edit_responsible"
+                        value={editFormData.responsible}
+                        onChange={(e) => setEditFormData({ ...editFormData, responsible: e.target.value })}
+                        placeholder="Nome do responsável"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit_status">Status</Label>
+                      <Select
+                        value={editFormData.status}
+                        onValueChange={(value) => setEditFormData({ ...editFormData, status: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Pendente">🟡 Pendente</SelectItem>
+                          <SelectItem value="Em Desenvolvimento">🔵 Em Desenvolvimento</SelectItem>
+                          <SelectItem value="Aguardando resposta do cliente">🟠 Aguardando resposta do cliente</SelectItem>
+                          <SelectItem value="Concluído">🟢 Concluído</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit_priority">Prioridade</Label>
+                      <Select
+                        value={editFormData.priority}
+                        onValueChange={(value) => setEditFormData({ ...editFormData, priority: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Baixa">🟢 Baixa</SelectItem>
+                          <SelectItem value="Média">🟡 Média</SelectItem>
+                          <SelectItem value="Alta">🟠 Alta</SelectItem>
+                          <SelectItem value="Urgente">🔴 Urgente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit_seguradora">Seguradora</Label>
+                      <Select
+                        value={editFormData.seguradora}
+                        onValueChange={(value) => setEditFormData({ ...editFormData, seguradora: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a seguradora" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Nenhuma</SelectItem>
+                          <SelectItem value="AVLA">AVLA</SelectItem>
+                          <SelectItem value="DAYCOVAL">DAYCOVAL</SelectItem>
+                          <SelectItem value="ESSOR">ESSOR</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit_category">Categoria</Label>
+                      <Select
+                        value={editFormData.category}
+                        onValueChange={(value) => setEditFormData({ ...editFormData, category: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Nenhuma</SelectItem>
+                          <SelectItem value="Erro Técnico">Erro Técnico</SelectItem>
+                          <SelectItem value="Erro Boleto">Erro Boleto</SelectItem>
+                          <SelectItem value="Erro Corretor">Erro Corretor</SelectItem>
+                          <SelectItem value="Problema Documento">Problema Documento</SelectItem>
+                          <SelectItem value="Reprocessamento">Reprocessamento</SelectItem>
+                          <SelectItem value="Cobertura">Cobertura</SelectItem>
+                          <SelectItem value="Sumiço de Dados">Sumiço de Dados</SelectItem>
+                          <SelectItem value="Adequação Nova Lei">Adequação Nova Lei</SelectItem>
+                          <SelectItem value="Outros">Outros</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="flex gap-2 justify-end pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setEditDialogOpen(false)}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button 
+                        type="submit"
+                        className="bg-purple-600 hover:bg-purple-700"
+                      >
+                        Salvar Alterações
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
 
           <Separator className="my-4" />
