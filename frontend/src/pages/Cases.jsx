@@ -622,6 +622,16 @@ export const Cases = () => {
                 </div>
                 <div className="flex gap-2">
                   <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => navigate(`/cases/${caseItem.id}`)}
+                    data-testid={`view-case-${caseItem.id}`}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Eye className="w-4 h-4 mr-1" />
+                    Ver Detalhes
+                  </Button>
+                  <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(caseItem)}
