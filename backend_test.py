@@ -98,121 +98,381 @@ class Safe2GoHelpdeskTester:
         """Test root API endpoint"""
         return self.run_test("Root API Endpoint", "GET", "", 200)
 
-    def test_dashboard_stats(self):
-        """Test dashboard statistics"""
-        success, response = self.run_test("Dashboard Stats", "GET", "dashboard/stats", 200)
-        if success:
-            required_fields = ['total_cases', 'completed_cases', 'pending_cases', 'completion_percentage']
-            for field in required_fields:
-                if field not in response:
-                    self.log_test(f"Dashboard Stats - {field} field", False, f"Missing field: {field}")
-                    return False
-            self.log_test("Dashboard Stats - All fields present", True)
-        return success
-
-    def test_dashboard_charts(self):
-        """Test dashboard charts data"""
-        success, response = self.run_test("Dashboard Charts", "GET", "dashboard/charts", 200)
-        if success and isinstance(response, list):
-            if len(response) == 7:  # Should return 7 days of data
-                self.log_test("Dashboard Charts - 7 days data", True)
-                # Check first item structure
-                if response and 'date' in response[0] and 'completed' in response[0] and 'pending' in response[0]:
-                    self.log_test("Dashboard Charts - Data structure", True)
-                else:
-                    self.log_test("Dashboard Charts - Data structure", False, "Missing required fields")
+    # ========== AUTHENTICATION TESTS ==========
+    
+    def test_admin_login(self):
+        """Test admin login with pedro.carvalho@safe2go.com.br"""
+        success, response = self.run_test("Admin Login", "POST", "auth/login", 200, self.admin_credentials)
+        
+        if not success:
+            # Try alternative password
+            alt_credentials = self.admin_credentials.copy()
+            alt_credentials["password"] = "admin123"
+            success, response = self.run_test("Admin Login (alt password)", "POST", "auth/login", 200, alt_credentials)
+        
+        if success and 'token' in response and 'user' in response:
+            self.admin_token = response['token']
+            self.admin_user = response['user']
+            self.log_test("Admin Login - Token received", True)
+            self.log_test("Admin Login - User data received", True)
+            
+            # Verify admin role
+            if response['user'].get('role') == 'administrador':
+                self.log_test("Admin Login - Role verification", True)
             else:
-                self.log_test("Dashboard Charts - 7 days data", False, f"Expected 7 days, got {len(response)}")
+                self.log_test("Admin Login - Role verification", False, f"Expected 'administrador', got '{response['user'].get('role')}'")
+        
         return success
 
-    def test_create_case(self):
-        """Test creating a new case"""
+    def test_client_login(self):
+        """Test client login with cliente@teste.com"""
+        success, response = self.run_test("Client Login", "POST", "auth/login", 200, self.client_credentials)
+        
+        if not success:
+            # Try alternative password
+            alt_credentials = self.client_credentials.copy()
+            alt_credentials["password"] = "cliente123"
+            success, response = self.run_test("Client Login (alt password)", "POST", "auth/login", 200, alt_credentials)
+        
+        if success and 'token' in response and 'user' in response:
+            self.client_token = response['token']
+            self.client_user = response['user']
+            self.log_test("Client Login - Token received", True)
+            self.log_test("Client Login - User data received", True)
+            
+            # Verify client role
+            if response['user'].get('role') == 'cliente':
+                self.log_test("Client Login - Role verification", True)
+            else:
+                self.log_test("Client Login - Role verification", False, f"Expected 'cliente', got '{response['user'].get('role')}'")
+        
+        return success
+
+    def test_auth_me_admin(self):
+        """Test /auth/me endpoint with admin token"""
+        if not self.admin_token:
+            self.log_test("Auth Me (Admin)", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Auth Me (Admin)", "GET", "auth/me", 200, token=self.admin_token)
+        
+        if success:
+            if response.get('role') == 'administrador':
+                self.log_test("Auth Me (Admin) - Role check", True)
+            else:
+                self.log_test("Auth Me (Admin) - Role check", False, f"Expected 'administrador', got '{response.get('role')}'")
+        
+        return success
+
+    def test_auth_me_client(self):
+        """Test /auth/me endpoint with client token"""
+        if not self.client_token:
+            self.log_test("Auth Me (Client)", False, "No client token available")
+            return False
+        
+        success, response = self.run_test("Auth Me (Client)", "GET", "auth/me", 200, token=self.client_token)
+        
+        if success:
+            if response.get('role') == 'cliente':
+                self.log_test("Auth Me (Client) - Role check", True)
+            else:
+                self.log_test("Auth Me (Client) - Role check", False, f"Expected 'cliente', got '{response.get('role')}'")
+        
+        return success
+
+    # ========== CASES TESTS ==========
+    
+    def test_get_cases_admin(self):
+        """Test GET /cases as admin (should see all cases)"""
+        if not self.admin_token:
+            self.log_test("Get Cases (Admin)", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Get Cases (Admin)", "GET", "cases", 200, token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Get Cases (Admin) - List returned", True)
+            print(f"    Admin sees {len(response)} cases")
+        
+        return success
+
+    def test_get_cases_client(self):
+        """Test GET /cases as client (should see only own cases)"""
+        if not self.client_token:
+            self.log_test("Get Cases (Client)", False, "No client token available")
+            return False
+        
+        success, response = self.run_test("Get Cases (Client)", "GET", "cases", 200, token=self.client_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Get Cases (Client) - List returned", True)
+            print(f"    Client sees {len(response)} cases")
+            
+            # Verify all cases belong to client
+            if response:
+                client_id = self.client_user.get('id') if self.client_user else None
+                all_own_cases = all(case.get('creator_id') == client_id for case in response)
+                if all_own_cases:
+                    self.log_test("Get Cases (Client) - Role filtering", True)
+                else:
+                    self.log_test("Get Cases (Client) - Role filtering", False, "Client sees cases from other users")
+        
+        return success
+
+    def test_create_case_client(self):
+        """Test POST /cases as client"""
+        if not self.client_token:
+            self.log_test("Create Case (Client)", False, "No client token available")
+            return False
+        
         test_case = {
-            "jira_id": f"TEST-{datetime.now().strftime('%H%M%S')}",
-            "title": "Test Case for API Testing",
-            "description": "This is a test case created by automated testing",
-            "responsible": "Test User",
-            "status": "Pendente"
+            "title": "Problema com sistema de pagamento",
+            "description": "O sistema não está processando pagamentos via PIX corretamente. Erro 500 ao tentar finalizar transação.",
+            "priority": "Alta",
+            "seguradora": "AVLA",
+            "category": "Erro Sistema"
         }
         
-        success, response = self.run_test("Create Case", "POST", "cases", 201, test_case)
+        success, response = self.run_test("Create Case (Client)", "POST", "cases", 200, test_case, token=self.client_token)
+        
         if success and 'id' in response:
             self.created_case_id = response['id']
-            self.log_test("Create Case - ID returned", True)
+            self.log_test("Create Case (Client) - ID returned", True)
+            
+            # Verify creator_id is automatically set
+            if response.get('creator_id') == self.client_user.get('id'):
+                self.log_test("Create Case (Client) - Creator ID set", True)
+            else:
+                self.log_test("Create Case (Client) - Creator ID set", False, "Creator ID not set correctly")
+        
         return success
 
-    def test_get_cases(self):
-        """Test getting all cases"""
-        return self.run_test("Get All Cases", "GET", "cases", 200)
-
     def test_get_case_by_id(self):
-        """Test getting a specific case by ID"""
+        """Test GET /cases/:id"""
         if not self.created_case_id:
             self.log_test("Get Case by ID", False, "No case ID available")
             return False
         
-        return self.run_test("Get Case by ID", "GET", f"cases/{self.created_case_id}", 200)
-
-    def test_update_case(self):
-        """Test updating a case"""
-        if not self.created_case_id:
-            self.log_test("Update Case", False, "No case ID available")
-            return False
+        success, response = self.run_test("Get Case by ID", "GET", f"cases/{self.created_case_id}", 200)
         
-        update_data = {
-            "title": "Updated Test Case Title",
-            "status": "Concluído"
-        }
+        if success:
+            required_fields = ['id', 'title', 'description', 'status', 'creator_id']
+            for field in required_fields:
+                if field not in response:
+                    self.log_test(f"Get Case by ID - {field} field", False, f"Missing field: {field}")
+                    return False
+            self.log_test("Get Case by ID - All fields present", True)
         
-        return self.run_test("Update Case", "PUT", f"cases/{self.created_case_id}", 200, update_data)
-
-    def test_filter_cases_by_status(self):
-        """Test filtering cases by status"""
-        return self.run_test("Filter Cases by Status", "GET", "cases", 200, params={"status": "Pendente"})
-
-    def test_filter_cases_by_responsible(self):
-        """Test filtering cases by responsible"""
-        return self.run_test("Filter Cases by Responsible", "GET", "cases", 200, params={"responsible": "Test User"})
-
-    def test_create_activity(self):
-        """Test creating a new activity"""
-        test_activity = {
-            "responsible": "Test User",
-            "activity": "Testing API endpoints",
-            "case_id": self.created_case_id,
-            "notes": "Automated test activity",
-            "is_current": True
-        }
-        
-        success, response = self.run_test("Create Activity", "POST", "activities", 201, test_activity)
-        if success and 'id' in response:
-            self.created_activity_id = response['id']
-            self.log_test("Create Activity - ID returned", True)
         return success
 
-    def test_get_activities(self):
-        """Test getting all activities"""
-        return self.run_test("Get All Activities", "GET", "activities", 200)
-
-    def test_get_current_activities(self):
-        """Test getting current activities"""
-        return self.run_test("Get Current Activities", "GET", "activities/current", 200)
-
-    def test_stop_activity(self):
-        """Test stopping an activity"""
-        if not self.created_activity_id:
-            self.log_test("Stop Activity", False, "No activity ID available")
+    # ========== COMMENTS TESTS ==========
+    
+    def test_create_public_comment(self):
+        """Test POST /cases/:id/comments (public comment)"""
+        if not self.created_case_id or not self.admin_token:
+            self.log_test("Create Public Comment", False, "Missing case ID or admin token")
             return False
         
-        return self.run_test("Stop Activity", "PUT", f"activities/{self.created_activity_id}/stop", 200)
+        comment_data = {
+            "content": "Olá! Recebemos seu chamado e estamos analisando o problema. Em breve retornaremos com uma solução.",
+            "is_internal": False
+        }
+        
+        success, response = self.run_test("Create Public Comment", "POST", f"cases/{self.created_case_id}/comments", 200, comment_data, token=self.admin_token)
+        
+        if success and 'id' in response:
+            self.created_comment_id = response['id']
+            self.log_test("Create Public Comment - ID returned", True)
+            
+            # Verify comment properties
+            if response.get('is_internal') == False:
+                self.log_test("Create Public Comment - Public flag", True)
+            else:
+                self.log_test("Create Public Comment - Public flag", False, "Comment marked as internal")
+        
+        return success
 
-    def test_delete_case(self):
-        """Test deleting a case (cleanup)"""
-        if not self.created_case_id:
-            self.log_test("Delete Case", False, "No case ID available")
+    def test_create_internal_comment(self):
+        """Test POST /cases/:id/comments with is_internal=true"""
+        if not self.created_case_id or not self.admin_token:
+            self.log_test("Create Internal Comment", False, "Missing case ID or admin token")
             return False
         
-        return self.run_test("Delete Case", "DELETE", f"cases/{self.created_case_id}", 200)
+        comment_data = {
+            "content": "INTERNO: Cliente relatou problema similar na semana passada. Verificar se é o mesmo bug do sistema de pagamento.",
+            "is_internal": True
+        }
+        
+        success, response = self.run_test("Create Internal Comment", "POST", f"cases/{self.created_case_id}/comments", 200, comment_data, token=self.admin_token)
+        
+        if success and 'id' in response:
+            self.log_test("Create Internal Comment - ID returned", True)
+            
+            # Verify comment properties
+            if response.get('is_internal') == True:
+                self.log_test("Create Internal Comment - Internal flag", True)
+            else:
+                self.log_test("Create Internal Comment - Internal flag", False, "Comment not marked as internal")
+        
+        return success
+
+    def test_get_comments_admin(self):
+        """Test GET /cases/:id/comments as admin (should see all comments)"""
+        if not self.created_case_id or not self.admin_token:
+            self.log_test("Get Comments (Admin)", False, "Missing case ID or admin token")
+            return False
+        
+        success, response = self.run_test("Get Comments (Admin)", "GET", f"cases/{self.created_case_id}/comments", 200, token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Get Comments (Admin) - List returned", True)
+            print(f"    Admin sees {len(response)} comments")
+            
+            # Check if internal comments are visible
+            internal_comments = [c for c in response if c.get('is_internal') == True]
+            if internal_comments:
+                self.log_test("Get Comments (Admin) - Internal comments visible", True)
+            else:
+                self.log_test("Get Comments (Admin) - Internal comments visible", False, "No internal comments found")
+        
+        return success
+
+    def test_get_comments_client(self):
+        """Test GET /cases/:id/comments as client (should NOT see internal comments)"""
+        if not self.created_case_id or not self.client_token:
+            self.log_test("Get Comments (Client)", False, "Missing case ID or client token")
+            return False
+        
+        success, response = self.run_test("Get Comments (Client)", "GET", f"cases/{self.created_case_id}/comments", 200, token=self.client_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Get Comments (Client) - List returned", True)
+            print(f"    Client sees {len(response)} comments")
+            
+            # Verify no internal comments are visible
+            internal_comments = [c for c in response if c.get('is_internal') == True]
+            if not internal_comments:
+                self.log_test("Get Comments (Client) - Internal comments filtered", True)
+            else:
+                self.log_test("Get Comments (Client) - Internal comments filtered", False, f"Client sees {len(internal_comments)} internal comments")
+        
+        return success
+
+    # ========== NOTIFICATIONS TESTS ==========
+    
+    def test_get_notifications_admin(self):
+        """Test GET /notifications as admin"""
+        if not self.admin_token:
+            self.log_test("Get Notifications (Admin)", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Get Notifications (Admin)", "GET", "notifications", 200, token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Get Notifications (Admin) - List returned", True)
+            print(f"    Admin has {len(response)} notifications")
+        
+        return success
+
+    def test_get_notifications_client(self):
+        """Test GET /notifications as client"""
+        if not self.client_token:
+            self.log_test("Get Notifications (Client)", False, "No client token available")
+            return False
+        
+        success, response = self.run_test("Get Notifications (Client)", "GET", "notifications", 200, token=self.client_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Get Notifications (Client) - List returned", True)
+            print(f"    Client has {len(response)} notifications")
+            
+            # Store a notification ID for testing mark as read
+            if response:
+                self.created_notification_id = response[0].get('id')
+        
+        return success
+
+    def test_mark_notification_read(self):
+        """Test POST /notifications/:id/read"""
+        if not self.created_notification_id or not self.client_token:
+            self.log_test("Mark Notification Read", False, "Missing notification ID or client token")
+            return False
+        
+        success, response = self.run_test("Mark Notification Read", "POST", f"notifications/{self.created_notification_id}/read", 200, token=self.client_token)
+        
+        if success:
+            self.log_test("Mark Notification Read - Success", True)
+        
+        return success
+
+    def test_mark_all_notifications_read(self):
+        """Test POST /notifications/mark-all-read"""
+        if not self.client_token:
+            self.log_test("Mark All Notifications Read", False, "No client token available")
+            return False
+        
+        success, response = self.run_test("Mark All Notifications Read", "POST", "notifications/mark-all-read", 200, token=self.client_token)
+        
+        if success:
+            self.log_test("Mark All Notifications Read - Success", True)
+        
+        return success
+
+    # ========== USER MANAGEMENT TESTS (Admin only) ==========
+    
+    def test_get_all_users_admin(self):
+        """Test GET /users as admin"""
+        if not self.admin_token:
+            self.log_test("Get All Users (Admin)", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Get All Users (Admin)", "GET", "users", 200, token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Get All Users (Admin) - List returned", True)
+            print(f"    System has {len(response)} users")
+        
+        return success
+
+    def test_get_all_users_client_forbidden(self):
+        """Test GET /users as client (should return 403)"""
+        if not self.client_token:
+            self.log_test("Get All Users (Client - Forbidden)", False, "No client token available")
+            return False
+        
+        success, response = self.run_test("Get All Users (Client - Forbidden)", "GET", "users", 403, token=self.client_token)
+        
+        if success:
+            self.log_test("Get All Users (Client) - Access denied correctly", True)
+        
+        return success
+
+    def test_get_pending_users_admin(self):
+        """Test GET /users/pending as admin"""
+        if not self.admin_token:
+            self.log_test("Get Pending Users (Admin)", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Get Pending Users (Admin)", "GET", "users/pending", 200, token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Get Pending Users (Admin) - List returned", True)
+            print(f"    System has {len(response)} pending users")
+        
+        return success
+
+    def test_get_pending_users_client_forbidden(self):
+        """Test GET /users/pending as client (should return 403)"""
+        if not self.client_token:
+            self.log_test("Get Pending Users (Client - Forbidden)", False, "No client token available")
+            return False
+        
+        success, response = self.run_test("Get Pending Users (Client - Forbidden)", "GET", "users/pending", 403, token=self.client_token)
+        
+        if success:
+            self.log_test("Get Pending Users (Client) - Access denied correctly", True)
+        
+        return success
 
     def run_all_tests(self):
         """Run all backend tests"""
