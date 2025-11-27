@@ -262,7 +262,7 @@ export const Dashboard = () => {
             </div>
             <TrendingUp className="w-5 h-5 text-gray-400" />
           </div>
-          <p className="text-sm text-gray-600 mb-1">Total de Casos</p>
+          <p className="text-sm text-gray-600 mb-1">Total de Chamados</p>
           <p className="text-3xl font-bold text-gray-900">{stats.total_cases}</p>
         </div>
 
@@ -276,7 +276,7 @@ export const Dashboard = () => {
               <CheckCircle2 className="w-6 h-6 text-green-600" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Casos Concluídos</p>
+          <p className="text-sm text-gray-600 mb-1">Chamados Concluídos</p>
           <p className="text-3xl font-bold text-green-600">{stats.completed_cases}</p>
         </div>
 
@@ -290,7 +290,7 @@ export const Dashboard = () => {
               <Clock className="w-6 h-6 text-yellow-600" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Casos Pendentes</p>
+          <p className="text-sm text-gray-600 mb-1">Chamados Pendentes</p>
           <p className="text-3xl font-bold text-yellow-600">{stats.pending_cases}</p>
         </div>
 
