@@ -227,13 +227,13 @@ export const CaseDetails = () => {
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4 text-gray-500" />
                 <span className="text-gray-600">Responsável:</span>
-                <span className="font-medium">{caseData.responsible}</span>
+                <span className="font-medium">{caseData.responsible || 'Não atribuído'}</span>
               </div>
 
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-gray-500" />
                 <span className="text-gray-600">Aberto em:</span>
-                <span className="font-medium">{formatDate(caseData.opened_date)}</span>
+                <span className="font-medium">{caseData.opened_date ? formatDate(caseData.opened_date) : 'Data não disponível'}</span>
               </div>
 
               {caseData.creator_name && (
