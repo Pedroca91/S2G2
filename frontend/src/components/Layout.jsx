@@ -13,7 +13,7 @@ export const Layout = ({ children }) => {
 
   const navigation = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard, adminOnly: false },
-    { name: 'Casos', path: '/cases', icon: FileText, adminOnly: false },
+    { name: 'Chamados', path: '/cases', icon: FileText, adminOnly: false },
     { name: 'Análise Recorrente', path: '/analytics', icon: TrendingUp, adminOnly: false },
     { name: 'Painel Suporte', path: '/support', icon: Headphones, adminOnly: false },
     { name: 'Usuários', path: '/users', icon: Users, adminOnly: true },
