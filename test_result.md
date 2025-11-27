@@ -122,15 +122,18 @@ frontend:
 
   - task: "Client Dashboard - Meus Chamados Banner"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/Cases.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "testing"
         - comment: "Need to verify 'Meus Chamados' banner appears for client users but not for admin users"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: 'Meus Chamados' banner correctly appears for client users on Cases page and correctly does NOT appear for admin users. Role-based UI working properly."
 
   - task: "Header Navigation - Abrir Chamado Button"
     implemented: true
