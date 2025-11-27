@@ -182,15 +182,18 @@ frontend:
 
   - task: "Case Details and Comments System"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/pages/CaseDetails.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
         - comment: "Need to test case details view, public/internal comments, and role-based visibility"
+        - working: false
+        - agent: "testing"
+        - comment: "❌ CRITICAL: Cannot test case details and comments due to 403 errors when loading cases. Backend returns 'Erro ao carregar casos: AxiosError' with 403 status. No cases are displayed, so 'Ver Detalhes' buttons are not available."
 
   - task: "Role-based Access Control"
     implemented: true
