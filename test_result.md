@@ -222,7 +222,11 @@ test_plan:
     - "Ticket Creation Flow"
     - "Case Details and Comments System"
     - "Role-based Access Control"
-  stuck_tasks: []
+  stuck_tasks: 
+    - "Notification System - Bell Icon"
+    - "Ticket Creation Flow"
+    - "Case Details and Comments System"
+    - "Role-based Access Control"
   test_all: true
   test_priority: "high_first"
 
