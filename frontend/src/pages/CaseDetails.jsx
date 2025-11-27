@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -9,112 +9,89 @@ import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Separator } from '../components/ui/separator';
-import { 
-  ArrowLeft, 
-  MessageSquare, 
-  Send, 
-  User, 
-  Building,
-  AlertCircle,
-  Eye,
-  EyeOff,
-  Calendar
-} from 'lucide-react';
+import { ArrowLeft, MessageSquare, Send, User, Building, AlertCircle, Eye, EyeOff, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-export const CaseDetails = () => {
+const CaseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  // Estados
-  const [caseData, setCaseData] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [commentText, setCommentText] = useState('');
-  const [isInternal, setIsInternal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  
-  // Ref para controlar montagem
-  const mountedRef = useRef(false);
+  const [state, setState] = useState({
+    caseData: null,
+    comments: [],
+    loading: true,
+    commentText: '',
+    isInternal: false,
+    submitting: false
+  });
 
   const isAdmin = user?.role === 'administrador';
 
-  // Carregar dados apenas uma vez
-  useEffect(() => {
-    mountedRef.current = true;
+  const loadData = useCallback(async () => {
+    if (!id) return;
     
-    const fetchData = async () => {
-      if (!id) return;
+    try {
+      const token = localStorage.getItem('token');
+      const headers = { Authorization: `Bearer ${token}` };
       
-      try {
-        const token = localStorage.getItem('token');
-        const headers = { Authorization: `Bearer ${token}` };
-        
-        const [caseRes, commentsRes] = await Promise.all([
-          axios.get(`${API}/cases/${id}`, { headers }),
-          axios.get(`${API}/cases/${id}/comments`, { headers })
-        ]);
+      const [caseRes, commentsRes] = await Promise.all([
+        axios.get(`${API}/cases/${id}`, { headers }),
+        axios.get(`${API}/cases/${id}/comments`, { headers })
+      ]);
 
-        if (mountedRef.current) {
-          setCaseData(caseRes.data);
-          setComments(commentsRes.data || []);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Erro:', error);
-        if (mountedRef.current) {
-          toast.error('Erro ao carregar caso');
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      mountedRef.current = false;
-    };
+      setState(prev => ({
+        ...prev,
+        caseData: caseRes.data,
+        comments: commentsRes.data || [],
+        loading: false
+      }));
+    } catch (error) {
+      console.error('Erro ao carregar:', error);
+      toast.error('Erro ao carregar caso');
+      setState(prev => ({ ...prev, loading: false }));
+    }
   }, [id]);
 
-  const handleSubmitComment = async (e) => {
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!commentText.trim() || submitting) return;
+    if (!state.commentText.trim() || state.submitting) return;
 
-    setSubmitting(true);
+    setState(prev => ({ ...prev, submitting: true }));
     
     try {
       const token = localStorage.getItem('token');
       await axios.post(
         `${API}/cases/${id}/comments`,
-        { content: commentText, is_internal: isInternal },
+        { 
+          content: state.commentText, 
+          is_internal: state.isInternal 
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (mountedRef.current) {
-        toast.success('Comentário adicionado!');
-        setCommentText('');
-        setIsInternal(false);
-        
-        // Recarregar comentários
-        const response = await axios.get(`${API}/cases/${id}/comments`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setComments(response.data || []);
-      }
+      toast.success('Comentário adicionado!');
+      
+      setState(prev => ({
+        ...prev,
+        commentText: '',
+        isInternal: false,
+        submitting: false
+      }));
+      
+      loadData();
     } catch (error) {
       console.error('Erro:', error);
-      if (mountedRef.current) {
-        toast.error('Erro ao adicionar comentário');
-      }
-    } finally {
-      if (mountedRef.current) {
-        setSubmitting(false);
-      }
+      toast.error('Erro ao adicionar comentário');
+      setState(prev => ({ ...prev, submitting: false }));
     }
   };
 
@@ -128,10 +105,9 @@ export const CaseDetails = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Data não disponível';
+    if (!dateString) return 'N/A';
     try {
-      const date = new Date(dateString);
-      return date.toLocaleString('pt-BR', {
+      return new Date(dateString).toLocaleString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -143,7 +119,7 @@ export const CaseDetails = () => {
     }
   };
 
-  if (loading) {
+  if (state.loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
@@ -151,7 +127,7 @@ export const CaseDetails = () => {
     );
   }
 
-  if (!caseData) {
+  if (!state.caseData) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -163,6 +139,8 @@ export const CaseDetails = () => {
     );
   }
 
+  const { caseData, comments, commentText, isInternal, submitting } = state;
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-5xl mx-auto">
@@ -171,7 +149,6 @@ export const CaseDetails = () => {
           Voltar
         </Button>
 
-        {/* Card Principal */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -189,7 +166,6 @@ export const CaseDetails = () => {
 
           <Separator className="my-4" />
 
-          {/* Informações */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {caseData.seguradora && (
               <div className="flex items-center gap-2 text-sm">
@@ -222,7 +198,6 @@ export const CaseDetails = () => {
 
           <Separator className="my-4" />
 
-          {/* Descrição */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 mb-2">Descrição</h3>
             <p className="text-gray-700 whitespace-pre-wrap bg-gray-50 p-4 rounded-lg">
@@ -231,7 +206,6 @@ export const CaseDetails = () => {
           </div>
         </div>
 
-        {/* Comentários */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -240,7 +214,6 @@ export const CaseDetails = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Lista */}
             <div className="space-y-4 mb-6">
               {comments.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
@@ -250,7 +223,7 @@ export const CaseDetails = () => {
               ) : (
                 comments.map((comment, idx) => (
                   <div 
-                    key={`comment-${comment.id || idx}`}
+                    key={`comment-${comment.id || idx}-${idx}`}
                     className={`p-4 rounded-lg border ${
                       comment.is_internal 
                         ? 'bg-amber-50 border-amber-200' 
@@ -283,8 +256,7 @@ export const CaseDetails = () => {
 
             <Separator className="my-6" />
 
-            {/* Formulário */}
-            <form onSubmit={handleSubmitComment}>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="comment">Adicionar Comentário</Label>
@@ -292,7 +264,7 @@ export const CaseDetails = () => {
                     id="comment"
                     placeholder="Escreva sua resposta..."
                     value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
+                    onChange={(e) => setState(prev => ({ ...prev, commentText: e.target.value }))}
                     rows={4}
                     className="mt-2"
                   />
@@ -303,7 +275,7 @@ export const CaseDetails = () => {
                     <Switch
                       id="internal"
                       checked={isInternal}
-                      onCheckedChange={setIsInternal}
+                      onCheckedChange={(checked) => setState(prev => ({ ...prev, isInternal: checked }))}
                     />
                     <Label htmlFor="internal" className="cursor-pointer flex items-center gap-2">
                       {isInternal ? (
