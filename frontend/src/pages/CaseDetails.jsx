@@ -423,4 +423,5 @@ const CaseDetailsComponent = () => {
   );
 };
 
+export const CaseDetails = React.memo(CaseDetailsComponent);
 export default CaseDetails;
