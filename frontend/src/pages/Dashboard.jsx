@@ -359,21 +359,21 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* Casos por Seguradora */}
+      {/* Chamados por Seguradora */}
       {Object.keys(stats.cases_by_seguradora).length > 0 && (
         <div className="card mb-6" data-testid="seguradoras-stats">
-          <h3 className="text-lg font-semibold mb-4">Casos por Seguradora</h3>
+          <h3 className="text-lg font-semibold mb-4">Chamados por Seguradora</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {Object.entries(stats.cases_by_seguradora).map(([seguradora, count]) => (
               <div 
                 key={seguradora} 
                 className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200"
                 onClick={() => navigate(`/cases?seguradora=${seguradora}`)}
-                title={`Clique para ver todos os casos da ${seguradora}`}
+                title={`Clique para ver todos os chamados da ${seguradora}`}
               >
                 <div className="flex-1">
                   <p className="text-sm text-gray-600 font-medium">{seguradora}</p>
-                  <p className="text-2xl font-bold text-purple-600">{count} casos</p>
+                  <p className="text-2xl font-bold text-purple-600">{count} chamados</p>
                 </div>
                 <div className="ml-4">
                   <div className="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center">
