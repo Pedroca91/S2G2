@@ -101,3 +101,110 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Testar o sistema de helpdesk completo no frontend com credenciais específicas e fluxos de cliente/admin"
+
+frontend:
+  - task: "Login System - Client and Admin Authentication"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/Login.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test login functionality for both client (cliente@teste.com) and admin (pedro.carvalho@safe2go.com.br) users"
+
+  - task: "Client Dashboard - Meus Chamados Banner"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/Cases.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to verify 'Meus Chamados' banner appears for client users but not for admin users"
+
+  - task: "Header Navigation - Abrir Chamado Button"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/Layout.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to verify 'Abrir Chamado' button appears in header for authenticated users"
+
+  - task: "Notification System - Bell Icon"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/NotificationBell.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test notification bell functionality and real-time updates"
+
+  - task: "Ticket Creation Flow"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/NewTicket.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test complete ticket creation flow with form validation and redirection"
+
+  - task: "Case Details and Comments System"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/CaseDetails.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test case details view, public/internal comments, and role-based visibility"
+
+  - task: "Role-based Access Control"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/context/AuthContext.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to verify clients see only their cases while admins see all cases"
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+
+test_plan:
+  current_focus:
+    - "Login System - Client and Admin Authentication"
+    - "Client Dashboard - Meus Chamados Banner"
+    - "Ticket Creation Flow"
+    - "Case Details and Comments System"
+    - "Role-based Access Control"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "testing"
+    - message: "Starting comprehensive helpdesk system testing with provided credentials. Will test complete user flows for both client and admin roles."
