@@ -158,10 +158,11 @@ class Case(BaseModel):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CaseCreate(BaseModel):
-    jira_id: str
+    jira_id: Optional[str] = None
     title: str
     description: str
-    responsible: str
+    priority: str = "Média"
+    responsible: Optional[str] = None
     status: str = "Pendente"
     seguradora: Optional[str] = None
     category: Optional[str] = None
@@ -173,6 +174,7 @@ class CaseUpdate(BaseModel):
     jira_id: Optional[str] = None
     title: Optional[str] = None
     description: Optional[str] = None
+    priority: Optional[str] = None
     responsible: Optional[str] = None
     status: Optional[str] = None
     seguradora: Optional[str] = None
