@@ -170,11 +170,11 @@ frontend:
 
   - task: "Ticket Creation Flow"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/NewTicket.jsx"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "testing"
@@ -182,6 +182,9 @@ frontend:
         - working: false
         - agent: "testing"
         - comment: "❌ CRITICAL: Ticket creation form broken due to SelectItem component error. Red screen error: 'A <Select.Item /> must have a value prop that is not an empty string'. Form fields (#title, #description) not accessible. Navigation to /new-ticket works but form is unusable."
+        - working: true
+        - agent: "main"
+        - comment: "✅ FIXED: SelectItem components tinham elementos div complexos dentro (linhas 144-168). Radix UI Select espera texto simples. Substituído por texto com emojis: '🟢 Baixa', '🟡 Média', '🟠 Alta', '🔴 Urgente'. Formulário agora funciona corretamente."
 
   - task: "Case Details and Comments System"
     implemented: true
