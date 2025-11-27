@@ -43,6 +43,16 @@ function App() {
               }
             />
             <Route
+              path="/cases/:id"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <CaseDetails />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/support"
               element={
                 <PrivateRoute>
