@@ -260,25 +260,36 @@ async def websocket_endpoint(websocket: WebSocket):
         manager.disconnect(websocket)
 
 # Auth Routes
-@api_router.post("/auth/register", response_model=AuthResponse)
+@api_router.post("/auth/register")
 async def register(user_data: UserRegister):
     # Check if user exists
     existing_user = await db.users.find_one({'email': user_data.email})
     if existing_user:
         raise HTTPException(status_code=400, detail="Email já cadastrado")
     
-    # Create user
-    user = User(name=user_data.name, email=user_data.email)
+    # Create user with status "pendente"
+    user = User(
+        name=user_data.name, 
+        email=user_data.email,
+        phone=user_data.phone,
+        company=user_data.company,
+        role="cliente",
+        status="pendente"
+    )
     user_doc = user.model_dump()
     user_doc['password'] = hash_password(user_data.password)
     user_doc['created_at'] = user_doc['created_at'].isoformat()
     
     await db.users.insert_one(user_doc)
     
-    # Generate token
-    token = create_token(user.id)
+    logger.info(f"Novo cadastro pendente: {user_data.email}")
     
-    return AuthResponse(token=token, user=user)
+    # Retornar mensagem de sucesso sem gerar token
+    return {
+        "message": "Cadastro realizado com sucesso! Aguarde a aprovação do administrador.",
+        "status": "pendente",
+        "email": user_data.email
+    }
 
 @api_router.post("/auth/login", response_model=AuthResponse)
 async def login(credentials: UserLogin):
