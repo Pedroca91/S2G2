@@ -156,27 +156,45 @@ export const NewTicket = () => {
                 </Select>
               </div>
 
-              {/* Seguradora */}
-              <div>
-                <Label htmlFor="seguradora" className="text-base font-semibold flex items-center gap-2">
-                  <Building className="h-4 w-4" />
-                  Seguradora (opcional)
-                </Label>
-                <p className="text-sm text-gray-600 mb-2">
-                  Se o problema está relacionado a uma seguradora específica
-                </p>
-                <Select value={formData.seguradora} onValueChange={(value) => setFormData({ ...formData, seguradora: value })}>
-                  <SelectTrigger id="seguradora">
-                    <SelectValue placeholder="Selecione uma seguradora" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Nenhuma</SelectItem>
-                    <SelectItem value="AVLA">AVLA</SelectItem>
-                    <SelectItem value="ESSOR">ESSOR</SelectItem>
-                    <SelectItem value="DAYCOVAL">DAYCOVAL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Seguradora - Apenas para Administradores */}
+              {user?.role === 'administrador' && (
+                <div>
+                  <Label htmlFor="seguradora" className="text-base font-semibold flex items-center gap-2">
+                    <Building className="h-4 w-4" />
+                    Seguradora (opcional)
+                  </Label>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Se o problema está relacionado a uma seguradora específica
+                  </p>
+                  <Select value={formData.seguradora} onValueChange={(value) => setFormData({ ...formData, seguradora: value })}>
+                    <SelectTrigger id="seguradora">
+                      <SelectValue placeholder="Selecione uma seguradora" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhuma</SelectItem>
+                      <SelectItem value="AVLA">AVLA</SelectItem>
+                      <SelectItem value="ESSOR">ESSOR</SelectItem>
+                      <SelectItem value="DAYCOVAL">DAYCOVAL</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Informação da Seguradora - Para Clientes */}
+              {user?.role === 'cliente' && user?.company && (
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-purple-900">
+                    <Building className="h-5 w-5" />
+                    <div>
+                      <p className="font-semibold">Seguradora Vinculada</p>
+                      <p className="text-sm text-purple-700">{user.company}</p>
+                      <p className="text-xs text-purple-600 mt-1">
+                        Este chamado será automaticamente vinculado à sua seguradora
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Categoria */}
               <div>
