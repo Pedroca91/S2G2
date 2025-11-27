@@ -438,12 +438,6 @@ export const Cases = () => {
                     <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-lg">
                       {caseItem.jira_id}
                     </span>
-                    {/* Badge NOVO para casos recém-criados */}
-                    {newCaseIds.has(caseItem.id) && (
-                      <span className="animate-pulse flex items-center gap-1 px-2 py-1 bg-red-500 text-white rounded-full text-xs font-bold">
-                        🔴 NOVO
-                      </span>
-                    )}
                     <span
                       className={`badge ${
                         caseItem.status === 'Concluído' 
