@@ -162,7 +162,7 @@ class CaseCreate(BaseModel):
     title: str
     description: str
     priority: str = "Média"
-    responsible: Optional[str] = None
+    responsible: str = "Não atribuído"
     status: str = "Pendente"
     seguradora: Optional[str] = None
     category: Optional[str] = None
