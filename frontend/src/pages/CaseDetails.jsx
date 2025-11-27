@@ -249,7 +249,7 @@ const CaseDetails = () => {
                         value={editFormData.title}
                         onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
                         required
-                        placeholder="Título do caso"
+                        placeholder="Título do chamado"
                       />
                     </div>
                     
