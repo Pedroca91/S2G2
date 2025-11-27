@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Cases from './pages/Cases';
 import CaseDetails from './pages/CaseDetails';
+import NewTicket from './pages/NewTicket';
 import SupportPanel from './pages/SupportPanel';
 import RecurrentAnalysis from './pages/RecurrentAnalysis';
 import UserManagement from './pages/UserManagement';
