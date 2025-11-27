@@ -323,9 +323,9 @@ export const CaseDetails = () => {
                   <p className="text-sm">Seja o primeiro a comentar!</p>
                 </div>
               ) : (
-                comments.filter(c => c && c.id).map((comment) => (
+                comments.filter(c => c && c.id).map((comment, index) => (
                   <div 
-                    key={comment.id} 
+                    key={`comment-${comment.id}-${index}`} 
                     className={`p-4 rounded-lg border ${
                       comment.is_internal 
                         ? 'bg-amber-50 border-amber-200' 
