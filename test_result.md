@@ -197,15 +197,18 @@ frontend:
 
   - task: "Role-based Access Control"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/context/AuthContext.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
         - comment: "Need to verify clients see only their cases while admins see all cases"
+        - working: false
+        - agent: "testing"
+        - comment: "❌ CRITICAL: Cannot verify role-based access control for cases due to 403 errors. Both client and admin users get 'Failed to load resource: the server responded with a status of 403' when trying to load cases. Backend permission system appears broken. UI role differentiation works (banner visibility) but data access fails."
 
 metadata:
   created_by: "testing_agent"
