@@ -471,34 +471,48 @@ export const Cases = () => {
                     <span>Aberto: {new Date(caseItem.opened_date).toLocaleDateString('pt-BR')}</span>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => navigate(`/cases/${caseItem.id}`)}
-                    data-testid={`view-case-${caseItem.id}`}
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    <Eye className="w-4 h-4 mr-1" />
-                    Ver Detalhes
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(caseItem)}
-                    data-testid={`edit-case-${caseItem.id}`}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(caseItem.id)}
-                    data-testid={`delete-case-${caseItem.id}`}
-                    className="text-red-600 hover:bg-red-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                <div className="flex flex-col gap-2">
+                  {/* Seletor rápido de status */}
+                  <div className="w-64">
+                    <Select
+                      value={caseItem.status}
+                      onValueChange={(value) => handleStatusChange(caseItem.id, value)}
+                    >
+                      <SelectTrigger className="h-9 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Pendente">🟡 Pendente</SelectItem>
+                        <SelectItem value="Em Desenvolvimento">🔵 Em Desenvolvimento</SelectItem>
+                        <SelectItem value="Aguardando resposta do cliente">🟠 Aguardando resposta do cliente</SelectItem>
+                        <SelectItem value="Concluído">🟢 Concluído</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => navigate(`/cases/${caseItem.id}`)}
+                      data-testid={`view-case-${caseItem.id}`}
+                      className="bg-purple-600 hover:bg-purple-700 flex-1"
+                    >
+                      <Eye className="w-4 h-4 mr-1" />
+                      Ver Detalhes
+                    </Button>
+                    {isAdmin && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(caseItem.id)}
+                        data-testid={`delete-case-${caseItem.id}`}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
