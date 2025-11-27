@@ -475,42 +475,66 @@ class Safe2GoHelpdeskTester:
         return success
 
     def run_all_tests(self):
-        """Run all backend tests"""
-        print("🚀 Starting Support System Backend API Tests")
+        """Run all Safe2Go helpdesk backend tests"""
+        print("🚀 Starting Safe2Go Helpdesk Backend API Tests")
         print(f"Testing against: {self.api_url}")
-        print("=" * 60)
+        print("=" * 70)
         
-        # Basic API tests
+        # Basic API test
         self.test_root_endpoint()
         
-        # Dashboard tests
-        self.test_dashboard_stats()
-        self.test_dashboard_charts()
+        print("\n🔐 AUTHENTICATION TESTS")
+        print("-" * 30)
+        # Authentication tests
+        self.test_admin_login()
+        self.test_client_login()
+        self.test_auth_me_admin()
+        self.test_auth_me_client()
         
-        # Cases CRUD tests
-        self.test_create_case()
-        self.test_get_cases()
+        print("\n📋 CASES TESTS")
+        print("-" * 20)
+        # Cases tests
+        self.test_get_cases_admin()
+        self.test_get_cases_client()
+        self.test_create_case_client()
         self.test_get_case_by_id()
-        self.test_update_case()
         
-        # Cases filtering tests
-        self.test_filter_cases_by_status()
-        self.test_filter_cases_by_responsible()
+        print("\n💬 COMMENTS TESTS")
+        print("-" * 25)
+        # Comments tests
+        self.test_create_public_comment()
+        self.test_create_internal_comment()
+        self.test_get_comments_admin()
+        self.test_get_comments_client()
         
-        # Activities tests
-        self.test_create_activity()
-        self.test_get_activities()
-        self.test_get_current_activities()
-        self.test_stop_activity()
+        print("\n🔔 NOTIFICATIONS TESTS")
+        print("-" * 30)
+        # Notifications tests
+        self.test_get_notifications_admin()
+        self.test_get_notifications_client()
+        self.test_mark_notification_read()
+        self.test_mark_all_notifications_read()
         
-        # Cleanup
-        self.test_delete_case()
+        print("\n👥 USER MANAGEMENT TESTS")
+        print("-" * 35)
+        # User management tests (admin only)
+        self.test_get_all_users_admin()
+        self.test_get_all_users_client_forbidden()
+        self.test_get_pending_users_admin()
+        self.test_get_pending_users_client_forbidden()
         
         # Print summary
-        print("=" * 60)
+        print("\n" + "=" * 70)
         print(f"📊 Test Summary: {self.tests_passed}/{self.tests_run} tests passed")
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
         print(f"📈 Success Rate: {success_rate:.1f}%")
+        
+        # Print failed tests
+        failed_tests = [result for result in self.test_results if result['status'] == 'FAILED']
+        if failed_tests:
+            print(f"\n❌ Failed Tests ({len(failed_tests)}):")
+            for test in failed_tests:
+                print(f"   • {test['test']}: {test['details']}")
         
         return self.tests_passed == self.tests_run
 
