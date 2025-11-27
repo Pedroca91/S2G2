@@ -448,6 +448,8 @@ export const Cases = () => {
                           ? 'badge-success' 
                           : caseItem.status === 'Aguardando resposta do cliente'
                           ? 'badge-waiting'
+                          : caseItem.status === 'Em Desenvolvimento'
+                          ? 'bg-blue-100 text-blue-700'
                           : 'badge-pending'
                       }`}
                       data-testid={`case-status-${caseItem.id}`}
