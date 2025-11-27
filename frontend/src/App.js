@@ -61,6 +61,16 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/users"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <UserManagement />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <Toaster position="top-right" richColors />
