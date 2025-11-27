@@ -48,8 +48,8 @@ export const NewTicket = () => {
           title: formData.title,
           description: formData.description,
           priority: formData.priority,
-          seguradora: formData.seguradora || null,
-          category: formData.category || null,
+          seguradora: formData.seguradora === 'none' ? null : formData.seguradora,
+          category: formData.category === 'none' ? null : formData.category,
           status: 'Pendente',
           responsible: 'Não atribuído'
         },
