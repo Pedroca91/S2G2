@@ -9,7 +9,7 @@
 **Configure:**
 ```
 Nome: Safe2Go - Sincronização de Casos
-URL: https://projeto-atual-1.preview.emergentagent.com/api/webhooks/jira
+URL: https://validacao-ponto.preview.emergentagent.com/api/webhooks/jira
 Eventos: Issue Created, Issue Updated, Issue Assigned
 Status: Ativado ✅
 ```
@@ -35,7 +35,7 @@ Valor: safe2go-webhook-secret-2025
 
 1. Crie um novo caso no Jira
 2. Aguarde 2-3 segundos
-3. Acesse Safe2Go: https://projeto-atual-1.preview.emergentagent.com/
+3. Acesse Safe2Go: https://validacao-ponto.preview.emergentagent.com/
 4. Vá em **Casos**
 5. 🎉 **Seu caso apareceu automaticamente!**
 
@@ -119,7 +119,7 @@ Safe2Go: Responsável atualizado para "João Silva"
 
 **Teste manual:**
 ```bash
-curl -X POST https://projeto-atual-1.preview.emergentagent.com/api/webhooks/jira \
+curl -X POST https://validacao-ponto.preview.emergentagent.com/api/webhooks/jira \
   -H "Content-Type: application/json" \
   -H "X-Webhook-Secret: safe2go-webhook-secret-2025" \
   -d '{"webhookEvent":"jira:issue_created","issue":{"key":"TEST-1","fields":{"summary":"Teste"}}}'
@@ -133,7 +133,7 @@ curl -X POST https://projeto-atual-1.preview.emergentagent.com/api/webhooks/jira
 
 **Endpoint do Webhook:**
 ```
-POST https://projeto-atual-1.preview.emergentagent.com/api/webhooks/jira
+POST https://validacao-ponto.preview.emergentagent.com/api/webhooks/jira
 ```
 
 **Última atualização:** Novembro 2025
