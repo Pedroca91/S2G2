@@ -182,11 +182,11 @@ frontend:
 
   - task: "Case Details and Comments System"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/CaseDetails.jsx"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "testing"
@@ -194,6 +194,9 @@ frontend:
         - working: false
         - agent: "testing"
         - comment: "❌ CRITICAL: Cannot test case details and comments due to 403 errors when loading cases. Backend returns 'Erro ao carregar casos: AxiosError' with 403 status. No cases are displayed, so 'Ver Detalhes' buttons are not available."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: 'Ver Detalhes' button functionality works correctly. Successfully tested complete flow: 1) Login with admin credentials (pedro.carvalho@safe2go.com.br) 2) Navigate to /cases page 3) Found 2 cases displayed 4) Located 'Ver Detalhes' button with correct data-testid='view-case-{id}' 5) Button click successfully navigates to /cases/{id} 6) Case details page loads with proper title, case information, and comments section. Previous 403 errors resolved - cases now load properly for admin users."
 
   - task: "Role-based Access Control"
     implemented: true
