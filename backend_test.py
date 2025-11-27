@@ -52,10 +52,14 @@ class Safe2GoHelpdeskTester:
             "details": details
         })
 
-    def run_test(self, name, method, endpoint, expected_status, data=None, params=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, params=None, token=None):
         """Run a single API test"""
         url = f"{self.api_url}/{endpoint}"
         headers = {'Content-Type': 'application/json'}
+        
+        # Add authorization header if token provided
+        if token:
+            headers['Authorization'] = f'Bearer {token}'
         
         try:
             if method == 'GET':
@@ -73,11 +77,18 @@ class Safe2GoHelpdeskTester:
             if not success:
                 details += f", Expected: {expected_status}"
                 if response.text:
-                    details += f", Response: {response.text[:200]}"
+                    try:
+                        error_data = response.json()
+                        details += f", Error: {error_data.get('detail', response.text[:200])}"
+                    except:
+                        details += f", Response: {response.text[:200]}"
             
             self.log_test(name, success, details)
             
-            return success, response.json() if success and response.text else {}
+            try:
+                return success, response.json() if response.text else {}
+            except:
+                return success, {}
 
         except Exception as e:
             self.log_test(name, False, f"Exception: {str(e)}")
