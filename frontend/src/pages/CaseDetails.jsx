@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const CaseDetailsComponent = () => {
+export const CaseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -39,6 +39,9 @@ const CaseDetailsComponent = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const isAdmin = user?.role === 'administrador';
+
+  // Ref para controlar se o componente está montado
+  const isMountedRef = React.useRef(true);
 
   useEffect(() => {
     let isMounted = true;
