@@ -260,7 +260,7 @@ const CaseDetails = () => {
                         value={editFormData.description}
                         onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
                         required
-                        placeholder="Descreva o caso"
+                        placeholder="Descreva o chamado"
                         rows={4}
                       />
                     </div>
