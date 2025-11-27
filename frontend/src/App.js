@@ -5,6 +5,7 @@ import Cases from './pages/Cases';
 import SupportPanel from './pages/SupportPanel';
 import RecurrentAnalysis from './pages/RecurrentAnalysis';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Layout from './components/Layout';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
@@ -18,6 +19,7 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route
               path="/"
               element={
