@@ -18,6 +18,7 @@ const API = `${BACKEND_URL}/api`;
 
 export const Cases = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [cases, setCases] = useState([]);
   const [filteredCases, setFilteredCases] = useState([]);
@@ -31,6 +32,7 @@ export const Cases = () => {
   const [newCaseIds, setNewCaseIds] = useState(new Set());
   const [soundEnabled, setSoundEnabled] = useState(false);
   const audioContextRef = useRef(null);
+  const isAdmin = user?.role === 'administrador';
   const [formData, setFormData] = useState({
     jira_id: '',
     title: '',
