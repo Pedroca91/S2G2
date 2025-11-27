@@ -115,53 +115,33 @@ export const Login = () => {
               </TabsContent>
 
               <TabsContent value="register">
-                <form onSubmit={handleRegister} className="space-y-4 mt-4">
-                  <div>
-                    <Label htmlFor="register-name">Nome Completo</Label>
-                    <Input
-                      id="register-name"
-                      data-testid="register-name-input"
-                      type="text"
-                      placeholder="Seu nome"
-                      value={registerData.name}
-                      onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
-                      required
-                    />
+                <div className="space-y-6 mt-4 py-8">
+                  <div className="text-center">
+                    <div className="inline-block p-4 bg-purple-100 rounded-full mb-4">
+                      <UserPlus className="w-12 h-12 text-purple-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Criar Nova Conta
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      Cadastre-se para abrir chamados e acompanhar o suporte
+                    </p>
                   </div>
-                  <div>
-                    <Label htmlFor="register-email">Email</Label>
-                    <Input
-                      id="register-email"
-                      data-testid="register-email-input"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={registerData.email}
-                      onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                      required
-                    />
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-blue-800">
+                      ℹ️ Após o cadastro, seu acesso ficará pendente até aprovação do administrador.
+                    </p>
                   </div>
-                  <div>
-                    <Label htmlFor="register-password">Senha</Label>
-                    <Input
-                      id="register-password"
-                      data-testid="register-password-input"
-                      type="password"
-                      placeholder="••••••••"
-                      value={registerData.password}
-                      onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                      required
-                      minLength={6}
-                    />
-                  </div>
+                  
                   <Button
-                    type="submit"
+                    onClick={() => navigate('/register')}
                     data-testid="register-submit-btn"
                     className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
-                    disabled={loading}
                   >
-                    {loading ? 'Criando conta...' : 'Criar conta'}
+                    Ir para Cadastro
                   </Button>
-                </form>
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
