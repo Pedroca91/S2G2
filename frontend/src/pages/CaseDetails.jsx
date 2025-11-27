@@ -44,7 +44,7 @@ export const CaseDetails = () => {
   const isMountedRef = React.useRef(true);
 
   useEffect(() => {
-    let isMounted = true;
+    isMountedRef.current = true;
 
     const loadData = async () => {
       try {
@@ -55,7 +55,7 @@ export const CaseDetails = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        if (isMounted) {
+        if (isMountedRef.current) {
           setCaseData(caseResponse.data);
         }
 
@@ -64,16 +64,16 @@ export const CaseDetails = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        if (isMounted) {
+        if (isMountedRef.current) {
           setComments(commentsResponse.data);
         }
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
-        if (isMounted) {
+        if (isMountedRef.current) {
           toast.error('Erro ao carregar detalhes do caso');
         }
       } finally {
-        if (isMounted) {
+        if (isMountedRef.current) {
           setLoading(false);
         }
       }
@@ -83,7 +83,7 @@ export const CaseDetails = () => {
 
     // Cleanup function
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
     };
   }, [id]);
 
