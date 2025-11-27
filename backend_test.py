@@ -3,7 +3,6 @@ import sys
 import json
 from datetime import datetime, timedelta
 import uuid
-import websocket
 import threading
 import time
 
