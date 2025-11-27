@@ -141,30 +141,10 @@ export const NewTicket = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Baixa">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                        Baixa - Pode aguardar
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="Média">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                        Média - Normal
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="Alta">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                        Alta - Preciso de atenção
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="Urgente">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                        Urgente - Sistema parado
-                      </div>
-                    </SelectItem>
+                    <SelectItem value="Baixa">🟢 Baixa - Pode aguardar</SelectItem>
+                    <SelectItem value="Média">🟡 Média - Normal</SelectItem>
+                    <SelectItem value="Alta">🟠 Alta - Preciso de atenção</SelectItem>
+                    <SelectItem value="Urgente">🔴 Urgente - Sistema parado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
