@@ -340,7 +340,7 @@ export const Dashboard = () => {
                 📊 Análise por Categoria
               </span>
               <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full">
-                🔍 Casos Similares
+                🔍 Chamados Similares
               </span>
               <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full">
                 ⚡ Sugestões de Automação
