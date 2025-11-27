@@ -236,12 +236,6 @@ export const Dashboard = () => {
         <div className="flex-1">
           <div className="flex items-center gap-3">
             <h1 className="page-title" data-testid="dashboard-title">Dashboard</h1>
-            {isConnected && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                <Wifi className="w-3 h-3" />
-                <span>Ao vivo</span>
-              </div>
-            )}
           </div>
           <p className="page-subtitle">Visão geral do sistema de suporte</p>
         </div>
