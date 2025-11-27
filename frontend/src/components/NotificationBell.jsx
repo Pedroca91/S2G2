@@ -108,7 +108,13 @@ export const NotificationBell = () => {
 
   const formatDate = (dateString) => {
     try {
-      return format(new Date(dateString), "d/MM 'às' HH:mm", { locale: ptBR });
+      const date = new Date(dateString);
+      return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     } catch {
       return dateString;
     }
