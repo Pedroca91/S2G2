@@ -180,40 +180,7 @@ export const Cases = () => {
     <div className="page-container">
       <div className="page-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h1 className="page-title" data-testid="cases-title">Casos</h1>
-            {/* Indicador de conexão WebSocket */}
-            <div className="flex items-center gap-2">
-              {isConnected ? (
-                <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                  <Wifi className="w-3 h-3" />
-                  <span>Ao vivo</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                  <WifiOff className="w-3 h-3" />
-                  <span>Desconectado</span>
-                </div>
-              )}
-              
-              {/* Botão para habilitar som */}
-              {!soundEnabled && isConnected && (
-                <button
-                  onClick={enableSound}
-                  className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded-full text-xs font-medium transition-colors"
-                  title="Clique para ativar notificações sonoras"
-                >
-                  🔔 Ativar Som
-                </button>
-              )}
-              
-              {soundEnabled && (
-                <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                  🔔 Som Ativo
-                </div>
-              )}
-            </div>
-          </div>
+          <h1 className="page-title" data-testid="cases-title">Casos</h1>
           <p className="page-subtitle">Gerencie todos os casos de suporte</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
