@@ -234,7 +234,7 @@ export const Cases = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   required
-                  placeholder="Descreva o caso"
+                  placeholder="Descreva o chamado"
                   rows={4}
                 />
               </div>
