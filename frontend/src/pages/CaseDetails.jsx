@@ -267,7 +267,7 @@ export const CaseDetails = () => {
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-2">Descrição</h3>
               <p className="text-gray-700 whitespace-pre-wrap bg-gray-50 p-4 rounded-lg">
-                {caseData.description}
+                {caseData.description || 'Sem descrição'}
               </p>
             </div>
           </div>
