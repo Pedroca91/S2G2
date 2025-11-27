@@ -102,6 +102,17 @@ class UserLogin(BaseModel):
 class AuthResponse(BaseModel):
     token: str
     user: User
+
+class UserApproval(BaseModel):
+    status: str  # "aprovado" ou "rejeitado"
+    
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    company: Optional[str] = None
+    role: Optional[str] = None
+    status: Optional[str] = None
 class Case(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
