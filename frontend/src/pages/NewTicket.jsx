@@ -205,7 +205,7 @@ export const NewTicket = () => {
                     <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Nenhuma</SelectItem>
+                    <SelectItem value="none">Nenhuma</SelectItem>
                     <SelectItem value="Erro Técnico">Erro Técnico</SelectItem>
                     <SelectItem value="Erro Boleto">Erro Boleto</SelectItem>
                     <SelectItem value="Erro Corretor">Erro Corretor</SelectItem>
