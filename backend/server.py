@@ -743,9 +743,18 @@ async def get_recurrent_cases():
     return analysis
 
 @api_router.get("/cases/categories", response_model=List[CategoryStats])
-async def get_categories():
+async def get_categories(current_user: dict = Depends(get_current_user)):
     """Lista todas as categorias com estatísticas"""
-    pipeline = [
+    # Construir filtro inicial - se cliente, apenas seus casos
+    match_stage = {}
+    if current_user['role'] == 'cliente':
+        match_stage = {"$match": {"creator_id": current_user['id']}}
+    
+    pipeline = []
+    if match_stage:
+        pipeline.append(match_stage)
+    
+    pipeline.extend([
         {
             "$group": {
                 "_id": "$category",
@@ -754,7 +763,7 @@ async def get_categories():
             }
         },
         {"$sort": {"count": -1}}
-    ]
+    ])
     
     results = await db.cases.aggregate(pipeline).to_list(100)
     
