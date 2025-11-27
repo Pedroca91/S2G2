@@ -11,8 +11,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from './ui/popover';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
