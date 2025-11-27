@@ -328,6 +328,133 @@ async def login(credentials: UserLogin):
 async def get_me(current_user: dict = Depends(get_current_user)):
     return User(**current_user)
 
+# User Management (Admin only)
+@api_router.get("/users", response_model=List[User])
+async def list_users(
+    status: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    # Verificar se é administrador
+    if current_user.get('role') != 'administrador':
+        raise HTTPException(status_code=403, detail="Acesso negado. Apenas administradores.")
+    
+    # Filtrar por status se fornecido
+    query = {}
+    if status:
+        query['status'] = status
+    
+    users = await db.users.find(query, {'_id': 0, 'password': 0}).to_list(1000)
+    
+    # Converter datas
+    for user in users:
+        if isinstance(user.get('created_at'), str):
+            user['created_at'] = datetime.fromisoformat(user['created_at'])
+        if user.get('approved_at') and isinstance(user['approved_at'], str):
+            user['approved_at'] = datetime.fromisoformat(user['approved_at'])
+    
+    return [User(**user) for user in users]
+
+@api_router.get("/users/pending", response_model=List[User])
+async def list_pending_users(current_user: dict = Depends(get_current_user)):
+    """Lista apenas usuários pendentes de aprovação"""
+    if current_user.get('role') != 'administrador':
+        raise HTTPException(status_code=403, detail="Acesso negado. Apenas administradores.")
+    
+    users = await db.users.find(
+        {'status': 'pendente'}, 
+        {'_id': 0, 'password': 0}
+    ).to_list(1000)
+    
+    for user in users:
+        if isinstance(user.get('created_at'), str):
+            user['created_at'] = datetime.fromisoformat(user['created_at'])
+    
+    return [User(**user) for user in users]
+
+@api_router.post("/users/{user_id}/approve")
+async def approve_user(
+    user_id: str, 
+    approval: UserApproval,
+    current_user: dict = Depends(get_current_user)
+):
+    """Aprovar ou rejeitar cadastro de usuário"""
+    if current_user.get('role') != 'administrador':
+        raise HTTPException(status_code=403, detail="Acesso negado. Apenas administradores.")
+    
+    if approval.status not in ['aprovado', 'rejeitado']:
+        raise HTTPException(status_code=400, detail="Status inválido")
+    
+    user = await db.users.find_one({'id': user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Atualizar status
+    update_data = {
+        'status': approval.status,
+        'approved_at': datetime.now(timezone.utc).isoformat(),
+        'approved_by': current_user['id']
+    }
+    
+    await db.users.update_one({'id': user_id}, {'$set': update_data})
+    
+    logger.info(f"Usuário {user['email']} {approval.status} por {current_user['email']}")
+    
+    return {
+        "message": f"Usuário {approval.status} com sucesso",
+        "user_id": user_id,
+        "status": approval.status
+    }
+
+@api_router.put("/users/{user_id}", response_model=User)
+async def update_user(
+    user_id: str,
+    user_update: UserUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Atualizar dados do usuário"""
+    if current_user.get('role') != 'administrador':
+        raise HTTPException(status_code=403, detail="Acesso negado. Apenas administradores.")
+    
+    user = await db.users.find_one({'id': user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Preparar dados para atualização (apenas campos não None)
+    update_data = {k: v for k, v in user_update.model_dump().items() if v is not None}
+    
+    if update_data:
+        await db.users.update_one({'id': user_id}, {'$set': update_data})
+    
+    # Buscar usuário atualizado
+    updated_user = await db.users.find_one({'id': user_id}, {'_id': 0, 'password': 0})
+    
+    if isinstance(updated_user.get('created_at'), str):
+        updated_user['created_at'] = datetime.fromisoformat(updated_user['created_at'])
+    if updated_user.get('approved_at') and isinstance(updated_user['approved_at'], str):
+        updated_user['approved_at'] = datetime.fromisoformat(updated_user['approved_at'])
+    
+    return User(**updated_user)
+
+@api_router.delete("/users/{user_id}")
+async def delete_user(
+    user_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Deletar usuário"""
+    if current_user.get('role') != 'administrador':
+        raise HTTPException(status_code=403, detail="Acesso negado. Apenas administradores.")
+    
+    # Não permitir deletar a si mesmo
+    if user_id == current_user['id']:
+        raise HTTPException(status_code=400, detail="Você não pode deletar sua própria conta")
+    
+    result = await db.users.delete_one({'id': user_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    return {"message": "Usuário deletado com sucesso", "user_id": user_id}
+
 # Cases CRUD
 @api_router.post("/cases", response_model=Case)
 async def create_case(case: CaseCreate):
