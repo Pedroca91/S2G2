@@ -94,15 +94,15 @@ export const Dashboard = () => {
       
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
-      pdf.text(`Total de Casos: ${stats.total_cases}`, 20, 70);
-      pdf.text(`Casos Concluídos: ${stats.completed_cases}`, 20, 80);
-      pdf.text(`Casos Pendentes: ${stats.pending_cases}`, 20, 90);
+      pdf.text(`Total de Chamados: ${stats.total_cases}`, 20, 70);
+      pdf.text(`Chamados Concluídos: ${stats.completed_cases}`, 20, 80);
+      pdf.text(`Chamados Pendentes: ${stats.pending_cases}`, 20, 90);
       pdf.text(`Taxa de Conclusão: ${stats.completion_percentage}%`, 20, 100);
       
-      // Casos por Seguradora
+      // Chamados por Seguradora
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Casos por Seguradora:', 20, 115);
+      pdf.text('Chamados por Seguradora:', 20, 115);
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
       
