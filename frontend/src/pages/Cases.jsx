@@ -10,8 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
-import { useWebSocket } from '../hooks/useWebSocket';
-import { playNotificationSound, showBrowserNotification, requestNotificationPermission } from '../utils/notification';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;

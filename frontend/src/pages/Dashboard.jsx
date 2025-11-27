@@ -7,8 +7,6 @@ import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { useWebSocket } from '../hooks/useWebSocket';
-import { playNotificationSound } from '../utils/notification';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -26,22 +24,6 @@ export const Dashboard = () => {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // WebSocket handler
-  const handleWebSocketMessage = (data) => {
-    if (data.type === 'new_case' || data.type === 'case_updated') {
-      // Recarregar estatísticas quando houver mudança
-      fetchDashboardData();
-      
-      if (data.type === 'new_case') {
-        playNotificationSound();
-        toast.success('📊 Dashboard atualizado', {
-          description: 'Novo caso adicionado ao sistema'
-        });
-      }
-    }
-  };
-
-  const { isConnected } = useWebSocket(handleWebSocketMessage);
 
   useEffect(() => {
     fetchDashboardData();
