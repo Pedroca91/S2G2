@@ -330,7 +330,7 @@ export const Dashboard = () => {
               <div className="p-2 bg-white bg-opacity-20 rounded-lg">
                 <TrendingUp className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold">Análise de Casos Recorrentes</h3>
+              <h3 className="text-2xl font-bold">Análise de Chamados Recorrentes</h3>
             </div>
             <p className="text-white text-opacity-90 mb-3">
               Identifique padrões e erros que se repetem para criar automações e melhorar a eficiência da equipe
