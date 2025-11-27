@@ -339,7 +339,7 @@ const CaseDetails = () => {
                           <SelectValue placeholder="Selecione a categoria" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Nenhuma</SelectItem>
+                          <SelectItem value="Nenhuma">Nenhuma</SelectItem>
                           <SelectItem value="Erro Técnico">Erro Técnico</SelectItem>
                           <SelectItem value="Erro Boleto">Erro Boleto</SelectItem>
                           <SelectItem value="Erro Corretor">Erro Corretor</SelectItem>
