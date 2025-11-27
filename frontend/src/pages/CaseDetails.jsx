@@ -391,6 +391,28 @@ const CaseDetails = () => {
               <span className="font-medium">{caseData.responsible || 'Não atribuído'}</span>
             </div>
 
+            {caseData.priority && (
+              <div className="flex items-center gap-2 text-sm">
+                <AlertCircle className="h-4 w-4 text-gray-500" />
+                <span className="text-gray-600">Prioridade:</span>
+                <span className={`font-medium ${
+                  caseData.priority === 'Urgente' ? 'text-red-600' :
+                  caseData.priority === 'Alta' ? 'text-orange-600' :
+                  caseData.priority === 'Média' ? 'text-yellow-600' :
+                  'text-green-600'
+                }`}>
+                  {caseData.priority}
+                </span>
+              </div>
+            )}
+
+            {caseData.category && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-gray-600">Categoria:</span>
+                <span className="font-medium">{caseData.category}</span>
+              </div>
+            )}
+
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="h-4 w-4 text-gray-500" />
               <span className="text-gray-600">Aberto em:</span>
