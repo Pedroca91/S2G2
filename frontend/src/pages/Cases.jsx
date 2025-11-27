@@ -37,33 +37,6 @@ export const Cases = () => {
     seguradora: '',
   });
 
-  // Inicializar AudioContext na primeira interação do usuário
-  const enableSound = async () => {
-    try {
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      
-      // Tocar um som de teste
-      const oscillator = audioContextRef.current.createOscillator();
-      const gainNode = audioContextRef.current.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContextRef.current.destination);
-      
-      oscillator.frequency.value = 800;
-      gainNode.gain.value = 0.1;
-      
-      oscillator.start();
-      oscillator.stop(audioContextRef.current.currentTime + 0.1);
-      
-      setSoundEnabled(true);
-      toast.success('🔔 Notificações sonoras ativadas!');
-    } catch (error) {
-      console.error('Erro ao habilitar som:', error);
-      toast.error('Erro ao ativar som');
-    }
-  };
 
   // Função melhorada para tocar som
   const playSound = () => {
@@ -114,53 +87,7 @@ export const Cases = () => {
   };
 
   // WebSocket handler
-  const handleWebSocketMessage = (data) => {
-    if (data.type === 'new_case') {
-      console.log('🆕 Novo caso recebido via WebSocket:', data.case);
-      
-      // Adicionar novo caso à lista
-      setCases(prevCases => [data.case, ...prevCases]);
-      
-      // Marcar como novo
-      setNewCaseIds(prev => new Set([...prev, data.case.id]));
-      
-      // Remover badge "NOVO" após 30 segundos
-      setTimeout(() => {
-        setNewCaseIds(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(data.case.id);
-          return newSet;
-        });
-      }, 30000);
-      
-      // Tocar som (função melhorada)
-      playSound();
-      
-      // Mostrar toast
-      toast.success('🆕 Novo caso do Jira!', {
-        description: `${data.case.jira_id}: ${data.case.title}`,
-        duration: 5000
-      });
-      
-      // Notificação do navegador
-      showBrowserNotification('Novo Caso Safe2Go', {
-        body: `${data.case.jira_id}: ${data.case.title}`,
-        tag: data.case.id
-      });
-    } else if (data.type === 'case_updated') {
-      console.log('🔄 Caso atualizado via WebSocket:', data.case_id);
-      
-      // Recarregar casos
-      fetchCases();
-      
-      // Mostrar toast
-      toast.info('🔄 Caso atualizado', {
-        description: `${data.case_id} foi atualizado`
-      });
-    }
-  };
 
-  const { isConnected } = useWebSocket(handleWebSocketMessage);
 
   // Solicitar permissão de notificação ao montar
   useEffect(() => {
