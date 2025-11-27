@@ -80,8 +80,11 @@ export const Dashboard = () => {
     try {
       toast.info('Gerando PDF...');
       
+      const token = localStorage.getItem('token');
       // Buscar dados de categorias
-      const categoryResponse = await axios.get(`${API}/cases/categories`);
+      const categoryResponse = await axios.get(`${API}/cases/categories`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const categoryData = categoryResponse.data;
       
       const pdf = new jsPDF('p', 'mm', 'a4');
