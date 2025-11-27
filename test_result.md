@@ -305,11 +305,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Notification System - Bell Icon"
-    - "Ticket Creation Flow"
+    - "Backend testing completed successfully"
   stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
+  test_all: false
+  test_priority: "backend_complete"
 
 agent_communication:
     - agent: "testing"
