@@ -659,9 +659,14 @@ async def create_case(case: CaseCreate, current_user: dict = Depends(get_current
 async def get_cases(
     responsible: Optional[str] = None,
     status: Optional[str] = None,
-    days: Optional[int] = None
+    days: Optional[int] = None,
+    current_user: dict = Depends(get_current_user)
 ):
     query = {}
+    
+    # Se é cliente, mostrar apenas seus chamados
+    if current_user['role'] == 'cliente':
+        query['creator_id'] = current_user['id']
     
     if responsible:
         query['responsible'] = responsible
