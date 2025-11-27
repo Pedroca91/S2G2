@@ -617,7 +617,7 @@ async def mark_notification_read(
     
     return {"message": "Notificação marcada como lida"}
 
-@api_router.post("/notifications/read-all")
+@api_router.post("/notifications/mark-all-read")
 async def mark_all_notifications_read(current_user: dict = Depends(get_current_user)):
     """Marcar todas as notificações como lidas"""
     await db.notifications.update_many(
