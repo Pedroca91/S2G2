@@ -161,7 +161,23 @@ export const Layout = ({ children }) => {
           <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
             Suporte Safe2Go
           </h1>
-          <div className="w-6" />
+          <NotificationBell />
+        </header>
+
+        {/* Desktop Header */}
+        <header className="hidden md:flex bg-white border-b border-gray-200 px-6 py-3 items-center justify-between">
+          <div className="flex-1"></div>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => navigate('/new-ticket')}
+              size="sm"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Abrir Chamado
+            </Button>
+            <NotificationBell />
+          </div>
         </header>
 
         <main className="flex-1 overflow-auto">
