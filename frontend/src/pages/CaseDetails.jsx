@@ -41,24 +41,48 @@ export const CaseDetails = () => {
   const isAdmin = user?.role === 'administrador';
 
   useEffect(() => {
-    fetchCaseDetails();
-    fetchComments();
-  }, [id]);
+    let isMounted = true;
 
-  const fetchCaseDetails = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API}/cases/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setCaseData(response.data);
-    } catch (error) {
-      console.error('Erro ao carregar caso:', error);
-      toast.error('Erro ao carregar detalhes do caso');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const loadData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        // Buscar caso
+        const caseResponse = await axios.get(`${API}/cases/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (isMounted) {
+          setCaseData(caseResponse.data);
+        }
+
+        // Buscar comentários
+        const commentsResponse = await axios.get(`${API}/cases/${id}/comments`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (isMounted) {
+          setComments(commentsResponse.data);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        if (isMounted) {
+          toast.error('Erro ao carregar detalhes do caso');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   const fetchComments = async () => {
     try {
