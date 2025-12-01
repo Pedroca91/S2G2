@@ -31,6 +31,9 @@ export const Cases = () => {
   const [responsibleFilter, setResponsibleFilter] = useState('all');
   const [seguradoraFilter, setSeguradoraFilter] = useState('all');
   const isAdmin = user?.role === 'administrador';
+  const [selectedCases, setSelectedCases] = useState([]);
+  const [selectMode, setSelectMode] = useState(false);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     jira_id: '',
     title: '',
