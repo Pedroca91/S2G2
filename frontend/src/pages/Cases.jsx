@@ -537,6 +537,8 @@ export const Cases = () => {
             </form>
           </DialogContent>
         </Dialog>
+          </div>
+        )}
       </div>
 
       {/* Banner informativo para clientes */}
