@@ -289,6 +289,66 @@ frontend:
         - agent: "testing"
         - comment: "✅ VERIFIED: Badge colors working correctly. Status badges display with appropriate colors: Pendente (yellow), Em Desenvolvimento (blue), Aguardando resposta (orange), Concluído (green). Visual indicators properly implemented."
 
+  - task: "NEW FEATURE: PDF Report Generation"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Cases.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test PDF report generation functionality: selection mode, case selection, PDF generation with proper formatting"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ VERIFIED: PDF Report Generation fully functional. Selection mode activates correctly (button changes to 'Cancelar Seleção'), 'Selecionar Todos' card appears, individual case selection works with visual feedback (purple borders), counter updates correctly (Gerar PDF (1), (3), etc.), PDF generation triggers success toast and deactivates selection mode automatically. Edge case handled: PDF button disabled when no cases selected."
+
+  - task: "NEW FEATURE: Export All Cases to JSON"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Cases.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test Export All functionality: JSON file generation with proper structure and download"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ VERIFIED: Export All functionality working perfectly. Button triggers JSON export with proper structure (export_date, total_cases, cases array), success toast shows count of exported cases, file download initiates automatically with timestamped filename."
+
+  - task: "NEW FEATURE: Import Cases from JSON"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Cases.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test Import functionality: file selection, JSON validation, duplicate handling, success/error feedback"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ VERIFIED: Import functionality working correctly. Import button triggers file dialog, accepts JSON files, validates file structure, handles duplicates properly (ignores existing cases by jira_id), provides appropriate success/error feedback with counts of new vs ignored cases."
+
+  - task: "NEW FEATURE: Admin-only Access Control for Export/Import/PDF"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Cases.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to verify admin buttons (PDF, Export, Import) are hidden from client users and only visible to admin users"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ VERIFIED: Admin-only access control working perfectly. All Export/Import/PDF buttons (Gerar Relatório PDF, Exportar Todos, Importar) are completely hidden from client users. Only admin users can see and access these features. Role-based security properly implemented."
+
 metadata:
   created_by: "testing_agent"
   version: "2.0"
