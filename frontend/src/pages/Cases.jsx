@@ -550,7 +550,7 @@ export const Cases = () => {
               <h3 className="font-semibold text-blue-900 mb-1">Meus Chamados</h3>
               <p className="text-sm text-blue-800">
                 Aqui você pode ver todos os seus chamados e acompanhar o andamento. 
-                Para abrir um novo chamado, clique no botão "Abrir Chamado" no topo da página.
+                Para abrir um novo chamado, clique no botão &quot;Abrir Chamado&quot; no topo da página.
               </p>
             </div>
           </div>
