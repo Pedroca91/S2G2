@@ -1022,7 +1022,7 @@ export const Cases = () => {
                         {caseItem.seguradora}
                       </span>
                     )}
-                    <span>Aberto: {new Date(caseItem.opened_date).toLocaleDateString('pt-BR')}</span>
+                    <span>Aberto: {new Date(caseItem.created_at).toLocaleDateString('pt-BR')}</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
