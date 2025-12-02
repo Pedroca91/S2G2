@@ -613,12 +613,15 @@ export const Cases = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja deletar este caso?')) {
       try {
-        await axios.delete(`${API}/cases/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${API}/cases/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         toast.success('Caso deletado com sucesso!');
         fetchCases();
       } catch (error) {
         console.error('Erro ao deletar caso:', error);
-        toast.error('Erro ao deletar caso');
+        toast.error('Erro ao deletar caso: ' + (error.response?.data?.detail || error.message));
       }
     }
   };
