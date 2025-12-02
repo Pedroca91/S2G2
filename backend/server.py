@@ -876,11 +876,16 @@ async def update_case(case_id: str, case_update: CaseUpdate):
     updated_case = await db.cases.find_one({"id": case_id}, {"_id": 0})
     
     # Convert back to datetime
-    if isinstance(updated_case['opened_date'], str):
+    # Handle opened_date if exists (backwards compatibility)
+    if updated_case.get('opened_date') and isinstance(updated_case['opened_date'], str):
         updated_case['opened_date'] = datetime.fromisoformat(updated_case['opened_date'])
+    # Use created_at as opened_date if opened_date doesn't exist
+    elif not updated_case.get('opened_date') and updated_case.get('created_at'):
+        updated_case['opened_date'] = datetime.fromisoformat(updated_case['created_at']) if isinstance(updated_case['created_at'], str) else updated_case['created_at']
+    
     if updated_case.get('closed_date') and isinstance(updated_case['closed_date'], str):
         updated_case['closed_date'] = datetime.fromisoformat(updated_case['closed_date'])
-    if isinstance(updated_case['created_at'], str):
+    if isinstance(updated_case.get('created_at', ''), str):
         updated_case['created_at'] = datetime.fromisoformat(updated_case['created_at'])
     
     return Case(**updated_case)
