@@ -58,7 +58,8 @@ function RecurrentAnalysis() {
     total: cat.count,
     concluído: cat.status_breakdown['Concluído'] || 0,
     pendente: cat.status_breakdown['Pendente'] || 0,
-    aguardando: cat.status_breakdown['Aguardando resposta do cliente'] || 0
+    'em desenvolvimento': cat.status_breakdown['Em Desenvolvimento'] || 0,
+    aguardando: cat.status_breakdown['Aguardando resposta'] || 0
   }));
 
   const pieData = categoryStats.map(cat => ({
