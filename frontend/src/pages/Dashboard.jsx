@@ -98,7 +98,9 @@ export const Dashboard = () => {
       pdf.text(`Total de Chamados: ${stats.total_cases}`, 20, 70);
       pdf.text(`Chamados Concluídos: ${stats.completed_cases}`, 20, 80);
       pdf.text(`Chamados Pendentes: ${stats.pending_cases}`, 20, 90);
-      pdf.text(`Taxa de Conclusão: ${stats.completion_percentage}%`, 20, 100);
+      pdf.text(`Em Desenvolvimento: ${stats.in_development_cases || 0}`, 20, 100);
+      pdf.text(`Aguardando Resposta: ${stats.waiting_client_cases}`, 20, 110);
+      pdf.text(`Taxa de Conclusão: ${stats.completion_percentage}%`, 20, 120);
       
       // Chamados por Seguradora
       pdf.setFontSize(14);
