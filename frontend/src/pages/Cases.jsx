@@ -247,7 +247,7 @@ export const Cases = () => {
       doc.text(`Responsável: ${caseItem.responsible || 'Não atribuído'}`, 14, yPos);
       yPos += 7;
       
-      doc.text(`Data de abertura: ${new Date(caseItem.opened_date).toLocaleString('pt-BR')}`, 14, yPos);
+      doc.text(`Data de abertura: ${new Date(caseItem.created_at).toLocaleString('pt-BR')}`, 14, yPos);
       yPos += 7;
       
       // Descrição com quebra de linha
