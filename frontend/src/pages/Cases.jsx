@@ -34,6 +34,7 @@ export const Cases = () => {
   const isAdmin = user?.role === 'administrador';
   const [selectedCases, setSelectedCases] = useState([]);
   const [selectMode, setSelectMode] = useState(false);
+  const [ocrProcessing, setOcrProcessing] = useState(false);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     jira_id: '',
