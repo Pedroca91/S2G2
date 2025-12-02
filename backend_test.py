@@ -673,6 +673,20 @@ class Safe2GoHelpdeskTester:
         self.test_create_case_client()
         self.test_get_case_by_id()
         
+        print("\n🚨 DELETE ENDPOINT SECURITY TESTS (CRITICAL)")
+        print("-" * 50)
+        # DELETE security tests - MAIN FOCUS
+        self.test_delete_case_no_auth()
+        self.test_delete_case_client_forbidden()
+        self.test_delete_case_admin_success()
+        
+        print("\n📊 DASHBOARD & FILTERS TESTS")
+        print("-" * 35)
+        # Dashboard and filters
+        self.test_dashboard_stats()
+        self.test_filters_by_status()
+        self.test_filters_by_seguradora()
+        
         print("\n💬 COMMENTS TESTS")
         print("-" * 25)
         # Comments tests
