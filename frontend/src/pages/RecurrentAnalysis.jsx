@@ -20,9 +20,15 @@ function RecurrentAnalysis() {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem('token');
+      
       const [recurrentRes, categoryRes] = await Promise.all([
-        axios.get(`${BACKEND_URL}/api/cases/analytics/recurrent`),
-        axios.get(`${BACKEND_URL}/api/cases/categories`)
+        axios.get(`${BACKEND_URL}/api/cases/analytics/recurrent`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${BACKEND_URL}/api/cases/categories`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
       ]);
       
       setRecurrentData(recurrentRes.data);
