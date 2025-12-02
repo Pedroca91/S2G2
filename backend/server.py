@@ -842,11 +842,16 @@ async def get_case(case_id: str):
     if not case:
         raise HTTPException(status_code=404, detail="Caso não encontrado")
     
-    if isinstance(case['opened_date'], str):
+    # Handle opened_date if exists (backwards compatibility)
+    if case.get('opened_date') and isinstance(case['opened_date'], str):
         case['opened_date'] = datetime.fromisoformat(case['opened_date'])
+    # Use created_at as opened_date if opened_date doesn't exist
+    elif not case.get('opened_date') and case.get('created_at'):
+        case['opened_date'] = datetime.fromisoformat(case['created_at']) if isinstance(case['created_at'], str) else case['created_at']
+    
     if case.get('closed_date') and isinstance(case['closed_date'], str):
         case['closed_date'] = datetime.fromisoformat(case['closed_date'])
-    if isinstance(case['created_at'], str):
+    if isinstance(case.get('created_at', ''), str):
         case['created_at'] = datetime.fromisoformat(case['created_at'])
     
     return case
