@@ -21,7 +21,7 @@ class Safe2GoHelpdeskTester:
             "password": "S@muka91"  # Updated password from review request
         }
         self.client_credentials = {
-            "email": "cliente@teste.com", 
+            "email": "cliente@avla.com.br", 
             "password": "senha123"
         }
         
