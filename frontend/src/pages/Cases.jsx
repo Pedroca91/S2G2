@@ -901,11 +901,9 @@ export const Cases = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas</SelectItem>
-                <SelectItem value="AIPEAT">AIPEAT</SelectItem>
                 <SelectItem value="AVLA">AVLA</SelectItem>
                 <SelectItem value="ESSOR">ESSOR</SelectItem>
                 <SelectItem value="Daycoval">Daycoval</SelectItem>
-                <SelectItem value="DAIG">DAIG</SelectItem>
               </SelectContent>
             </Select>
           </div>
