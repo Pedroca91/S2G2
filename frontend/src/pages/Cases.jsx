@@ -425,8 +425,17 @@ export const Cases = () => {
     const isJsonFile = fileName.endsWith('.json');
     const isImageFile = fileName.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i);
     
+    console.log('📁 Arquivo selecionado:', {
+      name: fileName,
+      type: file.type,
+      size: file.size,
+      isJsonFile,
+      isImageFile
+    });
+    
     // Se é imagem, processar com OCR
     if (isImageFile || (!isJsonFile && file.type.startsWith('image/'))) {
+      console.log('🖼️ Processando como imagem com OCR');
       await processImageWithOCR(file);
       
       // Limpar input
