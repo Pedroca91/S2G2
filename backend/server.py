@@ -727,8 +727,13 @@ async def get_recurrent_cases():
         
         # Converter datetime fields
         for case in cases:
-            if isinstance(case.get('opened_date'), str):
+            # Handle opened_date if exists (backwards compatibility)
+            if case.get('opened_date') and isinstance(case.get('opened_date'), str):
                 case['opened_date'] = datetime.fromisoformat(case['opened_date'])
+            # Use created_at as opened_date if opened_date doesn't exist
+            elif not case.get('opened_date') and case.get('created_at'):
+                case['opened_date'] = datetime.fromisoformat(case['created_at']) if isinstance(case['created_at'], str) else case['created_at']
+            
             if case.get('closed_date') and isinstance(case['closed_date'], str):
                 case['closed_date'] = datetime.fromisoformat(case['closed_date'])
             if isinstance(case.get('created_at'), str):
