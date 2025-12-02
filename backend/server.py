@@ -876,10 +876,21 @@ async def update_case(case_id: str, case_update: CaseUpdate):
     return Case(**updated_case)
 
 @api_router.delete("/cases/{case_id}")
-async def delete_case(case_id: str):
+async def delete_case(case_id: str, current_user: dict = Depends(get_current_user)):
+    # Apenas administradores podem deletar casos
+    if current_user['role'] != 'administrador':
+        raise HTTPException(status_code=403, detail="Apenas administradores podem deletar casos")
+    
     result = await db.cases.delete_one({"id": case_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Caso não encontrado")
+    
+    # Notificar via WebSocket
+    await manager.broadcast({
+        "type": "case_deleted",
+        "case_id": case_id
+    })
+    
     return {"message": "Caso deletado com sucesso"}
 
 # Dashboard
