@@ -1,0 +1,116 @@
+{
+  "export_date": "2025-12-02T15:30:00",
+  "total_cases": 11,
+  "cases": [
+    {
+      "jira_id": "SGSS-N012",
+      "title": "Cartão Protegido e PPC1 não estão para inclusão de informação",
+      "description": "Os campos do Cartão Protegido e PPC1 não aparecem disponíveis para inclusão de informações no sistema.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Lucas Colete da Silva",
+      "seguradora": "Allianz",
+      "category": "Outros",
+      "priority": "Alta"
+    },
+    {
+      "jira_id": "SGSS-N020",
+      "title": "DADOS ESSASI NOS BOLETOS",
+      "description": "Necessário incluir dados da ESSASI nos boletos gerados pelo sistema.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": "Em Técnico",
+      "priority": "Alta"
+    },
+    {
+      "jira_id": "SGSS-N030",
+      "title": "NOVA LEI DE SEGUROS - OBSERVAÇÃO",
+      "description": "Adequação necessária do sistema conforme nova lei de seguros com campo de observações específico.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": "Em Técnico",
+      "priority": "Média"
+    },
+    {
+      "jira_id": "SGSS-N021",
+      "title": "ADEQUAÇÃO NOVA LEI DO SEGURO - OBSERVAÇÕES",
+      "description": "Implementar adequações conforme nova lei de seguros incluindo campo de observações obrigatórias.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": "Em Técnico",
+      "priority": "Alta"
+    },
+    {
+      "jira_id": "SGSS-N020",
+      "title": "ADEQUAÇÃO NOVA LEI DO SEGURO - OBSERVAÇÕES",
+      "description": "Duplicata - Implementar adequações conforme nova lei de seguros.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": "Em Técnico",
+      "priority": "Média"
+    },
+    {
+      "jira_id": "SGSS-N004",
+      "title": "ADEQUAÇÃO NOVA LEI DO SEGURO - inclusão de disclaimer",
+      "description": "Adicionar disclaimer obrigatório conforme nova lei de seguros nos documentos gerados.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": "Em Técnico",
+      "priority": "Média"
+    },
+    {
+      "jira_id": "SGSS-N009",
+      "title": "ADEQUAÇÃO NOVA LEI DO SEGURO - Número das condições [preservação da emissão]",
+      "description": "Atualizar sistema para incluir número das condições conforme nova lei mantendo preservação da emissão.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": "Em Técnico",
+      "priority": "Média"
+    },
+    {
+      "jira_id": "SGSS-N060",
+      "title": "COSSEG ADEQ INTELIGENCIAL",
+      "description": "Adequação do COSSEG para atender requisitos de inteligência artificial e análise de dados.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": "Em Técnico",
+      "priority": "Média"
+    },
+    {
+      "jira_id": "SGSS-N034",
+      "title": "URGENTE - PDF COM ERRO - 92040202250010001",
+      "description": "PDF gerado com erro crítico no número 92040202250010001. Necessita correção urgente.",
+      "status": "Em Atendimento",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": null,
+      "priority": "Crítica"
+    },
+    {
+      "jira_id": "SGSS-N407",
+      "title": "CAUTONA - VOCÊ SÃO AO",
+      "description": "Chamado sobre questão CAUTONA relacionado ao campo VOCÊ SÃO AO.",
+      "status": "Aguardando resposta do cliente",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": "Em Técnico",
+      "priority": "Baixa"
+    },
+    {
+      "jira_id": "SGSS-N000",
+      "title": "AJUSTE EMPRÉSTIMO DE PROPRIAÇÃO",
+      "description": "Ajustes necessários no módulo de empréstimo de propriação do sistema.",
+      "status": "Em Atendimento",
+      "responsible": "Valentim Fazazl Riego",
+      "seguradora": "Allianz",
+      "category": null,
+      "priority": "Média"
+    }
+  ]
+}
