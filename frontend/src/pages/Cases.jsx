@@ -420,8 +420,13 @@ export const Cases = () => {
     const file = event.target.files[0];
     if (!file) return;
     
-    // Verificar se é imagem
-    if (file.type.startsWith('image/')) {
+    // Verificar extensão do arquivo primeiro (mais confiável que MIME type)
+    const fileName = file.name.toLowerCase();
+    const isJsonFile = fileName.endsWith('.json');
+    const isImageFile = fileName.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i);
+    
+    // Se é imagem, processar com OCR
+    if (isImageFile || (!isJsonFile && file.type.startsWith('image/'))) {
       await processImageWithOCR(file);
       
       // Limpar input
