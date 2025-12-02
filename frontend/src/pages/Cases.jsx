@@ -287,47 +287,80 @@ export const Cases = () => {
   // Processar imagem com OCR
   const processImageWithOCR = async (file) => {
     setOcrProcessing(true);
-    toast.info('🔍 Processando imagem com OCR... Aguarde...');
+    toast.info('🔍 Processando imagem com OCR... Aguarde, isso pode levar alguns segundos...');
     
     try {
-      const worker = await createWorker('por');
-      const { data: { text } } = await worker.recognize(file);
+      console.log('🖼️ Iniciando OCR para arquivo:', file.name, 'Tamanho:', file.size);
+      
+      // Criar worker com português e configurações otimizadas
+      const worker = await createWorker('por', 1, {
+        logger: m => console.log('OCR:', m)
+      });
+      
+      // Configurar reconhecimento para melhor performance com tabelas
+      await worker.setParameters({
+        tessedit_pageseg_mode: '6', // Assume uniform block of text
+      });
+      
+      console.log('🔄 Reconhecendo texto...');
+      const { data: { text, confidence } } = await worker.recognize(file);
       await worker.terminate();
       
-      console.log('Texto extraído:', text);
+      console.log('✅ OCR Completo! Confiança:', confidence);
+      console.log('📝 Texto extraído completo:', text);
       
       // Processar texto extraído e criar chamados
       const extractedCases = parseTextToCases(text);
       
       if (extractedCases.length === 0) {
-        toast.error('Nenhum chamado identificado na imagem. Tente uma imagem mais clara ou use JSON.');
+        console.error('❌ Nenhum caso foi extraído após o parsing');
+        toast.error('Nenhum chamado identificado na imagem. Verifique se a imagem está clara e contém IDs de casos (ex: SGSS-N012).');
         setOcrProcessing(false);
         return;
       }
       
+      console.log(`✅ ${extractedCases.length} casos prontos para criar:`, extractedCases);
+      
       // Criar chamados extraídos
       const token = localStorage.getItem('token');
       let successCount = 0;
+      let duplicateCount = 0;
       
-      toast.info(`Encontrados ${extractedCases.length} chamado(s) na imagem. Criando...`);
+      toast.info(`📊 Encontrados ${extractedCases.length} chamado(s) na imagem. Criando...`);
       
       for (const caseData of extractedCases) {
         try {
-          await axios.post(`${API}/cases`, caseData, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          successCount++;
+          // Verificar se já existe
+          const existing = cases.find(c => c.jira_id === caseData.jira_id);
+          
+          if (!existing) {
+            await axios.post(`${API}/cases`, caseData, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            successCount++;
+            console.log(`✅ Criado: ${caseData.jira_id}`);
+          } else {
+            duplicateCount++;
+            console.log(`⚠️ Já existe: ${caseData.jira_id}`);
+          }
         } catch (err) {
-          console.error('Erro ao criar caso da imagem:', err);
+          console.error('❌ Erro ao criar caso da imagem:', caseData.jira_id, err);
         }
       }
       
-      toast.success(`✅ ${successCount} chamado(s) criado(s) da imagem!`);
+      if (successCount > 0) {
+        toast.success(`✅ ${successCount} chamado(s) criado(s) da imagem!${duplicateCount > 0 ? ` (${duplicateCount} já existiam)` : ''}`);
+      } else if (duplicateCount > 0) {
+        toast.warning(`⚠️ Todos os ${duplicateCount} chamados já existem no sistema.`);
+      } else {
+        toast.error('Nenhum chamado pôde ser criado. Verifique os logs.');
+      }
+      
       fetchCases();
       
     } catch (error) {
-      console.error('Erro no OCR:', error);
-      toast.error('Erro ao processar imagem. Tente novamente ou use JSON.');
+      console.error('❌ Erro no OCR:', error);
+      toast.error('Erro ao processar imagem: ' + error.message);
     } finally {
       setOcrProcessing(false);
     }
