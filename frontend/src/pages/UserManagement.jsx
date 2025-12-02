@@ -80,6 +80,56 @@ export const UserManagement = () => {
     }
   };
 
+  // Estado e funções para edição de usuário
+  const [editingUser, setEditingUser] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    role: '',
+    status: ''
+  });
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  const openEditDialog = (user) => {
+    setEditingUser(user);
+    setEditFormData({
+      name: user.name || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      company: user.company || '',
+      role: user.role || 'cliente',
+      status: user.status || 'pendente'
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!editFormData.name || !editFormData.email) {
+      toast.error('Nome e email são obrigatórios');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `${API}/users/${editingUser.id}`,
+        editFormData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success('Usuário atualizado com sucesso!');
+      setIsEditDialogOpen(false);
+      fetchUsers();
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao atualizar usuário');
+    }
+  };
+
   const UserCard = ({ user, showActions = true }) => {
     const statusColors = {
       pendente: 'bg-yellow-100 text-yellow-800 border-yellow-300',
