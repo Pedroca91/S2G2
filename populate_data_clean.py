@@ -65,7 +65,7 @@ async def populate_database():
     
     # Distribuir casos: 25 para cada seguradora (75 total)
     # 15 concluídos + 10 pendentes por seguradora
-    seguradoras = ["AVLA", "ESSOR", "Daycoval"]
+    seguradoras = ["AVLA", "ESSOR", "DAYCOVAL"]
     
     total_casos = 0
     for seguradora in seguradoras:
