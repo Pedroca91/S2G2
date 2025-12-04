@@ -314,14 +314,14 @@ export const Dashboard = () => {
         <div 
           className="stat-card cursor-pointer" 
           data-testid="waiting-client-cases-card"
-          onClick={() => handleCardClick('Aguardando resposta')}
+          onClick={() => handleCardClick('Aguardando resposta do cliente')}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-orange-100 rounded-xl">
               <Clock className="w-6 h-6 text-orange-600" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Aguardando</p>
+          <p className="text-sm text-gray-600 mb-1">Aguardando Cliente</p>
           <p className="text-3xl font-bold text-orange-600">{stats.waiting_client_cases || 0}</p>
         </div>
 
