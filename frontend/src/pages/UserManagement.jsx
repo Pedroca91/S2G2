@@ -394,7 +394,7 @@ export const UserManagement = () => {
                   <option value="">Selecione...</option>
                   <option value="AVLA">AVLA</option>
                   <option value="ESSOR">ESSOR</option>
-                  <option value="Daycoval">Daycoval</option>
+                  <option value="DAYCOVAL">DAYCOVAL</option>
                   <option value="Safe2Go">Safe2Go</option>
                   <option value="Outro">Outro</option>
                 </select>
