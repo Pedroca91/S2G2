@@ -102,18 +102,18 @@ export const Dashboard = () => {
       pdf.text(`Aguardando Resposta: ${stats.waiting_client_cases}`, 20, 110);
       pdf.text(`Taxa de Conclusão: ${stats.completion_percentage}%`, 20, 120);
       
-      // Chamados por Seguradora
+      // Chamados por Seguradora (com mais espaçamento)
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Chamados por Seguradora:', 20, 115);
+      pdf.text('Chamados por Seguradora:', 20, 140);
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
       
-      let yPos = 125;
+      let yPos = 152;
       const seguradoras = stats.cases_by_seguradora || {};
       Object.keys(seguradoras).forEach((seguradora) => {
-        pdf.text(`${seguradora}: ${seguradoras[seguradora]} casos`, 20, yPos);
-        yPos += 10;
+        pdf.text(`${seguradora}: ${seguradoras[seguradora]} casos`, 25, yPos);
+        yPos += 12;
       });
       
       // Distribuição por Categoria
