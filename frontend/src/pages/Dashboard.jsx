@@ -254,11 +254,20 @@ export const Dashboard = () => {
           pdf.setFont('helvetica', 'bold');
           pdf.text(urgencyText, 40, yPos + 23);
           
-          // Recomendação
+          // Recomendação (gerada dinamicamente)
+          let recommendation = '';
+          if (item.count >= 9) {
+            recommendation = `Com ${item.count} casos recorrentes, esta categoria demanda automação URGENTE para reduzir até 80% do trabalho manual.`;
+          } else if (item.count >= 5) {
+            recommendation = `${item.count} casos recorrentes indicam necessidade de automação para otimizar processos e economizar tempo.`;
+          } else {
+            recommendation = `Considerar templates ou scripts para agilizar o tratamento dos ${item.count} casos desta categoria.`;
+          }
+          
           pdf.setTextColor(75, 85, 99);
           pdf.setFontSize(9);
           pdf.setFont('helvetica', 'italic');
-          pdf.text(item.recommendation, 40, yPos + 31, { maxWidth: pageWidth - 60 });
+          pdf.text(recommendation, 40, yPos + 31, { maxWidth: pageWidth - 60 });
           
           yPos += 55;
         });
