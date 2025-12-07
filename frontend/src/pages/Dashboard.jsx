@@ -188,6 +188,89 @@ export const Dashboard = () => {
         }
       });
       
+      // Análise de Casos Recorrentes - Top 3 para Automação
+      if (recurrentData && recurrentData.length > 0) {
+        // Adicionar nova página para análise recorrente
+        pdf.addPage();
+        yPos = 20;
+        
+        pdf.setFillColor(234, 88, 12); // Orange background
+        pdf.rect(0, 0, pageWidth, 35, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(18);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('⚠️ Análise de Casos Recorrentes', pageWidth / 2, 15, { align: 'center' });
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Top 3 Categorias Prioritárias para Automação', pageWidth / 2, 25, { align: 'center' });
+        
+        yPos = 50;
+        
+        // Pegar top 3 casos recorrentes (com mais casos)
+        const top3 = recurrentData.slice(0, 3);
+        
+        top3.forEach((item, index) => {
+          // Box para cada item
+          pdf.setDrawColor(234, 88, 12);
+          pdf.setLineWidth(0.5);
+          pdf.rect(15, yPos - 5, pageWidth - 30, 45, 'S');
+          
+          // Número e Ícone de criticidade
+          pdf.setFillColor(220, 38, 38);
+          pdf.circle(25, yPos + 5, 8, 'F');
+          pdf.setTextColor(255, 255, 255);
+          pdf.setFontSize(16);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(`${index + 1}`, 25, yPos + 7, { align: 'center' });
+          
+          // Nome da categoria
+          pdf.setTextColor(30, 41, 59);
+          pdf.setFontSize(14);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(item.category, 40, yPos + 7);
+          
+          // Quantidade de casos
+          pdf.setFontSize(11);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(107, 114, 128);
+          pdf.text(`${item.count} casos recorrentes (${item.percentage}% do total)`, 40, yPos + 15);
+          
+          // Nível de urgência
+          let urgencyText = '';
+          let urgencyColor = [0, 0, 0];
+          if (item.count >= 9) {
+            urgencyText = '🔴 CRÍTICO - Automação URGENTE recomendada';
+            urgencyColor = [220, 38, 38];
+          } else if (item.count >= 5) {
+            urgencyText = '🟠 ALTO - Automação recomendada';
+            urgencyColor = [234, 88, 12];
+          } else {
+            urgencyText = '🟡 MÉDIO - Considerar automação';
+            urgencyColor = [234, 179, 8];
+          }
+          
+          pdf.setTextColor(...urgencyColor);
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(urgencyText, 40, yPos + 23);
+          
+          // Recomendação
+          pdf.setTextColor(75, 85, 99);
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'italic');
+          pdf.text(item.recommendation, 40, yPos + 31, { maxWidth: pageWidth - 60 });
+          
+          yPos += 55;
+        });
+        
+        // Nota de rodapé
+        yPos += 10;
+        pdf.setTextColor(107, 114, 128);
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'italic');
+        pdf.text('💡 Recomendação: Priorize a automação das categorias com maior incidência para reduzir carga operacional.', 20, yPos, { maxWidth: pageWidth - 40 });
+      }
+      
       // Chart capture - Gráficos da Última Semana
       const chartElement = document.getElementById('dashboard-charts');
       if (chartElement) {
