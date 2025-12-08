@@ -941,8 +941,12 @@ class Safe2GoHelpdeskTester:
         return self.tests_passed == self.tests_run
 
 def main():
+    """Main function - run validation tests as requested in review"""
     tester = Safe2GoHelpdeskTester()
-    success = tester.run_all_tests()
+    
+    # Run the specific validation tests requested in the review
+    success = tester.run_validation_tests()
+    
     return 0 if success else 1
 
 if __name__ == "__main__":
