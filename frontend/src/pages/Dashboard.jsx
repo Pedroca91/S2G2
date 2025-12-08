@@ -207,6 +207,107 @@ export const Dashboard = () => {
         pdf.addImage(imgData, 'PNG', 20, 30, imgWidth, imgHeight);
       }
       
+      // Análise de Casos Recorrentes - ÚLTIMA PÁGINA (seguindo padrão visual)
+      if (recurrentData && recurrentData.length > 0) {
+        pdf.addPage();
+        
+        // Título da seção
+        pdf.setTextColor(30, 41, 59);
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Análise de Casos Recorrentes', 20, 20);
+        
+        // Subtítulo
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(100, 116, 139);
+        pdf.text('Top 3 Categorias Prioritárias para Automação', 20, 30);
+        
+        yPos = 45;
+        
+        // Pegar top 3 casos recorrentes
+        const top3 = recurrentData.slice(0, 3);
+        
+        top3.forEach((item, index) => {
+          // Número
+          pdf.setFontSize(14);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(147, 51, 234); // Roxo do tema
+          pdf.text(`${index + 1}.`, 20, yPos);
+          
+          // Nome da categoria
+          pdf.setTextColor(30, 41, 59);
+          pdf.setFontSize(13);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(item.category, 30, yPos);
+          
+          yPos += 8;
+          
+          // Quantidade e percentual
+          pdf.setFontSize(11);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(71, 85, 105);
+          pdf.text(`${item.count} casos recorrentes (${item.percentage}% do total)`, 30, yPos);
+          
+          yPos += 7;
+          
+          // Nível de urgência
+          let urgencyText = '';
+          let urgencyColor = [0, 0, 0];
+          if (item.count >= 9) {
+            urgencyText = 'CRÍTICO - Automação URGENTE';
+            urgencyColor = [220, 38, 38]; // Vermelho
+          } else if (item.count >= 5) {
+            urgencyText = 'ALTO - Automação recomendada';
+            urgencyColor = [234, 88, 12]; // Laranja
+          } else {
+            urgencyText = 'MÉDIO - Considerar automação';
+            urgencyColor = [234, 179, 8]; // Amarelo
+          }
+          
+          pdf.setTextColor(...urgencyColor);
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(urgencyText, 30, yPos);
+          
+          yPos += 7;
+          
+          // Recomendação
+          let recommendation = '';
+          if (item.count >= 9) {
+            recommendation = `Recomendação: Com ${item.count} casos recorrentes, esta categoria demanda automação URGENTE para reduzir até 80% do trabalho manual e melhorar eficiência operacional.`;
+          } else if (item.count >= 5) {
+            recommendation = `Recomendação: ${item.count} casos recorrentes indicam necessidade de automação para otimizar processos e economizar tempo da equipe.`;
+          } else {
+            recommendation = `Recomendação: Considerar templates ou scripts para agilizar o tratamento dos ${item.count} casos desta categoria.`;
+          }
+          
+          pdf.setTextColor(71, 85, 105);
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'normal');
+          const lines = pdf.splitTextToSize(recommendation, pageWidth - 60);
+          pdf.text(lines, 30, yPos);
+          
+          yPos += (lines.length * 4) + 12;
+        });
+        
+        // Nota de rodapé
+        yPos += 5;
+        if (yPos < pageHeight - 40) {
+          pdf.setDrawColor(147, 51, 234);
+          pdf.setLineWidth(0.3);
+          pdf.line(20, yPos, pageWidth - 20, yPos);
+          
+          yPos += 8;
+          pdf.setTextColor(100, 116, 139);
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'italic');
+          const noteText = 'Nota: Priorize a automação das categorias com maior incidência para reduzir carga operacional e melhorar tempo de resposta aos clientes.';
+          const noteLines = pdf.splitTextToSize(noteText, pageWidth - 40);
+          pdf.text(noteLines, 20, yPos);
+        }
+      }
+      
       // Footer
       const totalPages = pdf.internal.pages.length - 1;
       for (let i = 1; i <= totalPages; i++) {
