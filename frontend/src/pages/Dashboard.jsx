@@ -80,229 +80,221 @@ export const Dashboard = () => {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       
-      // Header
+      // ============= PÁGINA 1 =============
+      // Header mais compacto
       pdf.setFillColor(147, 51, 234);
-      pdf.rect(0, 0, pageWidth, 40, 'F');
+      pdf.rect(0, 0, pageWidth, 28, 'F');
       pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(24);
+      pdf.setFontSize(18);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Relatório Semanal - Safe2Go', pageWidth / 2, 20, { align: 'center' });
-      
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      const today = new Date().toLocaleDateString('pt-BR');
-      pdf.text(`Data de Emissão: ${today}`, pageWidth / 2, 30, { align: 'center' });
-      
-      // Stats Section
-      pdf.setTextColor(30, 41, 59);
-      pdf.setFontSize(16);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Estatísticas Gerais', 20, 55);
-      
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Total de Chamados: ${stats.total_cases}`, 20, 70);
-      pdf.text(`Chamados Concluídos: ${stats.completed_cases}`, 20, 80);
-      pdf.text(`Chamados Pendentes: ${stats.pending_cases}`, 20, 90);
-      pdf.text(`Em Desenvolvimento: ${stats.in_development_cases || 0}`, 20, 100);
-      pdf.text(`Aguardando Resposta: ${stats.waiting_client_cases}`, 20, 110);
-      pdf.text(`Taxa de Conclusão: ${stats.completion_percentage}%`, 20, 120);
-      
-      // Chamados por Seguradora (com mais espaçamento)
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Chamados por Seguradora:', 20, 140);
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      
-      let yPos = 152;
-      const seguradoras = stats.cases_by_seguradora || {};
-      Object.keys(seguradoras).forEach((seguradora) => {
-        pdf.text(`${seguradora}: ${seguradoras[seguradora]} casos`, 25, yPos);
-        yPos += 12;
-      });
-      
-      // Distribuição por Categoria (com mais espaçamento)
-      yPos += 15;
-      pdf.setFontSize(13);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Distribuição por Categoria:', 20, yPos);
-      yPos += 10;
+      pdf.text('Relatório Semanal - Safe2Go', pageWidth / 2, 14, { align: 'center' });
       
       pdf.setFontSize(9);
       pdf.setFont('helvetica', 'normal');
+      const today = new Date().toLocaleDateString('pt-BR');
+      pdf.text(`Data de Emissão: ${today}`, pageWidth / 2, 22, { align: 'center' });
       
-      // Criar gráfico de barras manualmente
+      // Stats Section - mais compacto
+      pdf.setTextColor(30, 41, 59);
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Estatísticas Gerais', 20, 38);
+      
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Total: ${stats.total_cases}`, 20, 46);
+      pdf.text(`Concluídos: ${stats.completed_cases}`, 20, 52);
+      pdf.text(`Pendentes: ${stats.pending_cases}`, 20, 58);
+      pdf.text(`Em Desenvolvimento: ${stats.in_development_cases || 0}`, 20, 64);
+      pdf.text(`Aguardando: ${stats.waiting_client_cases}`, 20, 70);
+      pdf.text(`Taxa de Conclusão: ${stats.completion_percentage}%`, 20, 76);
+      
+      // Chamados por Seguradora - duas colunas
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Por Seguradora:', 20, 88);
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      
+      let yPos = 95;
+      const seguradoras = stats.cases_by_seguradora || {};
+      const segKeys = Object.keys(seguradoras);
+      segKeys.forEach((seguradora, idx) => {
+        const xPos = idx % 2 === 0 ? 20 : 105;
+        if (idx % 2 === 0 && idx > 0) yPos += 6;
+        pdf.text(`${seguradora}: ${seguradoras[seguradora]}`, xPos, yPos);
+      });
+      if (segKeys.length % 2 !== 0) yPos += 6;
+      
+      // Distribuição por Categoria - Top 7 apenas
+      yPos += 10;
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Top 7 Categorias:', 20, yPos);
+      yPos += 6;
+      
+      pdf.setFontSize(7);
+      pdf.setFont('helvetica', 'normal');
+      
       const maxCount = Math.max(...categoryData.map(c => c.count));
-      const barMaxWidth = 80; // Largura máxima da barra reduzida
+      const barMaxWidth = 70;
       
-      categoryData.slice(0, 10).forEach((category, index) => {
+      categoryData.slice(0, 7).forEach((category, index) => {
         const barWidth = (category.count / maxCount) * barMaxWidth;
         const percentage = ((category.count / stats.total_cases) * 100).toFixed(1);
         
-        // Alternar cores
         const colors = [
-          [239, 68, 68],    // red
-          [249, 115, 22],   // orange
-          [245, 158, 11],   // amber
-          [234, 179, 8],    // yellow
-          [132, 204, 22],   // lime
-          [34, 197, 94],    // green
-          [20, 184, 166],   // teal
-          [14, 165, 233],   // sky
-          [168, 85, 247],   // purple
-          [236, 72, 153],   // pink
+          [239, 68, 68], [249, 115, 22], [245, 158, 11], [234, 179, 8],
+          [132, 204, 22], [34, 197, 94], [20, 184, 166]
         ];
         const color = colors[index % colors.length];
         
-        // Nome da categoria (lado esquerdo, antes da barra)
         pdf.setTextColor(30, 41, 59);
         pdf.setFont('helvetica', 'normal');
-        const categoryName = category.category.length > 20 
-          ? category.category.substring(0, 20) + '...' 
+        const categoryName = category.category.length > 18 
+          ? category.category.substring(0, 18) + '...' 
           : category.category;
-        pdf.text(categoryName, 20, yPos + 3.5);
+        pdf.text(categoryName, 20, yPos + 2.5);
         
-        // Desenhar barra (no meio)
         pdf.setFillColor(...color);
-        pdf.rect(85, yPos, barWidth, 5, 'F');
+        pdf.rect(80, yPos, barWidth, 3.5, 'F');
         
-        // Quantidade e percentual (lado direito, após a barra)
         pdf.setFont('helvetica', 'bold');
-        pdf.text(`${category.count}`, 170, yPos + 3.5);
+        pdf.text(`${category.count}`, 155, yPos + 2.5);
         pdf.setFont('helvetica', 'normal');
-        pdf.text(`(${percentage}%)`, 178, yPos + 3.5);
+        pdf.text(`(${percentage}%)`, 162, yPos + 2.5);
         
-        yPos += 8;
-        
-        // Adicionar nova página se necessário
-        if (yPos > pageHeight - 30 && index < categoryData.length - 1) {
-          pdf.addPage();
-          yPos = 20;
-          pdf.setFontSize(13);
-          pdf.setFont('helvetica', 'bold');
-          pdf.text('Distribuição por Categoria (continuação):', 20, yPos);
-          yPos += 8;
-          pdf.setFontSize(9);
-          pdf.setFont('helvetica', 'normal');
-        }
+        yPos += 6;
       });
       
-      // Chart capture - Gráficos da Última Semana
+      // Chart capture - Gráficos da Última Semana na mesma página se couber
       const chartElement = document.getElementById('dashboard-charts');
-      if (chartElement) {
+      if (chartElement && yPos < 200) {
+        yPos += 8;
+        pdf.setTextColor(30, 41, 59);
+        pdf.setFontSize(11);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Gráficos da Semana:', 20, yPos);
+        
         const canvas = await html2canvas(chartElement, {
-          scale: 2,
+          scale: 1.5,
           backgroundColor: '#ffffff',
         });
         const imgData = canvas.toDataURL('image/png');
         const imgWidth = pageWidth - 40;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, 75);
         
-        pdf.addPage();
-        pdf.setTextColor(30, 41, 59);
-        pdf.setFontSize(16);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text('Gráficos da Última Semana', 20, 20);
-        pdf.addImage(imgData, 'PNG', 20, 30, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 20, yPos + 3, imgWidth, imgHeight);
       }
       
-      // Análise de Casos Recorrentes - ÚLTIMA PÁGINA (seguindo padrão visual)
-      if (recurrentData && recurrentData.length > 0) {
-        pdf.addPage();
-        
-        // Título da seção
+      // ============= PÁGINA 2 =============
+      pdf.addPage();
+      
+      // Se não coube na página 1, adicionar gráfico aqui
+      if (chartElement && yPos >= 200) {
         pdf.setTextColor(30, 41, 59);
-        pdf.setFontSize(16);
+        pdf.setFontSize(11);
         pdf.setFont('helvetica', 'bold');
-        pdf.text('Análise de Casos Recorrentes', 20, 20);
+        pdf.text('Gráficos da Última Semana:', 20, 20);
         
-        // Subtítulo
+        const canvas = await html2canvas(chartElement, {
+          scale: 1.5,
+          backgroundColor: '#ffffff',
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - 40;
+        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, 100);
+        
+        pdf.addImage(imgData, 'PNG', 20, 25, imgWidth, imgHeight);
+        yPos = 25 + imgHeight + 10;
+      } else {
+        yPos = 20;
+      }
+      
+      // Análise de Casos Recorrentes - COMPACTO
+      if (recurrentData && recurrentData.length > 0) {
+        pdf.setTextColor(30, 41, 59);
         pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Análise de Casos Recorrentes', 20, yPos);
+        
+        pdf.setFontSize(8);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(100, 116, 139);
-        pdf.text('Top 3 Categorias Prioritárias para Automação', 20, 30);
+        pdf.text('Top 3 Categorias Prioritárias', 20, yPos + 6);
         
-        yPos = 45;
+        yPos += 14;
         
-        // Pegar top 3 casos recorrentes
         const top3 = recurrentData.slice(0, 3);
         
         top3.forEach((item, index) => {
-          // Número
-          pdf.setFontSize(14);
+          pdf.setFontSize(10);
           pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(147, 51, 234); // Roxo do tema
+          pdf.setTextColor(147, 51, 234);
           pdf.text(`${index + 1}.`, 20, yPos);
           
-          // Nome da categoria
           pdf.setTextColor(30, 41, 59);
-          pdf.setFontSize(13);
-          pdf.setFont('helvetica', 'bold');
-          pdf.text(item.category, 30, yPos);
+          pdf.setFontSize(10);
+          pdf.text(item.category, 27, yPos);
           
-          yPos += 8;
+          yPos += 5;
           
-          // Quantidade e percentual
-          pdf.setFontSize(11);
+          pdf.setFontSize(8);
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(71, 85, 105);
-          pdf.text(`${item.count} casos recorrentes (${item.percentage}% do total)`, 30, yPos);
+          pdf.text(`${item.count} casos (${item.percentage}%)`, 27, yPos);
           
-          yPos += 7;
+          yPos += 4;
           
-          // Nível de urgência
           let urgencyText = '';
           let urgencyColor = [0, 0, 0];
           if (item.count >= 9) {
             urgencyText = 'CRÍTICO - Automação URGENTE';
-            urgencyColor = [220, 38, 38]; // Vermelho
+            urgencyColor = [220, 38, 38];
           } else if (item.count >= 5) {
             urgencyText = 'ALTO - Automação recomendada';
-            urgencyColor = [234, 88, 12]; // Laranja
+            urgencyColor = [234, 88, 12];
           } else {
             urgencyText = 'MÉDIO - Considerar automação';
-            urgencyColor = [234, 179, 8]; // Amarelo
+            urgencyColor = [234, 179, 8];
           }
           
           pdf.setTextColor(...urgencyColor);
-          pdf.setFontSize(10);
+          pdf.setFontSize(7);
           pdf.setFont('helvetica', 'bold');
-          pdf.text(urgencyText, 30, yPos);
+          pdf.text(urgencyText, 27, yPos);
           
-          yPos += 7;
+          yPos += 4;
           
-          // Recomendação
           let recommendation = '';
           if (item.count >= 9) {
-            recommendation = `Recomendação: Com ${item.count} casos recorrentes, esta categoria demanda automação URGENTE para reduzir até 80% do trabalho manual e melhorar eficiência operacional.`;
+            recommendation = `${item.count} casos recorrentes demandam automação urgente (redução até 80% trabalho manual).`;
           } else if (item.count >= 5) {
-            recommendation = `Recomendação: ${item.count} casos recorrentes indicam necessidade de automação para otimizar processos e economizar tempo da equipe.`;
+            recommendation = `${item.count} casos recorrentes - automação recomendada para otimizar processos.`;
           } else {
-            recommendation = `Recomendação: Considerar templates ou scripts para agilizar o tratamento dos ${item.count} casos desta categoria.`;
+            recommendation = `Considerar templates para agilizar ${item.count} casos desta categoria.`;
           }
           
           pdf.setTextColor(71, 85, 105);
-          pdf.setFontSize(9);
+          pdf.setFontSize(7);
           pdf.setFont('helvetica', 'normal');
-          const lines = pdf.splitTextToSize(recommendation, pageWidth - 60);
-          pdf.text(lines, 30, yPos);
+          const lines = pdf.splitTextToSize(recommendation, pageWidth - 55);
+          pdf.text(lines, 27, yPos);
           
-          yPos += (lines.length * 4) + 12;
+          yPos += (lines.length * 3) + 6;
         });
         
-        // Nota de rodapé
-        yPos += 5;
-        if (yPos < pageHeight - 40) {
+        yPos += 3;
+        if (yPos < pageHeight - 25) {
           pdf.setDrawColor(147, 51, 234);
-          pdf.setLineWidth(0.3);
+          pdf.setLineWidth(0.2);
           pdf.line(20, yPos, pageWidth - 20, yPos);
           
-          yPos += 8;
+          yPos += 5;
           pdf.setTextColor(100, 116, 139);
-          pdf.setFontSize(9);
+          pdf.setFontSize(7);
           pdf.setFont('helvetica', 'italic');
-          const noteText = 'Nota: Priorize a automação das categorias com maior incidência para reduzir carga operacional e melhorar tempo de resposta aos clientes.';
+          const noteText = 'Nota: Priorize automação das categorias com maior incidência para reduzir carga operacional.';
           const noteLines = pdf.splitTextToSize(noteText, pageWidth - 40);
           pdf.text(noteLines, 20, yPos);
         }
