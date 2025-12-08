@@ -666,6 +666,202 @@ class Safe2GoHelpdeskTester:
         
         return success
 
+    # ========== PDF DATA VALIDATION TESTS ==========
+    
+    def test_dashboard_stats_for_pdf(self):
+        """Test GET /api/dashboard/stats - verificar se retorna todas estatísticas para PDF"""
+        if not self.admin_token:
+            self.log_test("Dashboard Stats for PDF", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Dashboard Stats for PDF", "GET", "dashboard/stats", 200, token=self.admin_token)
+        
+        if success:
+            required_fields = ['total_cases', 'completed_cases', 'pending_cases', 'in_development_cases', 'waiting_client_cases', 'completion_percentage', 'cases_by_seguradora']
+            missing_fields = []
+            
+            for field in required_fields:
+                if field not in response:
+                    missing_fields.append(field)
+            
+            if not missing_fields:
+                self.log_test("Dashboard Stats for PDF - All required fields", True)
+                
+                # Print detailed stats for PDF validation
+                print(f"    📊 ESTATÍSTICAS PARA PDF:")
+                print(f"    Total de casos: {response.get('total_cases')}")
+                print(f"    Concluídos: {response.get('completed_cases')}")
+                print(f"    Pendentes: {response.get('pending_cases')}")
+                print(f"    Em Desenvolvimento: {response.get('in_development_cases')}")
+                print(f"    Aguardando resposta: {response.get('waiting_client_cases')}")
+                print(f"    Taxa de conclusão: {response.get('completion_percentage')}%")
+                print(f"    Por seguradora: {response.get('cases_by_seguradora')}")
+                
+                # Validate data integrity
+                total = response.get('total_cases', 0)
+                completed = response.get('completed_cases', 0)
+                pending = response.get('pending_cases', 0)
+                in_dev = response.get('in_development_cases', 0)
+                waiting = response.get('waiting_client_cases', 0)
+                
+                calculated_total = completed + pending + in_dev + waiting
+                if abs(total - calculated_total) <= 1:  # Allow small discrepancy
+                    self.log_test("Dashboard Stats - Data integrity check", True)
+                else:
+                    self.log_test("Dashboard Stats - Data integrity check", False, f"Total {total} != Sum {calculated_total}")
+            else:
+                self.log_test("Dashboard Stats for PDF - Missing fields", False, f"Missing: {missing_fields}")
+        
+        return success
+
+    def test_cases_categories_for_pdf(self):
+        """Test GET /api/cases/categories - verificar se retorna categorias para PDF"""
+        if not self.admin_token:
+            self.log_test("Cases Categories for PDF", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Cases Categories for PDF", "GET", "cases/categories", 200, token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Cases Categories for PDF - List returned", True)
+            print(f"    📋 CATEGORIAS PARA PDF ({len(response)} categorias):")
+            
+            for category in response:
+                cat_name = category.get('category', 'N/A')
+                cat_count = category.get('count', 0)
+                status_breakdown = category.get('status_breakdown', {})
+                print(f"    • {cat_name}: {cat_count} casos - {status_breakdown}")
+            
+            # Validate category structure
+            valid_categories = True
+            for category in response:
+                if 'category' not in category or 'count' not in category:
+                    valid_categories = False
+                    break
+            
+            if valid_categories:
+                self.log_test("Cases Categories - Structure validation", True)
+            else:
+                self.log_test("Cases Categories - Structure validation", False, "Invalid category structure")
+        
+        return success
+
+    def test_recurrent_analysis_for_pdf(self):
+        """Test GET /api/cases/analytics/recurrent - verificar análise recorrente para PDF"""
+        if not self.admin_token:
+            self.log_test("Recurrent Analysis for PDF", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Recurrent Analysis for PDF", "GET", "cases/analytics/recurrent", 200, token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_test("Recurrent Analysis for PDF - List returned", True)
+            print(f"    🔄 ANÁLISE RECORRENTE PARA PDF ({len(response)} categorias):")
+            
+            for analysis in response:
+                category = analysis.get('category', 'N/A')
+                count = analysis.get('count', 0)
+                percentage = analysis.get('percentage', 0)
+                suggestion = analysis.get('suggestion', 'N/A')
+                print(f"    • {category}: {count} casos ({percentage}%) - {suggestion}")
+            
+            # Validate analysis structure
+            valid_analysis = True
+            for analysis in response:
+                required_fields = ['category', 'count', 'percentage', 'suggestion']
+                if not all(field in analysis for field in required_fields):
+                    valid_analysis = False
+                    break
+            
+            if valid_analysis:
+                self.log_test("Recurrent Analysis - Structure validation", True)
+            else:
+                self.log_test("Recurrent Analysis - Structure validation", False, "Invalid analysis structure")
+        
+        return success
+
+    def test_cases_exist_validation(self):
+        """Test GET /api/cases - verificar se há casos no sistema"""
+        if not self.admin_token:
+            self.log_test("Cases Exist Validation", False, "No admin token available")
+            return False
+        
+        success, response = self.run_test("Cases Exist Validation", "GET", "cases", 200, token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            cases_count = len(response)
+            self.log_test("Cases Exist Validation - Cases found", True)
+            print(f"    📁 CASOS NO SISTEMA: {cases_count} casos encontrados")
+            
+            if cases_count > 0:
+                self.log_test("Cases Exist - System has data", True)
+                
+                # Show sample case data
+                sample_case = response[0]
+                print(f"    Exemplo de caso: {sample_case.get('jira_id')} - {sample_case.get('title', 'N/A')[:50]}...")
+                print(f"    Status: {sample_case.get('status')}, Seguradora: {sample_case.get('seguradora')}")
+            else:
+                self.log_test("Cases Exist - System has data", False, "No cases found in system")
+        
+        return success
+
+    def run_validation_tests(self):
+        """Run specific validation tests for Safe2Go backend as requested in review"""
+        print("🎯 VALIDAÇÃO RÁPIDA SAFE2GO BACKEND")
+        print("Conforme solicitação de revisão - Validação do sistema para PDF")
+        print(f"Testing against: {self.api_url}")
+        print("=" * 70)
+        
+        # 1. Verificar Sistema Operacional
+        print("\n🔧 1. VERIFICAÇÃO DO SISTEMA")
+        print("-" * 35)
+        self.test_root_endpoint()
+        
+        # 2. Teste de Login Admin
+        print("\n🔐 2. TESTE DE LOGIN ADMIN")
+        print("-" * 35)
+        print(f"Testando credenciais: {self.admin_credentials['email']} / {self.admin_credentials['password']}")
+        self.test_admin_login()
+        
+        if self.admin_token:
+            self.test_auth_me_admin()
+            print(f"    ✅ Token JWT válido recebido")
+        else:
+            print(f"    ❌ Falha na autenticação - sistema não operacional")
+            return False
+        
+        # 3. Verificar Dados para PDF
+        print("\n📊 3. VERIFICAÇÃO DOS DADOS PARA PDF")
+        print("-" * 45)
+        self.test_dashboard_stats_for_pdf()
+        self.test_cases_categories_for_pdf()
+        self.test_recurrent_analysis_for_pdf()
+        
+        # 4. Validação Rápida de Casos
+        print("\n📋 4. VALIDAÇÃO RÁPIDA DE CASOS")
+        print("-" * 40)
+        self.test_cases_exist_validation()
+        
+        # Print summary
+        print("\n" + "=" * 70)
+        print(f"📊 RESULTADO DA VALIDAÇÃO: {self.tests_passed}/{self.tests_run} testes aprovados")
+        success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
+        print(f"📈 Taxa de Sucesso: {success_rate:.1f}%")
+        
+        if success_rate == 100:
+            print("🎉 SISTEMA 100% OPERACIONAL - PDF pode ser gerado corretamente!")
+        else:
+            print("⚠️  PROBLEMAS ENCONTRADOS - Verificar falhas antes de gerar PDF")
+        
+        # Print failed tests
+        failed_tests = [result for result in self.test_results if result['status'] == 'FAILED']
+        if failed_tests:
+            print(f"\n❌ Testes Falharam ({len(failed_tests)}):")
+            for test in failed_tests:
+                print(f"   • {test['test']}: {test['details']}")
+        
+        return self.tests_passed == self.tests_run
+
     def run_all_tests(self):
         """Run all Safe2Go helpdesk backend tests"""
         print("🚀 Starting Safe2Go Helpdesk Backend API Tests")
