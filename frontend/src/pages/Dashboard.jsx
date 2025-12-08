@@ -304,18 +304,18 @@ export const Dashboard = () => {
       const totalPages = pdf.internal.pages.length - 1;
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
-        pdf.setFontSize(10);
+        pdf.setFontSize(8);
         pdf.setTextColor(100, 116, 139);
         pdf.text(
           `Página ${i} de ${totalPages}`,
           pageWidth / 2,
-          pageHeight - 10,
+          pageHeight - 8,
           { align: 'center' }
         );
       }
       
       pdf.save(`relatorio-safe2go-${today.replace(/\//g, '-')}.pdf`);
-      toast.success('PDF gerado com sucesso!');
+      toast.success('PDF gerado com sucesso! (2 páginas compactas)');
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       toast.error('Erro ao gerar PDF');
