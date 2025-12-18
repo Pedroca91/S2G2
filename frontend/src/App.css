@@ -116,6 +116,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid #e2e8f0;
+  overflow: visible;
 }
 
 .page-container {
