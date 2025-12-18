@@ -979,85 +979,84 @@ export const Cases = () => {
                 selectedCases.includes(caseItem.id) ? 'ring-2 ring-purple-500 bg-purple-50' : ''
               }`}
             >
-              <div className="flex items-start justify-between gap-4">
-                {/* Checkbox de seleção */}
-                {selectMode && isAdmin && (
-                  <div className="flex items-center">
+              <div>
+                {/* Header do card com badges */}
+                <div className="flex items-center gap-3 mb-2 flex-wrap">
+                  {selectMode && isAdmin && (
                     <Checkbox
                       checked={selectedCases.includes(caseItem.id)}
                       onCheckedChange={() => toggleCaseSelection(caseItem.id)}
                       id={`select-${caseItem.id}`}
                     />
-                  </div>
-                )}
+                  )}
+                  <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-lg">
+                    {caseItem.jira_id}
+                  </span>
+                  <span
+                    className={`badge ${
+                      caseItem.status === 'Concluído' 
+                        ? 'badge-success' 
+                        : caseItem.status === 'Aguardando resposta do cliente'
+                        ? 'badge-waiting'
+                        : caseItem.status === 'Em Desenvolvimento'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'badge-pending'
+                    }`}
+                    data-testid={`case-status-${caseItem.id}`}
+                  >
+                    {caseItem.status}
+                  </span>
+                  {caseItem.category && (
+                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md border border-blue-200">
+                      📂 {caseItem.category}
+                    </span>
+                  )}
+                  {caseItem.seguradora && (
+                    <span className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs font-medium">
+                      {caseItem.seguradora}
+                    </span>
+                  )}
+                </div>
                 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2 flex-wrap">
-                    <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-lg">
-                      {caseItem.jira_id}
-                    </span>
-                    <span
-                      className={`badge ${
-                        caseItem.status === 'Concluído' 
-                          ? 'badge-success' 
-                          : caseItem.status === 'Aguardando resposta do cliente'
-                          ? 'badge-waiting'
-                          : caseItem.status === 'Em Desenvolvimento'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'badge-pending'
-                      }`}
-                      data-testid={`case-status-${caseItem.id}`}
-                    >
-                      {caseItem.status}
-                    </span>
-                    {caseItem.category && (
-                      <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md border border-blue-200">
-                        📂 {caseItem.category}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{caseItem.title}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{caseItem.description}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
+                {/* Título e descrição */}
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{caseItem.title}</h3>
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{caseItem.description}</p>
+                
+                {/* Footer com info e ações */}
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
                     <span>Responsável: <strong>{caseItem.responsible}</strong></span>
-                    {caseItem.seguradora && (
-                      <span className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs font-medium">
-                        {caseItem.seguradora}
-                      </span>
-                    )}
                     <span>Aberto: {new Date(caseItem.created_at).toLocaleDateString('pt-BR')}</span>
                   </div>
-                </div>
-                <div className="flex flex-col gap-2 flex-shrink-0 min-w-[200px]">
-                  {/* Seletor rápido de status */}
-                  <div className="w-full lg:w-48">
+                  
+                  <div className="flex items-center gap-2">
+                    {/* Seletor rápido de status */}
                     <Select
                       value={caseItem.status}
                       onValueChange={(value) => handleStatusChange(caseItem.id, value)}
                     >
-                      <SelectTrigger className="h-9 text-sm">
+                      <SelectTrigger className="h-9 text-sm w-[180px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Pendente">🟡 Pendente</SelectItem>
                         <SelectItem value="Em Desenvolvimento">🔵 Em Desenvolvimento</SelectItem>
-                        <SelectItem value="Aguardando resposta do cliente">🟠 Aguardando resposta do cliente</SelectItem>
+                        <SelectItem value="Aguardando resposta do cliente">🟠 Aguardando</SelectItem>
                         <SelectItem value="Concluído">🟢 Concluído</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                  
-                  <div className="flex gap-2">
+                    
                     <Button
                       variant="default"
                       size="sm"
                       onClick={() => navigate(`/cases/${caseItem.id}`)}
                       data-testid={`view-case-${caseItem.id}`}
-                      className="bg-purple-600 hover:bg-purple-700 flex-1"
+                      className="bg-purple-600 hover:bg-purple-700"
                     >
                       <Eye className="w-4 h-4 mr-1" />
                       Ver Detalhes
                     </Button>
+                    
                     {isAdmin && (
                       <Button
                         variant="outline"
