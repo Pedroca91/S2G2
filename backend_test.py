@@ -940,12 +940,126 @@ class Safe2GoHelpdeskTester:
         
         return self.tests_passed == self.tests_run
 
+    def run_review_tests(self):
+        """Run specific tests requested in the review"""
+        print("🎯 TESTE BACKEND SISTEMA SAFE2GO HELPDESK")
+        print("Conforme solicitação de revisão")
+        print(f"URL Base: {self.base_url}")
+        print("=" * 70)
+        
+        # 1. Test root endpoint
+        print("\n1️⃣ GET /api/ - Mensagem de boas vindas")
+        print("-" * 45)
+        success, response = self.run_test("GET /api/ - Welcome message", "GET", "", 200)
+        if success:
+            print(f"    ✅ Resposta: {response.get('message', 'N/A')}")
+        
+        # 2. Test admin login
+        print("\n2️⃣ POST /api/auth/login - Login Admin")
+        print("-" * 40)
+        print(f"    Email: {self.admin_credentials['email']}")
+        print(f"    Senha: {self.admin_credentials['password']}")
+        
+        login_success = self.test_admin_login()
+        if login_success and self.admin_token:
+            print(f"    ✅ Token JWT recebido: {self.admin_token[:50]}...")
+            
+            # 3. Test auth/me
+            print("\n3️⃣ GET /api/auth/me - Verificar usuário autenticado")
+            print("-" * 55)
+            me_success, me_response = self.run_test("GET /api/auth/me", "GET", "auth/me", 200, token=self.admin_token)
+            if me_success:
+                role = me_response.get('role', 'N/A')
+                status = me_response.get('status', 'N/A')
+                print(f"    ✅ Role: {role}")
+                print(f"    ✅ Status: {status}")
+                
+                # Validate expected values
+                if role == 'administrador':
+                    self.log_test("User role validation", True, "Role is 'administrador'")
+                else:
+                    self.log_test("User role validation", False, f"Expected 'administrador', got '{role}'")
+                
+                if status == 'aprovado':
+                    self.log_test("User status validation", True, "Status is 'aprovado'")
+                else:
+                    self.log_test("User status validation", False, f"Expected 'aprovado', got '{status}'")
+            
+            # 4. Test users list
+            print("\n4️⃣ GET /api/users - Listar usuários (requer auth admin)")
+            print("-" * 55)
+            users_success, users_response = self.run_test("GET /api/users", "GET", "users", 200, token=self.admin_token)
+            if users_success and isinstance(users_response, list):
+                users_count = len(users_response)
+                print(f"    ✅ Usuários encontrados: {users_count}")
+                
+                # Validate expected 4 users
+                if users_count == 4:
+                    self.log_test("Users count validation", True, "Found 4 users as expected")
+                else:
+                    self.log_test("Users count validation", False, f"Expected 4 users, found {users_count}")
+            
+            # 5. Test cases list
+            print("\n5️⃣ GET /api/cases - Listar chamados (requer auth)")
+            print("-" * 50)
+            cases_success, cases_response = self.run_test("GET /api/cases", "GET", "cases", 200, token=self.admin_token)
+            if cases_success and isinstance(cases_response, list):
+                cases_count = len(cases_response)
+                print(f"    ✅ Chamados encontrados: {cases_count}")
+                
+                # Validate expected 5 cases
+                if cases_count == 5:
+                    self.log_test("Cases count validation", True, "Found 5 cases as expected")
+                else:
+                    self.log_test("Cases count validation", False, f"Expected 5 cases, found {cases_count}")
+            
+            # 6. Test dashboard stats
+            print("\n6️⃣ GET /api/dashboard/stats - Estatísticas dashboard (requer auth)")
+            print("-" * 65)
+            stats_success, stats_response = self.run_test("GET /api/dashboard/stats", "GET", "dashboard/stats", 200, token=self.admin_token)
+            if stats_success:
+                total_cases = stats_response.get('total_cases', 0)
+                completed_cases = stats_response.get('completed_cases', 0)
+                pending_cases = stats_response.get('pending_cases', 0)
+                completion_percentage = stats_response.get('completion_percentage', 0)
+                
+                print(f"    ✅ Total de casos: {total_cases}")
+                print(f"    ✅ Casos concluídos: {completed_cases}")
+                print(f"    ✅ Casos pendentes: {pending_cases}")
+                print(f"    ✅ Taxa de conclusão: {completion_percentage}%")
+                
+                # Validate dashboard data
+                if total_cases > 0:
+                    self.log_test("Dashboard stats validation", True, f"Dashboard returning valid data: {total_cases} total cases")
+                else:
+                    self.log_test("Dashboard stats validation", False, "Dashboard shows 0 total cases")
+        
+        # Print final summary
+        print("\n" + "=" * 70)
+        print(f"📊 RESULTADO FINAL: {self.tests_passed}/{self.tests_run} testes aprovados")
+        success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
+        print(f"📈 Taxa de Sucesso: {success_rate:.1f}%")
+        
+        if success_rate == 100:
+            print("🎉 TODOS OS ENDPOINTS FUNCIONANDO CORRETAMENTE!")
+        else:
+            print("⚠️  PROBLEMAS ENCONTRADOS - Verificar falhas abaixo")
+        
+        # Print failed tests
+        failed_tests = [result for result in self.test_results if result['status'] == 'FAILED']
+        if failed_tests:
+            print(f"\n❌ Testes que Falharam ({len(failed_tests)}):")
+            for test in failed_tests:
+                print(f"   • {test['test']}: {test['details']}")
+        
+        return self.tests_passed == self.tests_run
+
 def main():
-    """Main function - run validation tests as requested in review"""
+    """Main function - run review tests as requested"""
     tester = Safe2GoHelpdeskTester()
     
-    # Run the specific validation tests requested in the review
-    success = tester.run_validation_tests()
+    # Run the specific tests requested in the review
+    success = tester.run_review_tests()
     
     return 0 if success else 1
 
