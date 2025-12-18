@@ -1170,6 +1170,21 @@ async def jira_webhook(payload: dict):
             await db.cases.insert_one(doc)
             logger.info(f"Novo caso criado via webhook: {issue_key}")
             
+            # Notificar TODOS os administradores sobre novo chamado via webhook
+            admins = await db.users.find({'role': 'administrador', 'status': 'aprovado'}, {'_id': 0, 'id': 1}).to_list(100)
+            for admin in admins:
+                notification = Notification(
+                    user_id=admin['id'],
+                    case_id=new_case.id,
+                    case_title=title,
+                    message=f"🆕 Novo chamado via Jira: #{issue_key} - {title[:50]}{'...' if len(title) > 50 else ''}",
+                    type="new_case"
+                )
+                notif_doc = notification.model_dump()
+                notif_doc['created_at'] = notif_doc['created_at'].isoformat()
+                await db.notifications.insert_one(notif_doc)
+                logger.info(f"Notificação criada para admin {admin['id']}")
+            
             # Notificar clientes WebSocket sobre novo caso
             await manager.broadcast({
                 "type": "new_case",
@@ -1185,6 +1200,14 @@ async def jira_webhook(payload: dict):
                     "opened_date": doc['opened_date'],
                     "created_at": doc['created_at']
                 }
+            })
+            
+            # Broadcast notificação para admins via WebSocket
+            await manager.broadcast({
+                "type": "new_notification",
+                "message": f"Novo chamado via Jira: #{issue_key}",
+                "case_id": new_case.id,
+                "jira_id": issue_key
             })
             
             return {"status": "created", "case_id": issue_key}
