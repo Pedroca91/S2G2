@@ -979,7 +979,7 @@ export const Cases = () => {
                 selectedCases.includes(caseItem.id) ? 'ring-2 ring-purple-500 bg-purple-50' : ''
               }`}
             >
-              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-4">
                 {/* Checkbox de seleção */}
                 {selectMode && isAdmin && (
                   <div className="flex items-center">
