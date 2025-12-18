@@ -7,7 +7,7 @@ import threading
 import time
 
 class Safe2GoHelpdeskTester:
-    def __init__(self, base_url="https://relatorio-compacto.preview.emergentagent.com"):
+    def __init__(self, base_url="http://localhost:8001"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.ws_url = f"wss://validacao-ponto.preview.emergentagent.com/ws"
@@ -17,7 +17,7 @@ class Safe2GoHelpdeskTester:
         
         # Test credentials - Updated per review request
         self.admin_credentials = {
-            "email": "pedro.carvalho@safe2go.com.br",
+            "email": "pedro.carvalho@fase2go.com.br",
             "password": "S@muka91"  # Updated password from review request
         }
         self.client_credentials = {
