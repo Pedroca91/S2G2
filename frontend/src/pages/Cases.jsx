@@ -1028,9 +1028,9 @@ export const Cases = () => {
                     <span>Aberto: {new Date(caseItem.created_at).toLocaleDateString('pt-BR')}</span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 flex-shrink-0 min-w-[200px]">
                   {/* Seletor rápido de status */}
-                  <div className="w-64">
+                  <div className="w-full lg:w-48">
                     <Select
                       value={caseItem.status}
                       onValueChange={(value) => handleStatusChange(caseItem.id, value)}
