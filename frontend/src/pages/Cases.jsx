@@ -991,7 +991,7 @@ export const Cases = () => {
                   </div>
                 )}
                 
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-lg">
                       {caseItem.jira_id}
