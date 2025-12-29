@@ -325,18 +325,12 @@ async def register(user_data: UserRegister):
 
 @api_router.post("/auth/login", response_model=AuthResponse)
 async def login(credentials: UserLogin):
-    print(f"[LOGIN] Tentando login para: {credentials.email}")
     user_doc = await db.users.find_one({'email': credentials.email})
     if not user_doc:
-        print(f"[LOGIN] Usuário não encontrado: {credentials.email}")
         raise HTTPException(status_code=401, detail="Email ou senha incorretos")
     
-    print(f"[LOGIN] Usuário encontrado. Verificando senha...")
-    print(f"[LOGIN] Password hash: {user_doc['password'][:20]}...")
     if not verify_password(credentials.password, user_doc['password']):
-        print(f"[LOGIN] Senha incorreta para: {credentials.email}")
         raise HTTPException(status_code=401, detail="Email ou senha incorretos")
-    print(f"[LOGIN] Senha correta!")
     
     # Verificar se usuário está aprovado
     if user_doc.get('status') == 'pendente':
