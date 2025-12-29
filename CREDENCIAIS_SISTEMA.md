@@ -52,14 +52,17 @@
 | Bruno Nascimento | bruno.nascimento@daycoval.com.br | 11987653333 |
 
 ### Permissões dos Clientes:
-✅ Ver apenas casos da própria seguradora  
+✅ Ver apenas casos que **eles próprios criaram** (privacidade e segurança)  
 ✅ Criar novos casos  
 ✅ Comentar em casos  
 ✅ Ver apenas comentários públicos  
 ✅ Receber notificações  
+❌ Não podem ver casos de outros usuários (mesmo da mesma seguradora)  
 ❌ Não podem excluir casos  
 ❌ Não podem gerenciar usuários  
-❌ Não veem comentários internos  
+❌ Não veem comentários internos
+
+> **📝 Nota Importante:** Por questões de privacidade e segurança, cada cliente vê apenas os casos que ele próprio abriu. Administradores têm acesso a todos os casos de todas as seguradoras.  
 
 ---
 
