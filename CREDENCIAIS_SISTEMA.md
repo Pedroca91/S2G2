@@ -10,6 +10,7 @@
 
 | Nome | Email | Telefone |
 |------|-------|----------|
+| **Pedro Carvalho** | **pedrohcarvalho1997@gmail.com** | 11987654321 |
 | Pedro Carvalho | pedro.carvalho@safe2go.com.br | 11987654321 |
 | Maria Silva | maria.silva@safe2go.com.br | 11987654322 |
 | João Santos | joao.santos@safe2go.com.br | 11987654323 |
