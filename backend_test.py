@@ -7,7 +7,7 @@ import threading
 import time
 
 class Safe2GoHelpdeskTester:
-    def __init__(self, base_url="https://609484b0-28b9-4300-96b5-a17be712096e.preview.emergentagent.com"):
+    def __init__(self, base_url="https://readydata-access.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.ws_url = f"wss://validacao-ponto.preview.emergentagent.com/ws"

@@ -10,7 +10,7 @@ O webhook do Jira está **totalmente funcional** e pronto para uso!
 
 ### 🌐 **URL do Webhook**
 ```
-https://relatorio-compacto.preview.emergentagent.com/api/webhooks/jira
+https://readydata-access.preview.emergentagent.com/api/webhooks/jira
 ```
 
 ### 📡 **Eventos que devem ser habilitados:**
@@ -71,7 +71,7 @@ Safe2Go - Sincronização de Casos
 
 **URL:**
 ```
-https://relatorio-compacto.preview.emergentagent.com/api/webhooks/jira
+https://readydata-access.preview.emergentagent.com/api/webhooks/jira
 ```
 
 **Descrição (opcional):**
@@ -111,7 +111,7 @@ project = "SEU_PROJETO" AND type = "Bug"
 
 ### **Teste 2: Via curl (teste manual)**
 ```bash
-curl -X POST https://relatorio-compacto.preview.emergentagent.com/api/webhooks/jira \
+curl -X POST https://readydata-access.preview.emergentagent.com/api/webhooks/jira \
   -H "Content-Type: application/json" \
   -d '{
     "webhookEvent": "jira:issue_created",
@@ -182,7 +182,7 @@ tail -f /var/log/supervisor/backend.out.log | grep -i "webhook\|jira"
 3. Webhook desabilitado no Jira
 
 **Solução:**
-- Verifique a URL: `https://relatorio-compacto.preview.emergentagent.com/api/webhooks/jira`
+- Verifique a URL: `https://readydata-access.preview.emergentagent.com/api/webhooks/jira`
 - Confirme que os eventos estão marcados
 - Teste via curl para confirmar que o endpoint está acessível
 
