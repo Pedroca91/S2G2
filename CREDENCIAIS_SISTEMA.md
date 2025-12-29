@@ -70,7 +70,7 @@
 ## 📊 DADOS DO SISTEMA
 
 ### Estatísticas Atuais:
-- **Total de Usuários:** 13 (4 admins + 9 clientes)
+- **Total de Usuários:** 14 (5 admins + 9 clientes)
 - **Total de Casos:** 75
 - **Casos Concluídos:** 45 (60%)
 - **Casos Pendentes:** 9
