@@ -413,7 +413,7 @@ export const Dashboard = () => {
         <div 
           className="stat-card cursor-pointer" 
           data-testid="waiting-client-cases-card"
-          onClick={() => handleCardClick('Aguardando resposta do cliente')}
+          onClick={() => handleCardClick('Aguardando resposta')}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-orange-100 rounded-xl">
