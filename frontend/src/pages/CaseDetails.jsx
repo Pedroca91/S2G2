@@ -151,7 +151,7 @@ const CaseDetails = () => {
       'Concluído': 'bg-green-100 text-green-800 border-green-300',
       'Pendente': 'bg-yellow-100 text-yellow-800 border-yellow-300',
       'Em Desenvolvimento': 'bg-blue-100 text-blue-800 border-blue-300',
-      'Aguardando resposta do cliente': 'bg-orange-100 text-orange-800 border-orange-300'
+      'Aguardando resposta': 'bg-orange-100 text-orange-800 border-orange-300'
     };
     return colors[status] || 'bg-gray-100 text-gray-800 border-gray-300';
   };
