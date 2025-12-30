@@ -424,7 +424,7 @@ export const Cases = () => {
         // Detectar status na linha
         let status = 'Pendente';
         if (/aguardando\s*suporte/i.test(line)) {
-          status = 'Aguardando resposta do cliente';
+          status = 'Aguardando resposta';
         } else if (/em\s*atendimento/i.test(line)) {
           status = 'Em Desenvolvimento';
         } else if (/conclu[íi]do/i.test(line)) {
@@ -478,7 +478,7 @@ export const Cases = () => {
         // Buscar status se ainda não encontrou
         if (currentCase.status === 'Pendente') {
           if (/aguardando\s*suporte/i.test(line)) {
-            currentCase.status = 'Aguardando resposta do cliente';
+            currentCase.status = 'Aguardando resposta';
           } else if (/em\s*atendimento/i.test(line)) {
             currentCase.status = 'Em Desenvolvimento';
           }
@@ -996,7 +996,7 @@ export const Cases = () => {
                     className={`badge ${
                       caseItem.status === 'Concluído' 
                         ? 'badge-success' 
-                        : caseItem.status === 'Aguardando resposta do cliente'
+                        : caseItem.status === 'Aguardando resposta'
                         ? 'badge-waiting'
                         : caseItem.status === 'Em Desenvolvimento'
                         ? 'bg-blue-100 text-blue-700'
