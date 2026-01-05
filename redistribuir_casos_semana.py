@@ -156,7 +156,7 @@ async def mostrar_distribuicao():
     print("="*70)
     
     # Pegar casos dos últimos 7 dias
-    data_inicial = datetime.utcnow() - timedelta(days=7)
+    data_inicial = datetime.utcnow().replace(tzinfo=None) - timedelta(days=7)
     
     todos_casos = await db.cases.find({}).to_list(1000)
     
