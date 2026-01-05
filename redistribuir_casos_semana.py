@@ -164,7 +164,8 @@ async def mostrar_distribuicao():
     casos_por_dia = {}
     
     for caso in todos_casos:
-        created_at = datetime.fromisoformat(caso["created_at"].replace("Z", "+00:00"))
+        created_at_str = caso["created_at"].replace("Z", "").replace("+00:00", "")
+        created_at = datetime.fromisoformat(created_at_str)
         
         # Se está nos últimos 7 dias
         if created_at >= data_inicial:
