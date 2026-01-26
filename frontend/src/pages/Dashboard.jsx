@@ -24,6 +24,7 @@ export const Dashboard = () => {
   });
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSeguradora, setSelectedSeguradora] = useState('');
 
 
   useEffect(() => {
@@ -31,17 +32,21 @@ export const Dashboard = () => {
     // Recarregar dados a cada 60 segundos
     const interval = setInterval(fetchDashboardData, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedSeguradora]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
+      
+      // Adicionar filtro de seguradora se selecionada
+      const seguradoraParam = selectedSeguradora ? `?seguradora=${selectedSeguradora}` : '';
+      
       const [statsRes, chartsRes] = await Promise.all([
-        axios.get(`${API}/dashboard/stats`, {
+        axios.get(`${API}/dashboard/stats${seguradoraParam}`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${API}/dashboard/charts`, {
+        axios.get(`${API}/dashboard/charts${seguradoraParam}`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
       ]);
