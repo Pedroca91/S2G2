@@ -961,11 +961,18 @@ async def delete_case(case_id: str, current_user: dict = Depends(get_current_use
 
 # Dashboard
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
-async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
+async def get_dashboard_stats(
+    seguradora: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
     # Construir query base - se cliente, filtrar apenas seus casos
     base_query = {}
     if current_user['role'] == 'cliente':
         base_query['creator_id'] = current_user['id']
+    
+    # Adicionar filtro de seguradora se fornecido
+    if seguradora:
+        base_query['seguradora'] = seguradora
     
     total = await db.cases.count_documents(base_query)
     completed = await db.cases.count_documents({**base_query, "status": "Concluído"})
