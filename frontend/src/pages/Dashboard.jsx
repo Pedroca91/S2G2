@@ -343,27 +343,39 @@ export const Dashboard = () => {
         <div className="flex-1">
           <div className="flex items-center gap-3">
             <h1 className="page-title" data-testid="dashboard-title">Dashboard</h1>
+            {selectedSeguradora && (
+              <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                {selectedSeguradora}
+              </span>
+            )}
           </div>
-          <p className="page-subtitle">Visão geral do sistema de suporte</p>
+          <p className="page-subtitle">
+            {selectedSeguradora 
+              ? `Visão geral - ${selectedSeguradora}` 
+              : 'Visão geral do sistema de suporte'}
+          </p>
         </div>
         
         {/* Filtro de Seguradora */}
         <div className="flex items-center gap-3">
-          <select
-            value={selectedSeguradora}
-            onChange={(e) => setSelectedSeguradora(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white shadow-sm hover:border-gray-400 transition-colors"
-          >
-            <option value="">Todas as Seguradoras</option>
-            <option value="ESSOR">ESSOR</option>
-            <option value="AVLA">AVLA</option>
-            <option value="DAYCOVAL">DAYCOVAL</option>
-          </select>
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-500 mb-1 font-medium">Seguradora:</label>
+            <select
+              value={selectedSeguradora}
+              onChange={(e) => setSelectedSeguradora(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white shadow-sm hover:border-gray-400 transition-colors min-w-[180px]"
+            >
+              <option value="">🌐 Todas</option>
+              <option value="ESSOR">🏢 ESSOR</option>
+              <option value="AVLA">🏢 AVLA</option>
+              <option value="DAYCOVAL">🏢 DAYCOVAL</option>
+            </select>
+          </div>
           
           <Button
             onClick={generatePDF}
             data-testid="generate-pdf-btn"
-            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg"
+            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg mt-5"
           >
             <Download className="w-4 h-4 mr-2" />
             Gerar Relatório PDF
