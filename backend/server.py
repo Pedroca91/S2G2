@@ -1002,7 +1002,10 @@ async def get_dashboard_stats(
     )
 
 @api_router.get("/dashboard/charts", response_model=List[ChartData])
-async def get_chart_data(current_user: dict = Depends(get_current_user)):
+async def get_chart_data(
+    seguradora: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
     # Get last 7 days data
     chart_data = []
     
@@ -1010,6 +1013,10 @@ async def get_chart_data(current_user: dict = Depends(get_current_user)):
     base_query = {}
     if current_user['role'] == 'cliente':
         base_query['creator_id'] = current_user['id']
+    
+    # Adicionar filtro de seguradora se fornecido
+    if seguradora:
+        base_query['seguradora'] = seguradora
     
     for i in range(6, -1, -1):
         date = datetime.now(timezone.utc) - timedelta(days=i)
