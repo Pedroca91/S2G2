@@ -346,14 +346,29 @@ export const Dashboard = () => {
           </div>
           <p className="page-subtitle">Visão geral do sistema de suporte</p>
         </div>
-        <Button
-          onClick={generatePDF}
-          data-testid="generate-pdf-btn"
-          className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Gerar Relatório PDF
-        </Button>
+        
+        {/* Filtro de Seguradora */}
+        <div className="flex items-center gap-3">
+          <select
+            value={selectedSeguradora}
+            onChange={(e) => setSelectedSeguradora(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white shadow-sm hover:border-gray-400 transition-colors"
+          >
+            <option value="">Todas as Seguradoras</option>
+            <option value="ESSOR">ESSOR</option>
+            <option value="AVLA">AVLA</option>
+            <option value="DAYCOVAL">DAYCOVAL</option>
+          </select>
+          
+          <Button
+            onClick={generatePDF}
+            data-testid="generate-pdf-btn"
+            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Gerar Relatório PDF
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
