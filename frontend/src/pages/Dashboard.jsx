@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { FileText, CheckCircle2, Clock, TrendingUp, Download, Wifi, Settings } from 'lucide-react';
+import { FileText, CheckCircle2, Clock, TrendingUp, Download, Wifi, Settings, Calendar, X } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -26,6 +28,9 @@ export const Dashboard = () => {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSeguradora, setSelectedSeguradora] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [dateFilterActive, setDateFilterActive] = useState(false);
 
 
   useEffect(() => {
@@ -33,7 +38,7 @@ export const Dashboard = () => {
     // Recarregar dados a cada 60 segundos
     const interval = setInterval(fetchDashboardData, 60000);
     return () => clearInterval(interval);
-  }, [selectedSeguradora]);
+  }, [selectedSeguradora, startDate, endDate]);
 
   const fetchDashboardData = async () => {
     try {
