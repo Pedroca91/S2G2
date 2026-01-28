@@ -1111,26 +1111,6 @@ async def get_detailed_chart_data(
     """
     Endpoint para gráfico mensal/semanal detalhado com todos os status
     """
-    # Determinar período
-    if view_type == 'monthly':
-        # Últimos 6 meses
-        from datetime import datetime, timedelta
-        end = datetime.now(timezone.utc)
-        start = end - timedelta(days=180)  # ~6 meses
-        num_periods = 6
-        period_type = 'month'
-    else:
-        # Últimas 4 semanas
-        if start_date and end_date:
-            start = datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc)
-            end = datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc)
-            num_days = (end - start).days + 1
-        else:
-            end = datetime.now(timezone.utc)
-            start = end - timedelta(days=27)  # 4 semanas
-            num_days = 28
-        period_type = 'week'
-    
     # Construir query base
     base_query = {}
     if current_user['role'] == 'cliente':
@@ -1138,6 +1118,29 @@ async def get_detailed_chart_data(
     
     if seguradora:
         base_query['seguradora'] = seguradora
+    
+    # Buscar o caso mais antigo e mais recente para determinar o período real
+    oldest_case = await db.cases.find_one(base_query, sort=[('created_at', 1)])
+    newest_case = await db.cases.find_one(base_query, sort=[('created_at', -1)])
+    
+    if not oldest_case or not newest_case:
+        return []
+    
+    # Determinar período baseado nos dados reais
+    if view_type == 'monthly':
+        # Usar últimos 6 meses dos dados reais
+        data_end = datetime.fromisoformat(newest_case['created_at'])
+        data_start = data_end - timedelta(days=180)  # ~6 meses
+        period_type = 'month'
+    else:
+        # Usar últimas 4 semanas dos dados reais
+        if start_date and end_date:
+            data_start = datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc)
+            data_end = datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc)
+        else:
+            data_end = datetime.fromisoformat(newest_case['created_at'])
+            data_start = data_end - timedelta(days=27)  # 4 semanas
+        period_type = 'week'
     
     # Adicionar filtro de status se fornecido
     status_filter = {}
@@ -1147,62 +1150,94 @@ async def get_detailed_chart_data(
     chart_data = []
     
     if period_type == 'month':
-        # Agrupar por mês
-        for i in range(num_periods):
-            # Calcular início e fim do mês
-            month_date = end - timedelta(days=30 * i)
-            month_start = month_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            
+        # Gerar lista de meses no período
+        from dateutil.relativedelta import relativedelta
+        import calendar
+        
+        current_month = data_start.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_month = data_end.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        while current_month <= end_month:
             # Calcular último dia do mês
-            if month_start.month == 12:
-                month_end = month_start.replace(year=month_start.year + 1, month=1, day=1)
-            else:
-                month_end = month_start.replace(month=month_start.month + 1, day=1)
+            last_day = calendar.monthrange(current_month.year, current_month.month)[1]
+            month_end = current_month.replace(day=last_day, hour=23, minute=59, second=59)
             
-            # Buscar casos do mês
+            # Query para o mês
             month_query = {
                 **base_query,
                 **status_filter,
                 'created_at': {
-                    '$gte': month_start.isoformat(),
-                    '$lt': month_end.isoformat()
+                    '$gte': current_month.isoformat(),
+                    '$lte': month_end.isoformat()
                 }
             }
             
             # Contar por status
-            completed = await db.cases.count_documents({**month_query, 'status': 'Concluído'}) if not status or status == 'all' else await db.cases.count_documents(month_query) if status == 'Concluído' else 0
-            pending = await db.cases.count_documents({**month_query, 'status': 'Pendente'}) if not status or status == 'all' else await db.cases.count_documents(month_query) if status == 'Pendente' else 0
-            in_development = await db.cases.count_documents({**month_query, 'status': 'Em Desenvolvimento'}) if not status or status == 'all' else await db.cases.count_documents(month_query) if status == 'Em Desenvolvimento' else 0
-            waiting = await db.cases.count_documents({**month_query, 'status': {'$in': ['Aguardando resposta', 'Aguardando Configuração']}}) if not status or status == 'all' else await db.cases.count_documents(month_query) if status in ['Aguardando resposta', 'Aguardando Configuração'] else 0
+            if not status or status == 'all':
+                completed = await db.cases.count_documents({**month_query, 'status': 'Concluído'})
+                pending = await db.cases.count_documents({**month_query, 'status': 'Pendente'})
+                in_development = await db.cases.count_documents({**month_query, 'status': 'Em Desenvolvimento'})
+                waiting = await db.cases.count_documents({
+                    **base_query,
+                    'created_at': month_query['created_at'],
+                    'status': {'$in': ['Aguardando resposta', 'Aguardando Configuração']}
+                })
+            else:
+                # Se status específico, contar apenas esse
+                count = await db.cases.count_documents(month_query)
+                completed = count if status == 'Concluído' else 0
+                pending = count if status == 'Pendente' else 0
+                in_development = count if status == 'Em Desenvolvimento' else 0
+                waiting = count if status in ['Aguardando resposta', 'Aguardando Configuração'] else 0
             
-            chart_data.insert(0, {
-                'date': month_start.strftime('%b/%y'),
+            chart_data.append({
+                'date': current_month.strftime('%b/%y'),
                 'completed': completed,
                 'pending': pending,
                 'in_development': in_development,
                 'waiting': waiting
             })
+            
+            # Próximo mês
+            if current_month.month == 12:
+                current_month = current_month.replace(year=current_month.year + 1, month=1)
+            else:
+                current_month = current_month.replace(month=current_month.month + 1)
+    
     else:
         # Agrupar por semana (7 dias)
-        num_weeks = num_days // 7
+        num_days = (data_end - data_start).days + 1
+        num_weeks = (num_days + 6) // 7  # Arredondar para cima
+        
         for i in range(num_weeks):
-            week_start = start + timedelta(weeks=i)
-            week_end = week_start + timedelta(days=7)
+            week_start = data_start + timedelta(days=i * 7)
+            week_end = min(week_start + timedelta(days=6), data_end)
             
             week_query = {
                 **base_query,
                 **status_filter,
                 'created_at': {
                     '$gte': week_start.isoformat(),
-                    '$lt': week_end.isoformat()
+                    '$lte': week_end.isoformat()
                 }
             }
             
             # Contar por status
-            completed = await db.cases.count_documents({**week_query, 'status': 'Concluído'}) if not status or status == 'all' else await db.cases.count_documents(week_query) if status == 'Concluído' else 0
-            pending = await db.cases.count_documents({**week_query, 'status': 'Pendente'}) if not status or status == 'all' else await db.cases.count_documents(week_query) if status == 'Pendente' else 0
-            in_development = await db.cases.count_documents({**week_query, 'status': 'Em Desenvolvimento'}) if not status or status == 'all' else await db.cases.count_documents(week_query) if status == 'Em Desenvolvimento' else 0
-            waiting = await db.cases.count_documents({**week_query, 'status': {'$in': ['Aguardando resposta', 'Aguardando Configuração']}}) if not status or status == 'all' else await db.cases.count_documents(week_query) if status in ['Aguardando resposta', 'Aguardando Configuração'] else 0
+            if not status or status == 'all':
+                completed = await db.cases.count_documents({**week_query, 'status': 'Concluído'})
+                pending = await db.cases.count_documents({**week_query, 'status': 'Pendente'})
+                in_development = await db.cases.count_documents({**week_query, 'status': 'Em Desenvolvimento'})
+                waiting = await db.cases.count_documents({
+                    **base_query,
+                    'created_at': week_query['created_at'],
+                    'status': {'$in': ['Aguardando resposta', 'Aguardando Configuração']}
+                })
+            else:
+                count = await db.cases.count_documents(week_query)
+                completed = count if status == 'Concluído' else 0
+                pending = count if status == 'Pendente' else 0
+                in_development = count if status == 'Em Desenvolvimento' else 0
+                waiting = count if status in ['Aguardando resposta', 'Aguardando Configuração'] else 0
             
             chart_data.append({
                 'date': f"{week_start.strftime('%d/%m')} - {week_end.strftime('%d/%m')}",
