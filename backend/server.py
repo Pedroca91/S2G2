@@ -1250,6 +1250,71 @@ async def get_detailed_chart_data(
     
     return chart_data
 
+# Função auxiliar para enviar comentário ao Jira
+async def send_comment_to_jira(jira_id: str, comment_text: str, author_name: str) -> bool:
+    """
+    Envia um comentário do Safe2Go para o Jira
+    """
+    try:
+        jira_url = os.environ.get('JIRA_URL', '').strip()
+        jira_email = os.environ.get('JIRA_EMAIL', '').strip()
+        jira_api_token = os.environ.get('JIRA_API_TOKEN', '').strip()
+        
+        # Verificar se as credenciais estão configuradas
+        if not jira_url or not jira_email or not jira_api_token:
+            print("⚠️  Credenciais do Jira não configuradas. Comentário não será sincronizado.")
+            return False
+        
+        # Criar autenticação básica
+        auth_string = f"{jira_email}:{jira_api_token}"
+        auth_bytes = auth_string.encode('ascii')
+        auth_base64 = base64.b64encode(auth_bytes).decode('ascii')
+        
+        # Preparar o comentário com informação do autor
+        comment_body = {
+            "body": {
+                "type": "doc",
+                "version": 1,
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": f"[Safe2Go - {author_name}] {comment_text}"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+        
+        # URL da API do Jira
+        api_url = f"{jira_url}/rest/api/3/issue/{jira_id}/comment"
+        
+        # Fazer requisição
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                api_url,
+                json=comment_body,
+                headers={
+                    "Authorization": f"Basic {auth_base64}",
+                    "Content-Type": "application/json"
+                },
+                timeout=10.0
+            )
+            
+            if response.status_code in [200, 201]:
+                print(f"✅ Comentário enviado ao Jira {jira_id}")
+                return True
+            else:
+                print(f"❌ Erro ao enviar comentário ao Jira: {response.status_code} - {response.text}")
+                return False
+                
+    except Exception as e:
+        print(f"❌ Erro ao enviar comentário ao Jira: {str(e)}")
+        return False
+
 # Função auxiliar para tratar comentários do Jira
 async def handle_jira_comment(payload: dict):
     """
