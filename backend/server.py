@@ -964,6 +964,8 @@ async def delete_case(case_id: str, current_user: dict = Depends(get_current_use
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
 async def get_dashboard_stats(
     seguradora: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
     # Construir query base - se cliente, filtrar apenas seus casos
@@ -974,6 +976,17 @@ async def get_dashboard_stats(
     # Adicionar filtro de seguradora se fornecido
     if seguradora:
         base_query['seguradora'] = seguradora
+    
+    # Adicionar filtro de data se fornecido
+    if start_date or end_date:
+        date_query = {}
+        if start_date:
+            # Adicionar hora 00:00:00 para incluir todo o dia inicial
+            date_query['$gte'] = f"{start_date}T00:00:00"
+        if end_date:
+            # Adicionar hora 23:59:59 para incluir todo o dia final
+            date_query['$lte'] = f"{end_date}T23:59:59"
+        base_query['created_at'] = date_query
     
     total = await db.cases.count_documents(base_query)
     completed = await db.cases.count_documents({**base_query, "status": "Concluído"})
