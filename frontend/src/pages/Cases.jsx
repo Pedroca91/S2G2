@@ -425,6 +425,8 @@ export const Cases = () => {
         let status = 'Pendente';
         if (/aguardando\s*suporte/i.test(line)) {
           status = 'Aguardando resposta';
+        } else if (/aguardando\s*configura[çc][ãa]o/i.test(line)) {
+          status = 'Aguardando Configuração';
         } else if (/em\s*atendimento/i.test(line)) {
           status = 'Em Desenvolvimento';
         } else if (/conclu[íi]do/i.test(line)) {
