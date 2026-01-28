@@ -798,6 +798,7 @@ export const Cases = () => {
                     <SelectItem value="Em Desenvolvimento">🔵 Em Desenvolvimento</SelectItem>
                     <SelectItem value="Aguardando resposta">🟠 Aguardando resposta</SelectItem>
                     <SelectItem value="Configuração">⚙️ Configuração</SelectItem>
+                    <SelectItem value="Configuração">⚙️ Configuração</SelectItem>
                     <SelectItem value="Concluído">🟢 Concluído</SelectItem>
                   </SelectContent>
                 </Select>
@@ -871,7 +872,8 @@ export const Cases = () => {
                 <SelectItem value="Pendente">🟡 Pendente</SelectItem>
                 <SelectItem value="Em Desenvolvimento">🔵 Em Desenvolvimento</SelectItem>
                 <SelectItem value="Aguardando resposta">🟠 Aguardando resposta</SelectItem>
-                <SelectItem value="Concluído">🟢 Concluído</SelectItem>
+                <SelectItem value="Configuração">⚙️ Configuração</SelectItem>
+                    <SelectItem value="Concluído">🟢 Concluído</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -1043,7 +1045,8 @@ export const Cases = () => {
                         <SelectItem value="Pendente">🟡 Pendente</SelectItem>
                         <SelectItem value="Em Desenvolvimento">🔵 Em Desenvolvimento</SelectItem>
                         <SelectItem value="Aguardando resposta">🟠 Aguardando</SelectItem>
-                        <SelectItem value="Concluído">🟢 Concluído</SelectItem>
+                        <SelectItem value="Configuração">⚙️ Configuração</SelectItem>
+                    <SelectItem value="Concluído">🟢 Concluído</SelectItem>
                       </SelectContent>
                     </Select>
                     
