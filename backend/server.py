@@ -1374,15 +1374,16 @@ async def handle_jira_comment(payload: dict):
         if existing_comment:
             return {"status": "ignored", "reason": "Comment already exists"}
         
-        # Criar comentário no Safe2Go
+        # Criar comentário no Safe2Go com campos corretos do modelo Comment
         comment_data = {
             'id': str(uuid.uuid4()),
             'case_id': case['id'],
-            'jira_comment_id': comment_id,
-            'author': comment_author,
-            'text': comment_body,
+            'user_id': case.get('creator_id', 'jira-user'),  # ID do criador do caso ou placeholder
+            'user_name': comment_author,
+            'content': comment_body,
             'is_internal': False,  # Comentários do Jira são públicos
             'created_at': created,
+            'jira_comment_id': comment_id,
             'synced_from_jira': True
         }
         
