@@ -655,11 +655,25 @@ export const Dashboard = () => {
         </div>
       )}
 
-      {/* Charts */}
-      <div id="dashboard-charts" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Bar Chart */}
         <div className="card" data-testid="bar-chart-container">
-          <h3 className="text-lg font-semibold mb-4">Chamados por Dia (Últimos 7 Dias)</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Chamados por Dia (Últimos 7 Dias)</h3>
+            <select
+              value={chartStatusFilter}
+              onChange={(e) => setChartStatusFilter(e.target.value)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+            >
+              <option value="all">Todos os Status</option>
+              <option value="Concluído">Concluídos</option>
+              <option value="Pendente">Pendentes</option>
+              <option value="Em Desenvolvimento">Em Desenvolvimento</option>
+              <option value="Aguardando resposta">Aguardando Cliente</option>
+              <option value="Aguardando Configuração">Aguardando Configuração</option>
+            </select>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -681,7 +695,21 @@ export const Dashboard = () => {
 
         {/* Line Chart */}
         <div className="card" data-testid="line-chart-container">
-          <h3 className="text-lg font-semibold mb-4">Evolução Semanal</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Evolução Semanal</h3>
+            <select
+              value={chartStatusFilter}
+              onChange={(e) => setChartStatusFilter(e.target.value)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+            >
+              <option value="all">Todos os Status</option>
+              <option value="Concluído">Concluídos</option>
+              <option value="Pendente">Pendentes</option>
+              <option value="Em Desenvolvimento">Em Desenvolvimento</option>
+              <option value="Aguardando resposta">Aguardando Cliente</option>
+              <option value="Aguardando Configuração">Aguardando Configuração</option>
+            </select>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -714,6 +742,70 @@ export const Dashboard = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Monthly/Weekly Chart - Full Width */}
+      <div className="card mb-8" data-testid="monthly-chart-container">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">
+            {monthlyViewType === 'monthly' ? 'Visão Mensal' : 'Visão Semanal Detalhada'}
+          </h3>
+          <div className="flex items-center gap-3">
+            <select
+              value={chartStatusFilter}
+              onChange={(e) => setChartStatusFilter(e.target.value)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+            >
+              <option value="all">Todos os Status</option>
+              <option value="Concluído">Concluídos</option>
+              <option value="Pendente">Pendentes</option>
+              <option value="Em Desenvolvimento">Em Desenvolvimento</option>
+              <option value="Aguardando resposta">Aguardando Cliente</option>
+              <option value="Aguardando Configuração">Aguardando Configuração</option>
+            </select>
+            <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setMonthlyViewType('monthly')}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  monthlyViewType === 'monthly'
+                    ? 'bg-white text-purple-600 font-medium shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Mensal
+              </button>
+              <button
+                onClick={() => setMonthlyViewType('weekly')}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  monthlyViewType === 'weekly'
+                    ? 'bg-white text-purple-600 font-medium shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Semanal
+              </button>
+            </div>
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={monthlyData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="date" stroke="#64748b" />
+            <YAxis stroke="#64748b" />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+              }}
+            />
+            <Legend />
+            <Bar dataKey="completed" fill="#10b981" name="Concluídos" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="pending" fill="#f59e0b" name="Pendentes" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="in_development" fill="#3b82f6" name="Em Desenvolvimento" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="waiting" fill="#f97316" name="Aguardando" radius={[8, 8, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
