@@ -38,10 +38,14 @@ export const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
+    fetchMonthlyData();
     // Recarregar dados a cada 60 segundos
-    const interval = setInterval(fetchDashboardData, 60000);
+    const interval = setInterval(() => {
+      fetchDashboardData();
+      fetchMonthlyData();
+    }, 60000);
     return () => clearInterval(interval);
-  }, [selectedSeguradora, startDate, endDate]);
+  }, [selectedSeguradora, startDate, endDate, chartStatusFilter, monthlyViewType]);
 
   const fetchDashboardData = async () => {
     try {
