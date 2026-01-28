@@ -632,12 +632,16 @@ async def get_comments(
     # Buscar comentários sem ordenação inicial
     comments = await db.comments.find(query, {'_id': 0}).to_list(1000)
     
-    # Converter todas as datas para datetime e ordenar em Python
+    # Converter todas as datas para datetime UTC e ordenar em Python
     for comment in comments:
         if isinstance(comment.get('created_at'), str):
-            comment['created_at'] = datetime.fromisoformat(comment['created_at'])
+            dt = datetime.fromisoformat(comment['created_at'])
+            # Converter para UTC para comparação correta
+            if dt.tzinfo is not None:
+                dt = dt.astimezone(timezone.utc)
+            comment['created_at'] = dt
     
-    # Ordenar por data (mais recentes primeiro) - agora funciona corretamente com timezones
+    # Ordenar por data UTC (mais recentes primeiro)
     comments.sort(key=lambda x: x.get('created_at', datetime.min.replace(tzinfo=timezone.utc)), reverse=True)
     
     return [Comment(**comment) for comment in comments]
