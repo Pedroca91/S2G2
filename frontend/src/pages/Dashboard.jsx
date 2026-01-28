@@ -656,7 +656,7 @@ export const Dashboard = () => {
       )}
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div id="dashboard-charts" className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Bar Chart */}
         <div className="card" data-testid="bar-chart-container">
           <div className="flex items-center justify-between mb-4">
