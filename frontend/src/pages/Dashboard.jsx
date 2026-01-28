@@ -19,6 +19,7 @@ export const Dashboard = () => {
     pending_cases: 0,
     in_development_cases: 0,
     waiting_client_cases: 0,
+    waiting_config_cases: 0,
     completion_percentage: 0,
     cases_by_seguradora: {},
   });
