@@ -604,6 +604,17 @@ async def create_comment(
     
     logger.info(f"Comentário adicionado no caso {case_id} por {current_user['name']}")
     
+    # Sincronizar com Jira se o caso tiver jira_id e não for comentário interno
+    if not comment_data.is_internal and case.get('jira_id'):
+        # Enviar comentário ao Jira em background (não bloquear resposta)
+        asyncio.create_task(
+            send_comment_to_jira(
+                case['jira_id'],
+                comment_data.content,
+                current_user['name']
+            )
+        )
+    
     return comment
 
 @api_router.get("/cases/{case_id}/comments", response_model=List[Comment])
