@@ -26,11 +26,14 @@ export const Dashboard = () => {
     cases_by_seguradora: {},
   });
   const [chartData, setChartData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSeguradora, setSelectedSeguradora] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [dateFilterActive, setDateFilterActive] = useState(false);
+  const [chartStatusFilter, setChartStatusFilter] = useState('all');
+  const [monthlyViewType, setMonthlyViewType] = useState('monthly'); // 'monthly' or 'weekly'
 
 
   useEffect(() => {
