@@ -45,19 +45,27 @@ export const Dashboard = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      // Adicionar filtro de seguradora se selecionada
-      const seguradoraParam = selectedSeguradora ? `?seguradora=${selectedSeguradora}` : '';
+      // Construir parâmetros de query
+      const params = new URLSearchParams();
+      if (selectedSeguradora) params.append('seguradora', selectedSeguradora);
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
+      
+      const queryString = params.toString() ? `?${params.toString()}` : '';
       
       const [statsRes, chartsRes] = await Promise.all([
-        axios.get(`${API}/dashboard/stats${seguradoraParam}`, {
+        axios.get(`${API}/dashboard/stats${queryString}`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${API}/dashboard/charts${seguradoraParam}`, {
+        axios.get(`${API}/dashboard/charts${queryString}`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
       ]);
       setStats(statsRes.data);
       setChartData(chartsRes.data);
+      
+      // Ativar indicador de filtro se houver datas
+      setDateFilterActive(!!startDate || !!endDate);
     } catch (error) {
       console.error('Erro ao carregar dados do dashboard:', error);
       toast.error('Erro ao carregar dados do dashboard');
