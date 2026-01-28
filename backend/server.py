@@ -15,6 +15,7 @@ import jwt
 import json
 import asyncio
 import httpx  # Para sincronização com Jira
+import base64  # Para autenticação no Jira
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
