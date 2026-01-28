@@ -57,6 +57,7 @@ export const Dashboard = () => {
       if (selectedSeguradora) params.append('seguradora', selectedSeguradora);
       if (startDate) params.append('start_date', startDate);
       if (endDate) params.append('end_date', endDate);
+      if (chartStatusFilter !== 'all') params.append('status', chartStatusFilter);
       
       const queryString = params.toString() ? `?${params.toString()}` : '';
       
