@@ -81,6 +81,30 @@ export const Dashboard = () => {
     }
   };
 
+  const fetchMonthlyData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Construir parâmetros de query
+      const params = new URLSearchParams();
+      if (selectedSeguradora) params.append('seguradora', selectedSeguradora);
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
+      if (chartStatusFilter !== 'all') params.append('status', chartStatusFilter);
+      params.append('view_type', monthlyViewType);
+      
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+      
+      const response = await axios.get(`${API}/dashboard/charts/detailed${queryString}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setMonthlyData(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar dados mensais:', error);
+    }
+  };
+
   const handleCardClick = (status) => {
     navigate(`/cases?status=${status}`);
   };
