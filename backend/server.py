@@ -629,7 +629,8 @@ async def get_comments(
     if current_user['role'] == 'cliente':
         query['is_internal'] = False
     
-    comments = await db.comments.find(query, {'_id': 0}).sort('created_at', 1).to_list(1000)
+    # Ordenar por data decrescente (mais recentes primeiro)
+    comments = await db.comments.find(query, {'_id': 0}).sort('created_at', -1).to_list(1000)
     
     for comment in comments:
         if isinstance(comment.get('created_at'), str):
