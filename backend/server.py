@@ -1253,8 +1253,11 @@ async def get_detailed_chart_data(
 @api_router.post("/webhooks/jira")
 async def jira_webhook(payload: dict):
     try:
-        # Verificar se é um evento de criação de issue
         webhook_event = payload.get('webhookEvent', '')
+        
+        # Tratar eventos de comentários
+        if 'comment' in webhook_event:
+            return await handle_jira_comment(payload)
         
         if 'issue' not in payload:
             return {"status": "ignored", "reason": "No issue data"}
