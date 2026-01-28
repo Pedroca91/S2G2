@@ -7,6 +7,7 @@ import NewTicket from './pages/NewTicket';
 import SupportPanel from './pages/SupportPanel';
 import RecurrentAnalysis from './pages/RecurrentAnalysis';
 import UserManagement from './pages/UserManagement';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -90,6 +91,16 @@ function App() {
                 <PrivateRoute>
                   <Layout>
                     <UserManagement />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <Settings />
                   </Layout>
                 </PrivateRoute>
               }
