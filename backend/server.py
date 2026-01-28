@@ -1507,7 +1507,10 @@ async def jira_webhook(payload: dict):
         # Verificar se o caso já existe
         existing_case = await db.cases.find_one({'jira_id': issue_key})
         
+        print(f"🔍 Verificando caso {issue_key}...")
+        
         if existing_case:
+            print(f"♻️  Caso existente encontrado, atualizando...")
             # Atualizar caso existente
             update_data = {
                 'title': title,
@@ -1531,6 +1534,12 @@ async def jira_webhook(payload: dict):
             
             return {"status": "updated", "case_id": issue_key}
         else:
+            print(f"✨ Criando novo caso {issue_key}...")
+            print(f"   Título: {title}")
+            print(f"   Status: {status}")
+            print(f"   Seguradora: {seguradora}")
+            print(f"   Categoria: {category}")
+            
             # Criar novo caso
             new_case = Case(
                 jira_id=issue_key,
