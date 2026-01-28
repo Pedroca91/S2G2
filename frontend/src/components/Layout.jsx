@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileText, Headphones, TrendingUp, Users, Menu, X, LogOut, User, Plus } from 'lucide-react';
+import { LayoutDashboard, FileText, Headphones, TrendingUp, Users, Menu, X, LogOut, User, Plus, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 import NotificationBell from './NotificationBell';
@@ -17,6 +17,7 @@ export const Layout = ({ children }) => {
     { name: 'Análise Recorrente', path: '/analytics', icon: TrendingUp, adminOnly: false },
     { name: 'Painel Suporte', path: '/support', icon: Headphones, adminOnly: false },
     { name: 'Usuários', path: '/users', icon: Users, adminOnly: true },
+    { name: 'Configurações', path: '/settings', icon: Settings, adminOnly: false },
   ];
 
   const filteredNavigation = navigation.filter(item => 
