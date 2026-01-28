@@ -1378,7 +1378,7 @@ async def handle_jira_comment(payload: dict):
         comment_data = {
             'id': str(uuid.uuid4()),
             'case_id': case['id'],
-            'user_id': case.get('creator_id', 'jira-user'),  # ID do criador do caso ou placeholder
+            'user_id': case.get('creator_id') or 'jira-user',  # Garantir que nunca seja None
             'user_name': comment_author,
             'content': comment_body,
             'is_internal': False,  # Comentários do Jira são públicos
