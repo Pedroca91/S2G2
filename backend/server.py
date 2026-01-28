@@ -1433,6 +1433,8 @@ async def jira_webhook(payload: dict):
         issue_key = issue.get('key', '')
         fields = issue.get('fields', {})
         
+        print(f"🔑 Issue key recebida: '{issue_key}'")
+        
         # Extrair dados do Jira
         title = fields.get('summary', 'Sem título')
         description = fields.get('description', '')
