@@ -457,6 +457,20 @@ export const Dashboard = () => {
           <p className="text-3xl font-bold text-orange-600">{stats.waiting_client_cases || 0}</p>
         </div>
 
+        <div 
+          className="stat-card cursor-pointer" 
+          data-testid="waiting-config-cases-card"
+          onClick={() => handleCardClick('Aguardando Configuração')}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-cyan-100 rounded-xl">
+              <Settings className="w-6 h-6 text-cyan-600" />
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 mb-1">Aguardando Configuração</p>
+          <p className="text-3xl font-bold text-cyan-600">{stats.waiting_config_cases || 0}</p>
+        </div>
+
         <div className="stat-card" data-testid="completion-percentage-card">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-purple-100 rounded-xl">
