@@ -289,7 +289,7 @@ const CaseDetails = () => {
                           <SelectItem value="Pendente">🟡 Pendente</SelectItem>
                           <SelectItem value="Em Desenvolvimento">🔵 Em Desenvolvimento</SelectItem>
                           <SelectItem value="Aguardando resposta">🟠 Aguardando resposta</SelectItem>
-                          <SelectItem value="Configuração">⚙️ Configuração</SelectItem>
+                          <SelectItem value="Aguardando Configuração">⚙️ Aguardando Configuração</SelectItem>
                           <SelectItem value="Concluído">🟢 Concluído</SelectItem>
                         </SelectContent>
                       </Select>
