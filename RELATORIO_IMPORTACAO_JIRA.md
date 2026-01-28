@@ -110,7 +110,7 @@
 
 ## 🌐 ACESSO AO SISTEMA
 
-**URL:** https://readydata-access.preview.emergentagent.com
+**URL:** https://functional-check-1.preview.emergentagent.com
 
 **Login Admin:**
 - Email: pedrohcarvalho1997@gmail.com

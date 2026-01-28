@@ -123,7 +123,7 @@ Otimizar o relatório PDF do Dashboard para ter **APENAS 2 PÁGINAS** com todas 
 
 ## 🧪 Como Testar
 
-1. **Acesse o Dashboard**: https://readydata-access.preview.emergentagent.com/
+1. **Acesse o Dashboard**: https://functional-check-1.preview.emergentagent.com/
 2. **Faça login** como administrador
 3. **Clique no botão "Gerar Relatório PDF"**
 4. **Verifique**:

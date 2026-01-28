@@ -1,7 +1,7 @@
 # 🚀 ACESSO RÁPIDO - Sistema Safe2Go Helpdesk
 
 ## 🌐 URL do Sistema
-**https://readydata-access.preview.emergentagent.com**
+**https://functional-check-1.preview.emergentagent.com**
 
 ---
 
@@ -77,7 +77,7 @@
 
 ## 🎯 PRIMEIRO ACESSO - PASSO A PASSO
 
-1. Acesse: https://readydata-access.preview.emergentagent.com
+1. Acesse: https://functional-check-1.preview.emergentagent.com
 2. Digite o email: `pedrohcarvalho1997@gmail.com`
 3. Digite a senha: `S@muka91`
 4. Clique em "Entrar"

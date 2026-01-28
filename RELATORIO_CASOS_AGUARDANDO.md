@@ -62,7 +62,7 @@
 
 ## 🌐 VISUALIZAR NO SISTEMA
 
-**URL:** https://readydata-access.preview.emergentagent.com  
+**URL:** https://functional-check-1.preview.emergentagent.com  
 **Login:** pedrohcarvalho1997@gmail.com / S@muka91
 
 ### Como visualizar os casos:

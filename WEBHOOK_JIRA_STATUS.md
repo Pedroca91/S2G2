@@ -11,14 +11,14 @@ O webhook do Jira está **HABILITADO** e **FUNCIONANDO** corretamente, sincroniz
 ### Webhook no Jira
 - **Nome:** Safe2Go - Sincronização de Casos
 - **Status:** ✅ HABILITADO
-- **URL Configurada:** `https://f694840c-28b9-4300-9bb5-af7b0712096e.preview.emergentagent.com/api/webhooks/jira`
-- **URL Correta:** `https://readydata-access.preview.emergentagent.com/api/webhooks/jira`
+- **URL Configurada:** `https://functional-check-1.preview.emergentagent.com/api/webhooks/jira`
+- **URL Correta:** `https://functional-check-1.preview.emergentagent.com/api/webhooks/jira`
 
 ⚠️ **ATENÇÃO:** A URL configurada no Jira está diferente da URL atual do sistema!
 
 ### URL que DEVE estar no Jira:
 ```
-https://readydata-access.preview.emergentagent.com/api/webhooks/jira
+https://functional-check-1.preview.emergentagent.com/api/webhooks/jira
 ```
 
 ---
@@ -115,7 +115,7 @@ Jira → Webhook → Safe2Go Helpdesk
 
 ### Resultado do Teste:
 ```
-POST https://readydata-access.preview.emergentagent.com/api/webhooks/jira
+POST https://functional-check-1.preview.emergentagent.com/api/webhooks/jira
 
 Payload de teste:
 {
@@ -154,8 +154,8 @@ Caso criado no banco: ✅ SIM
    - Clique em "Editar"
 
 3. **Atualize a URL:**
-   - **URL Antiga:** `https://f694840c-28b9-4300-9bb5-af7b0712096e.preview.emergentagent.com/api/webhooks/jira`
-   - **URL Nova:** `https://readydata-access.preview.emergentagent.com/api/webhooks/jira`
+   - **URL Antiga:** `https://functional-check-1.preview.emergentagent.com/api/webhooks/jira`
+   - **URL Nova:** `https://functional-check-1.preview.emergentagent.com/api/webhooks/jira`
 
 4. **Salve as Alterações:**
    - Clique em "Atualizar" ou "Salvar"

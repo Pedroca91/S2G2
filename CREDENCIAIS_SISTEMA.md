@@ -1,7 +1,7 @@
 # 🔐 CREDENCIAIS DO SISTEMA SAFE2GO HELPDESK
 
 ## 🌐 Acesso ao Sistema
-**URL:** https://readydata-access.preview.emergentagent.com
+**URL:** https://functional-check-1.preview.emergentagent.com
 
 ---
 
@@ -117,7 +117,7 @@
 ## 🔌 INTEGRAÇÕES
 
 ### Webhook Jira
-**Endpoint:** `https://readydata-access.preview.emergentagent.com/api/webhooks/jira`  
+**Endpoint:** `https://functional-check-1.preview.emergentagent.com/api/webhooks/jira`  
 **Método:** POST  
 **Autenticação:** Não requerida  
 
