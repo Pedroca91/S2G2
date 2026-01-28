@@ -1002,6 +1002,8 @@ export const Cases = () => {
                         ? 'badge-waiting'
                         : caseItem.status === 'Em Desenvolvimento'
                         ? 'bg-blue-100 text-blue-700'
+                        : caseItem.status === 'Aguardando Configuração'
+                        ? 'bg-cyan-100 text-cyan-700'
                         : 'badge-pending'
                     }`}
                     data-testid={`case-status-${caseItem.id}`}
