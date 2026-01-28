@@ -1020,9 +1020,22 @@ async def get_dashboard_stats(
 @api_router.get("/dashboard/charts", response_model=List[ChartData])
 async def get_chart_data(
     seguradora: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
-    # Get last 7 days data
+    # Determinar período
+    if start_date and end_date:
+        # Usar período fornecido
+        start = datetime.fromisoformat(start_date).replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=timezone.utc)
+        end = datetime.fromisoformat(end_date).replace(hour=23, minute=59, second=59, microsecond=999999, tzinfo=timezone.utc)
+        num_days = (end - start).days + 1
+    else:
+        # Usar últimos 7 dias como padrão
+        num_days = 7
+        end = datetime.now(timezone.utc)
+        start = end - timedelta(days=6)
+    
     chart_data = []
     
     # Construir query base - se cliente, filtrar apenas seus casos
@@ -1034,18 +1047,24 @@ async def get_chart_data(
     if seguradora:
         base_query['seguradora'] = seguradora
     
-    for i in range(6, -1, -1):
-        date = datetime.now(timezone.utc) - timedelta(days=i)
-        start_date = date.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date = start_date + timedelta(days=1)
+    # Gerar dados para cada dia no período
+    for i in range(num_days):
+        if start_date and end_date:
+            # Calcular data a partir do início
+            date = start + timedelta(days=i)
+        else:
+            # Calcular data regressiva (últimos 7 dias)
+            date = datetime.now(timezone.utc) - timedelta(days=num_days-1-i)
+        
+        day_start = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day_start + timedelta(days=1)
         
         # Count completed and pending cases for this day
-        # Usar created_at ao invés de opened_date
         completed = await db.cases.count_documents({
             **base_query,
             "created_at": {
-                "$gte": start_date.isoformat(),
-                "$lt": end_date.isoformat()
+                "$gte": day_start.isoformat(),
+                "$lt": day_end.isoformat()
             },
             "status": "Concluído"
         })
@@ -1053,14 +1072,14 @@ async def get_chart_data(
         pending = await db.cases.count_documents({
             **base_query,
             "created_at": {
-                "$gte": start_date.isoformat(),
-                "$lt": end_date.isoformat()
+                "$gte": day_start.isoformat(),
+                "$lt": day_end.isoformat()
             },
             "status": "Pendente"
         })
         
         chart_data.append(ChartData(
-            date=start_date.strftime("%d/%m"),
+            date=day_start.strftime("%d/%m"),
             completed=completed,
             pending=pending
         ))
