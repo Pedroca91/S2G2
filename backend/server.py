@@ -1086,6 +1086,121 @@ async def get_chart_data(
     
     return chart_data
 
+@api_router.get("/dashboard/charts/detailed")
+async def get_detailed_chart_data(
+    seguradora: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    status: Optional[str] = None,
+    view_type: str = 'monthly',  # 'monthly' or 'weekly'
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Endpoint para gráfico mensal/semanal detalhado com todos os status
+    """
+    # Determinar período
+    if view_type == 'monthly':
+        # Últimos 6 meses
+        from datetime import datetime, timedelta
+        end = datetime.now(timezone.utc)
+        start = end - timedelta(days=180)  # ~6 meses
+        num_periods = 6
+        period_type = 'month'
+    else:
+        # Últimas 4 semanas
+        if start_date and end_date:
+            start = datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc)
+            end = datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc)
+            num_days = (end - start).days + 1
+        else:
+            end = datetime.now(timezone.utc)
+            start = end - timedelta(days=27)  # 4 semanas
+            num_days = 28
+        period_type = 'week'
+    
+    # Construir query base
+    base_query = {}
+    if current_user['role'] == 'cliente':
+        base_query['creator_id'] = current_user['id']
+    
+    if seguradora:
+        base_query['seguradora'] = seguradora
+    
+    # Adicionar filtro de status se fornecido
+    status_filter = {}
+    if status and status != 'all':
+        status_filter = {'status': status}
+    
+    chart_data = []
+    
+    if period_type == 'month':
+        # Agrupar por mês
+        for i in range(num_periods):
+            # Calcular início e fim do mês
+            month_date = end - timedelta(days=30 * i)
+            month_start = month_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            
+            # Calcular último dia do mês
+            if month_start.month == 12:
+                month_end = month_start.replace(year=month_start.year + 1, month=1, day=1)
+            else:
+                month_end = month_start.replace(month=month_start.month + 1, day=1)
+            
+            # Buscar casos do mês
+            month_query = {
+                **base_query,
+                **status_filter,
+                'created_at': {
+                    '$gte': month_start.isoformat(),
+                    '$lt': month_end.isoformat()
+                }
+            }
+            
+            # Contar por status
+            completed = await db.cases.count_documents({**month_query, 'status': 'Concluído'}) if not status or status == 'all' else await db.cases.count_documents(month_query) if status == 'Concluído' else 0
+            pending = await db.cases.count_documents({**month_query, 'status': 'Pendente'}) if not status or status == 'all' else await db.cases.count_documents(month_query) if status == 'Pendente' else 0
+            in_development = await db.cases.count_documents({**month_query, 'status': 'Em Desenvolvimento'}) if not status or status == 'all' else await db.cases.count_documents(month_query) if status == 'Em Desenvolvimento' else 0
+            waiting = await db.cases.count_documents({**month_query, 'status': {'$in': ['Aguardando resposta', 'Aguardando Configuração']}}) if not status or status == 'all' else await db.cases.count_documents(month_query) if status in ['Aguardando resposta', 'Aguardando Configuração'] else 0
+            
+            chart_data.insert(0, {
+                'date': month_start.strftime('%b/%y'),
+                'completed': completed,
+                'pending': pending,
+                'in_development': in_development,
+                'waiting': waiting
+            })
+    else:
+        # Agrupar por semana (7 dias)
+        num_weeks = num_days // 7
+        for i in range(num_weeks):
+            week_start = start + timedelta(weeks=i)
+            week_end = week_start + timedelta(days=7)
+            
+            week_query = {
+                **base_query,
+                **status_filter,
+                'created_at': {
+                    '$gte': week_start.isoformat(),
+                    '$lt': week_end.isoformat()
+                }
+            }
+            
+            # Contar por status
+            completed = await db.cases.count_documents({**week_query, 'status': 'Concluído'}) if not status or status == 'all' else await db.cases.count_documents(week_query) if status == 'Concluído' else 0
+            pending = await db.cases.count_documents({**week_query, 'status': 'Pendente'}) if not status or status == 'all' else await db.cases.count_documents(week_query) if status == 'Pendente' else 0
+            in_development = await db.cases.count_documents({**week_query, 'status': 'Em Desenvolvimento'}) if not status or status == 'all' else await db.cases.count_documents(week_query) if status == 'Em Desenvolvimento' else 0
+            waiting = await db.cases.count_documents({**week_query, 'status': {'$in': ['Aguardando resposta', 'Aguardando Configuração']}}) if not status or status == 'all' else await db.cases.count_documents(week_query) if status in ['Aguardando resposta', 'Aguardando Configuração'] else 0
+            
+            chart_data.append({
+                'date': f"{week_start.strftime('%d/%m')} - {week_end.strftime('%d/%m')}",
+                'completed': completed,
+                'pending': pending,
+                'in_development': in_development,
+                'waiting': waiting
+            })
+    
+    return chart_data
+
 # Webhook do Jira
 @api_router.post("/webhooks/jira")
 async def jira_webhook(payload: dict):
