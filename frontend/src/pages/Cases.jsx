@@ -119,7 +119,12 @@ export const Cases = () => {
 
     // Seguradora filter
     if (seguradoraFilter !== 'all') {
-      filtered = filtered.filter((c) => c.seguradora === seguradoraFilter);
+      if (seguradoraFilter === 'Não especificada') {
+        // Filtrar casos sem seguradora (null, undefined, ou string vazia)
+        filtered = filtered.filter((c) => !c.seguradora || c.seguradora === 'Não especificada');
+      } else {
+        filtered = filtered.filter((c) => c.seguradora === seguradoraFilter);
+      }
     }
 
     setFilteredCases(filtered);
