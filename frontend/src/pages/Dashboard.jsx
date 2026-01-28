@@ -375,11 +375,17 @@ export const Dashboard = () => {
     <div className="page-container">
       <div className="page-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex-1">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <h1 className="page-title" data-testid="dashboard-title">Dashboard</h1>
             {selectedSeguradora && (
               <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
                 {selectedSeguradora}
+              </span>
+            )}
+            {dateFilterActive && startDate && endDate && (
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-1">
+                <Calendar className="w-3 h-3" />
+                {new Date(startDate).toLocaleDateString('pt-BR')} - {new Date(endDate).toLocaleDateString('pt-BR')}
               </span>
             )}
           </div>
@@ -387,6 +393,7 @@ export const Dashboard = () => {
             {selectedSeguradora 
               ? `Visão geral - ${selectedSeguradora}` 
               : 'Visão geral do sistema de suporte'}
+            {dateFilterActive && ' (Período filtrado)'}
           </p>
         </div>
         
