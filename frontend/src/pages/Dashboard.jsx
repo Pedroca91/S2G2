@@ -390,8 +390,8 @@ export const Dashboard = () => {
           </p>
         </div>
         
-        {/* Filtro de Seguradora */}
-        <div className="flex items-center gap-3">
+        {/* Filtro de Seguradora e Período */}
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex flex-col">
             <label className="text-xs text-gray-500 mb-1 font-medium">Seguradora:</label>
             <select
@@ -404,6 +404,41 @@ export const Dashboard = () => {
               <option value="AVLA">🏢 AVLA</option>
               <option value="DAYCOVAL">🏢 DAYCOVAL</option>
             </select>
+          </div>
+          
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-500 mb-1 font-medium flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              Período:
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-[150px]"
+                placeholder="Data inicial"
+              />
+              <span className="text-gray-400">até</span>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-[150px]"
+                placeholder="Data final"
+              />
+              {dateFilterActive && (
+                <Button
+                  onClick={clearDateFilter}
+                  variant="ghost"
+                  size="sm"
+                  className="h-9 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  title="Limpar filtro de período"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </div>
           
           <Button
