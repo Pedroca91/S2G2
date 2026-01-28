@@ -1416,11 +1416,17 @@ async def jira_webhook(payload: dict):
     try:
         webhook_event = payload.get('webhookEvent', '')
         
+        # Log para debug
+        print(f"📥 Webhook recebido: {webhook_event}")
+        print(f"📋 Payload keys: {list(payload.keys())}")
+        
         # Tratar eventos de comentários
         if 'comment' in webhook_event:
+            print("💬 Evento de comentário detectado")
             return await handle_jira_comment(payload)
         
         if 'issue' not in payload:
+            print("⚠️  Payload sem 'issue', ignorando")
             return {"status": "ignored", "reason": "No issue data"}
         
         issue = payload['issue']
