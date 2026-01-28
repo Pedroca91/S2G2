@@ -1044,7 +1044,7 @@ export const Cases = () => {
                         <SelectItem value="Pendente">🟡 Pendente</SelectItem>
                         <SelectItem value="Em Desenvolvimento">🔵 Em Desenvolvimento</SelectItem>
                         <SelectItem value="Aguardando resposta">🟠 Aguardando</SelectItem>
-                        <SelectItem value="Configuração">⚙️ Configuração</SelectItem>
+                        <SelectItem value="Aguardando Configuração">⚙️ Aguardando Configuração</SelectItem>
                     <SelectItem value="Concluído">🟢 Concluído</SelectItem>
                       </SelectContent>
                     </Select>
