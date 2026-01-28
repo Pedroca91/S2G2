@@ -1249,6 +1249,89 @@ async def get_detailed_chart_data(
     
     return chart_data
 
+# Função auxiliar para tratar comentários do Jira
+async def handle_jira_comment(payload: dict):
+    """
+    Trata eventos de comentários vindos do Jira
+    """
+    try:
+        webhook_event = payload.get('webhookEvent', '')
+        comment = payload.get('comment', {})
+        issue = payload.get('issue', {})
+        
+        if not comment or not issue:
+            return {"status": "ignored", "reason": "Missing comment or issue data"}
+        
+        # Extrair dados
+        issue_key = issue.get('key', '')
+        comment_body = comment.get('body', '')
+        comment_author = comment.get('author', {}).get('displayName', 'Jira User')
+        comment_id = comment.get('id', '')
+        created = comment.get('created', datetime.now(timezone.utc).isoformat())
+        
+        # Se body é um objeto (formato Jira moderno), extrair texto
+        if isinstance(comment_body, dict):
+            # Formato Atlassian Document Format (ADF)
+            content_list = comment_body.get('content', [])
+            text_parts = []
+            for content_block in content_list:
+                if content_block.get('type') == 'paragraph':
+                    for text_node in content_block.get('content', []):
+                        if text_node.get('type') == 'text':
+                            text_parts.append(text_node.get('text', ''))
+            comment_body = ' '.join(text_parts) if text_parts else 'Comentário sem texto'
+        
+        # Buscar o caso correspondente no Safe2Go
+        case = await db.cases.find_one({'jira_id': issue_key})
+        
+        if not case:
+            return {"status": "ignored", "reason": f"Case {issue_key} not found in Safe2Go"}
+        
+        # Verificar se o comentário já existe (evitar duplicatas)
+        existing_comment = await db.comments.find_one({
+            'case_id': case['id'],
+            'jira_comment_id': comment_id
+        })
+        
+        if existing_comment:
+            return {"status": "ignored", "reason": "Comment already exists"}
+        
+        # Criar comentário no Safe2Go
+        comment_data = {
+            'id': str(uuid.uuid4()),
+            'case_id': case['id'],
+            'jira_comment_id': comment_id,
+            'author': comment_author,
+            'text': comment_body,
+            'is_internal': False,  # Comentários do Jira são públicos
+            'created_at': created,
+            'synced_from_jira': True
+        }
+        
+        await db.comments.insert_one(comment_data)
+        
+        # Criar notificação
+        notification_data = {
+            'id': str(uuid.uuid4()),
+            'user_id': case.get('creator_id'),
+            'case_id': case['id'],
+            'message': f"Novo comentário no caso {issue_key} por {comment_author}",
+            'type': 'comment',
+            'read': False,
+            'created_at': datetime.now(timezone.utc).isoformat()
+        }
+        await db.notifications.insert_one(notification_data)
+        
+        return {
+            "status": "comment_created",
+            "case_id": issue_key,
+            "comment_id": comment_id
+        }
+        
+    except Exception as e:
+        print(f"Error handling Jira comment: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
 # Webhook do Jira
 @api_router.post("/webhooks/jira")
 async def jira_webhook(payload: dict):
