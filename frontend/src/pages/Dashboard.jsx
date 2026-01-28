@@ -78,6 +78,26 @@ export const Dashboard = () => {
     navigate(`/cases?status=${status}`);
   };
 
+  const clearDateFilter = () => {
+    setStartDate('');
+    setEndDate('');
+    setDateFilterActive(false);
+    toast.success('Filtro de período removido');
+  };
+
+  const applyDateFilter = () => {
+    if (startDate && endDate) {
+      if (new Date(startDate) > new Date(endDate)) {
+        toast.error('Data inicial não pode ser maior que data final');
+        return;
+      }
+      fetchDashboardData();
+      toast.success('Filtro de período aplicado');
+    } else if (startDate || endDate) {
+      toast.warning('Selecione ambas as datas (início e fim)');
+    }
+  };
+
   const generatePDF = async () => {
     try {
       toast.info('Gerando PDF...');
