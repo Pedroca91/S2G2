@@ -1022,6 +1022,7 @@ async def get_chart_data(
     seguradora: Optional[str] = None,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
+    status: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
     # Determinar período
@@ -1047,6 +1048,11 @@ async def get_chart_data(
     if seguradora:
         base_query['seguradora'] = seguradora
     
+    # Adicionar filtro de status se fornecido (para gráficos específicos)
+    status_filter = {}
+    if status and status != 'all':
+        status_filter = {'status': status}
+    
     # Gerar dados para cada dia no período
     for i in range(num_days):
         if start_date and end_date:
@@ -1060,23 +1066,30 @@ async def get_chart_data(
         day_end = day_start + timedelta(days=1)
         
         # Count completed and pending cases for this day
-        completed = await db.cases.count_documents({
+        day_query = {
             **base_query,
+            **status_filter,
             "created_at": {
                 "$gte": day_start.isoformat(),
                 "$lt": day_end.isoformat()
-            },
-            "status": "Concluído"
-        })
+            }
+        }
         
-        pending = await db.cases.count_documents({
-            **base_query,
-            "created_at": {
-                "$gte": day_start.isoformat(),
-                "$lt": day_end.isoformat()
-            },
-            "status": "Pendente"
-        })
+        # Se filtro de status está ativo, contar apenas esse status
+        if status and status != 'all':
+            completed = await db.cases.count_documents(day_query) if status == 'Concluído' else 0
+            pending = await db.cases.count_documents(day_query) if status != 'Concluído' else 0
+        else:
+            # Contar normalmente completed e pending
+            completed = await db.cases.count_documents({
+                **day_query,
+                "status": "Concluído"
+            })
+            
+            pending = await db.cases.count_documents({
+                **day_query,
+                "status": "Pendente"
+            })
         
         chart_data.append(ChartData(
             date=day_start.strftime("%d/%m"),
