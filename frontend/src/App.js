@@ -15,6 +15,7 @@ import Layout from './components/Layout';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from './components/ui/sonner';
+import { Toaster as HotToaster } from 'react-hot-toast';
 import './App.css';
 
 function App() {
@@ -108,6 +109,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <Toaster position="top-right" richColors />
+          <HotToaster position="top-right" />
         </AuthProvider>
       </BrowserRouter>
     </div>
