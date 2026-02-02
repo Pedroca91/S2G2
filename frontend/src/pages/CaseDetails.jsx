@@ -705,98 +705,114 @@ const CaseDetails = () => {
             </div>
           )}
 
-          {/* Seção de Métricas de Tempo */}
+          {/* Seção de Métricas de Tempo - Recolhível */}
           {timeMetrics && (
             <>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4" data-testid="time-metrics-section">
-                <div className="flex items-center gap-2 mb-3">
-                  <Clock className="h-5 w-5 text-blue-600" />
-                  <h3 className="font-semibold text-blue-800">Tempo do Caso</h3>
+              <div 
+                className="bg-blue-50 border border-blue-200 rounded-lg mb-4 overflow-hidden" 
+                data-testid="time-metrics-section"
+              >
+                {/* Header clicável */}
+                <div 
+                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-blue-100 transition-colors"
+                  onClick={() => setTimeSectionOpen(!timeSectionOpen)}
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-blue-600" />
+                    <h3 className="font-semibold text-blue-800">Tempo do Caso</h3>
+                    <span className="text-sm font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">
+                      {timeMetrics.total_time_formatted}
+                    </span>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-blue-600">
+                    {timeSectionOpen ? (
+                      <ChevronUp className="h-5 w-5" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5" />
+                    )}
+                  </Button>
                 </div>
                 
-                {/* Tempo Total */}
-                <div className="bg-white rounded-lg p-3 mb-3 border border-blue-100">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Tempo Total:</span>
-                    <span className="text-lg font-bold text-blue-700">{timeMetrics.total_time_formatted}</span>
-                  </div>
-                </div>
-                
-                {/* Tempo por Status */}
-                {timeMetrics.time_by_status?.length > 0 && (
-                  <div className="mb-3">
-                    <h4 className="text-sm font-medium text-blue-700 mb-2">Tempo por Status:</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {timeMetrics.time_by_status.map((item, idx) => (
-                        <div key={idx} className="bg-white rounded p-2 border border-blue-100 text-sm">
-                          <span className="text-gray-600">{item.status}:</span>
-                          <span className="font-medium ml-1">{item.duration_formatted}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Timeline */}
-                {timeMetrics.timeline?.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-blue-700 mb-2 flex items-center gap-1">
-                      <Timer className="w-4 h-4" />
-                      Histórico de Status:
-                    </h4>
-                    <div className="space-y-2">
-                      {timeMetrics.timeline.map((entry, idx) => {
-                        const getStatusColor = (status) => {
-                          const colors = {
-                            'Pendente': 'bg-yellow-100 border-yellow-300 text-yellow-800',
-                            'Em Desenvolvimento': 'bg-blue-100 border-blue-300 text-blue-800',
-                            'Aguardando resposta': 'bg-orange-100 border-orange-300 text-orange-800',
-                            'Aguardando Configuração': 'bg-cyan-100 border-cyan-300 text-cyan-800',
-                            'Concluído': 'bg-green-100 border-green-300 text-green-800'
-                          };
-                          return colors[status] || 'bg-gray-100 border-gray-300 text-gray-800';
-                        };
-                        
-                        const formatDateTime = (dateStr) => {
-                          if (!dateStr) return '';
-                          try {
-                            return new Date(dateStr).toLocaleString('pt-BR', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            });
-                          } catch {
-                            return dateStr;
-                          }
-                        };
-                        
-                        return (
-                          <div 
-                            key={idx} 
-                            className={`relative pl-4 border-l-2 ${entry.is_current ? 'border-blue-500' : 'border-gray-300'}`}
-                          >
-                            <div className={`absolute -left-2 top-1 w-3 h-3 rounded-full ${entry.is_current ? 'bg-blue-500' : 'bg-gray-400'}`}></div>
-                            <div className={`rounded p-2 border ${getStatusColor(entry.status)}`}>
-                              <div className="flex items-center justify-between flex-wrap gap-1">
-                                <span className="font-medium text-sm">{entry.status}</span>
-                                <span className="text-xs font-semibold">{entry.duration_formatted}</span>
-                              </div>
-                              <div className="text-xs mt-1 opacity-75">
-                                {formatDateTime(entry.started_at)}
-                                {entry.ended_at && ` → ${formatDateTime(entry.ended_at)}`}
-                                {entry.is_current && ' (atual)'}
-                              </div>
-                              {entry.changed_by && (
-                                <div className="text-xs mt-1 opacity-60">
-                                  Alterado por: {entry.changed_by}
-                                </div>
-                              )}
+                {/* Conteúdo expansível */}
+                {timeSectionOpen && (
+                  <div className="px-4 pb-4 border-t border-blue-200">
+                    {/* Tempo por Status */}
+                    {timeMetrics.time_by_status?.length > 0 && (
+                      <div className="mt-3 mb-3">
+                        <h4 className="text-sm font-medium text-blue-700 mb-2">Tempo por Status:</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          {timeMetrics.time_by_status.map((item, idx) => (
+                            <div key={idx} className="bg-white rounded p-2 border border-blue-100 text-sm">
+                              <span className="text-gray-600">{item.status}:</span>
+                              <span className="font-medium ml-1">{item.duration_formatted}</span>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Timeline */}
+                    {timeMetrics.timeline?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-blue-700 mb-2 flex items-center gap-1">
+                          <Timer className="w-4 h-4" />
+                          Histórico de Status:
+                        </h4>
+                        <div className="space-y-2">
+                          {timeMetrics.timeline.map((entry, idx) => {
+                            const getStatusColor = (status) => {
+                              const colors = {
+                                'Pendente': 'bg-yellow-100 border-yellow-300 text-yellow-800',
+                                'Em Desenvolvimento': 'bg-blue-100 border-blue-300 text-blue-800',
+                                'Aguardando resposta': 'bg-orange-100 border-orange-300 text-orange-800',
+                                'Aguardando Configuração': 'bg-cyan-100 border-cyan-300 text-cyan-800',
+                                'Concluído': 'bg-green-100 border-green-300 text-green-800'
+                              };
+                              return colors[status] || 'bg-gray-100 border-gray-300 text-gray-800';
+                            };
+                            
+                            const formatDateTime = (dateStr) => {
+                              if (!dateStr) return '';
+                              try {
+                                return new Date(dateStr).toLocaleString('pt-BR', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                });
+                              } catch {
+                                return dateStr;
+                              }
+                            };
+                            
+                            return (
+                              <div 
+                                key={idx} 
+                                className={`relative pl-4 border-l-2 ${entry.is_current ? 'border-blue-500' : 'border-gray-300'}`}
+                              >
+                                <div className={`absolute -left-2 top-1 w-3 h-3 rounded-full ${entry.is_current ? 'bg-blue-500' : 'bg-gray-400'}`}></div>
+                                <div className={`rounded p-2 border ${getStatusColor(entry.status)}`}>
+                                  <div className="flex items-center justify-between flex-wrap gap-1">
+                                    <span className="font-medium text-sm">{entry.status}</span>
+                                    <span className="text-xs font-semibold">{entry.duration_formatted}</span>
+                                  </div>
+                                  <div className="text-xs mt-1 opacity-75">
+                                    {formatDateTime(entry.started_at)}
+                                    {entry.ended_at && ` → ${formatDateTime(entry.ended_at)}`}
+                                    {entry.is_current && ' (atual)'}
+                                  </div>
+                                  {entry.changed_by && (
+                                    <div className="text-xs mt-1 opacity-60">
+                                      Alterado por: {entry.changed_by}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
