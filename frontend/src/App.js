@@ -118,6 +118,16 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/time-report"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <TimeReport />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <Toaster position="top-right" richColors />
