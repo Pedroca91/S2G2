@@ -1346,10 +1346,13 @@ async def get_chart_data(
         
         # Se filtro de status está ativo, contar apenas esse status
         if status and status != 'all':
-            completed = await db.cases.count_documents(day_query) if status == 'Concluído' else 0
-            pending = await db.cases.count_documents(day_query) if status != 'Concluído' else 0
+            completed = await db.cases.count_documents({**day_query, "status": "Concluído"}) if status == 'Concluído' else 0
+            pending = await db.cases.count_documents({**day_query, "status": "Pendente"}) if status == 'Pendente' else 0
+            in_development = await db.cases.count_documents({**day_query, "status": "Em Desenvolvimento"}) if status == 'Em Desenvolvimento' else 0
+            waiting = await db.cases.count_documents({**day_query, "status": "Aguardando resposta"}) if status == 'Aguardando resposta' else 0
+            waiting_config = await db.cases.count_documents({**day_query, "status": "Aguardando Configuração"}) if status == 'Aguardando Configuração' else 0
         else:
-            # Contar normalmente completed e pending
+            # Contar todos os status
             completed = await db.cases.count_documents({
                 **day_query,
                 "status": "Concluído"
@@ -1359,11 +1362,29 @@ async def get_chart_data(
                 **day_query,
                 "status": "Pendente"
             })
+            
+            in_development = await db.cases.count_documents({
+                **day_query,
+                "status": "Em Desenvolvimento"
+            })
+            
+            waiting = await db.cases.count_documents({
+                **day_query,
+                "status": "Aguardando resposta"
+            })
+            
+            waiting_config = await db.cases.count_documents({
+                **day_query,
+                "status": "Aguardando Configuração"
+            })
         
         chart_data.append(ChartData(
             date=day_start.strftime("%d/%m"),
             completed=completed,
-            pending=pending
+            pending=pending,
+            in_development=in_development,
+            waiting=waiting,
+            waiting_config=waiting_config
         ))
     
     return chart_data
