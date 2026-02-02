@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
-import { Users, CheckCircle, XCircle, Edit, Trash2, Clock, Building, Phone, Mail } from 'lucide-react';
+import { Users, CheckCircle, XCircle, Edit, Trash2, Clock, Building, Phone, Mail, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 
