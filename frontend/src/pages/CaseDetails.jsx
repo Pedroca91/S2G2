@@ -573,21 +573,41 @@ const CaseDetails = () => {
             </>
           )}
 
-          {/* Seção de Casos Similares Resolvidos */}
+          {/* Seção de Casos Similares Resolvidos - Recolhível */}
           {caseData.status !== 'Concluído' && similarCases.length > 0 && (
             <>
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4" data-testid="similar-cases-section">
-                <div className="flex items-center gap-2 mb-3">
-                  <Lightbulb className="h-5 w-5 text-amber-600" />
-                  <h3 className="font-semibold text-amber-800">
-                    Casos Similares Resolvidos ({similarCases.length})
-                  </h3>
+              <div 
+                className="bg-amber-50 border border-amber-200 rounded-lg mb-4 overflow-hidden" 
+                data-testid="similar-cases-section"
+              >
+                {/* Header clicável */}
+                <div 
+                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-amber-100 transition-colors"
+                  onClick={() => setSimilarSectionOpen(!similarSectionOpen)}
+                >
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-amber-600" />
+                    <h3 className="font-semibold text-amber-800">
+                      Casos Similares Resolvidos ({similarCases.length})
+                    </h3>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-amber-600">
+                    {similarSectionOpen ? (
+                      <ChevronUp className="h-5 w-5" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5" />
+                    )}
+                  </Button>
                 </div>
-                <p className="text-sm text-amber-700 mb-4">
-                  Encontramos casos similares que já foram resolvidos. Verifique se alguma solução pode ajudar:
-                </p>
                 
-                <div className="space-y-3">
+                {/* Conteúdo expansível */}
+                {similarSectionOpen && (
+                  <div className="px-4 pb-4 border-t border-amber-200">
+                    <p className="text-sm text-amber-700 my-3">
+                      Encontramos casos similares que já foram resolvidos. Verifique se alguma solução pode ajudar:
+                    </p>
+                    
+                    <div className="space-y-3">
                   {similarCases.map((similar) => (
                     <div 
                       key={similar.id}
