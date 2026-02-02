@@ -78,6 +78,9 @@ const CaseDetails = () => {
       if (caseRes.data.status !== 'Concluído') {
         loadSimilarCases(headers);
       }
+      
+      // Carregar métricas de tempo
+      loadTimeMetrics(headers);
     } catch (error) {
       console.error('Erro ao carregar:', error);
       toast.error('Erro ao carregar caso');
@@ -97,6 +100,21 @@ const CaseDetails = () => {
       console.error('Erro ao carregar casos similares:', error);
     } finally {
       setLoadingSimilar(false);
+    }
+  };
+
+  const loadTimeMetrics = async (headers) => {
+    try {
+      setLoadingMetrics(true);
+      const token = localStorage.getItem('token');
+      const authHeaders = headers || { Authorization: `Bearer ${token}` };
+      
+      const response = await axios.get(`${API}/cases/${id}/time-metrics`, { headers: authHeaders });
+      setTimeMetrics(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar métricas de tempo:', error);
+    } finally {
+      setLoadingMetrics(false);
     }
   };
 
