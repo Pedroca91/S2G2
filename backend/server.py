@@ -1263,7 +1263,7 @@ async def upload_case_attachment(
         'uploaded_by': current_user.get('name'),
         'uploaded_by_id': current_user.get('id'),
         'uploaded_at': datetime.now(timezone.utc).isoformat(),
-        'url': f"/uploads/{unique_filename}"
+        'url': f"/api/uploads/{unique_filename}"
     }
     
     # Adicionar ao caso
@@ -1356,7 +1356,7 @@ async def upload_comment_attachment(
         'uploaded_by': current_user.get('name'),
         'uploaded_by_id': current_user.get('id'),
         'uploaded_at': datetime.now(timezone.utc).isoformat(),
-        'url': f"/uploads/{unique_filename}"
+        'url': f"/api/uploads/{unique_filename}"
     }
     
     # Atualizar comentário
