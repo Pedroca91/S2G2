@@ -61,6 +61,24 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
   - Exportar para Excel/CSV
   - Paginação
 
+### Paginação na Lista de Casos (Dezembro/2025)
+- [x] Controles de paginação no topo (contador, seletor de itens por página)
+- [x] Controles de paginação no rodapé (números de página, Primeira/Última)
+- [x] Navegação entre páginas (Anterior/Próxima)
+- [x] Seletor de itens por página (5, 10, 20, 50)
+- [x] Backend: `GET /api/cases?page=X&per_page=Y` retorna paginação
+
+### Anexos de Arquivos (Dezembro/2025)
+- [x] Seção "Anexos" na página de detalhes do caso (recolhível)
+- [x] Upload de arquivos (drag-and-drop, limite 10MB)
+- [x] Download de arquivos anexados
+- [x] Exclusão de anexos (admin)
+- [x] Validação de tipos de arquivo
+- [x] Exibição de anexos nos comentários
+- [x] Backend: `POST /api/cases/{id}/attachments` para upload
+- [x] Backend: `DELETE /api/cases/{id}/attachments/{att_id}` para remover
+- [x] Arquivos servidos via `/api/uploads/`
+
 ### Outras
 - [x] Página de Configurações (Perfil, Segurança, Notificações)
 - [x] Criação de usuários pelo admin
@@ -72,19 +90,21 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 ├── backend/
 │   ├── .env (MONGO_URL, JIRA credentials)
 │   ├── server.py (FastAPI app)
+│   ├── uploads/ (arquivos anexados)
 │   └── tests/
 ├── frontend/
 │   ├── .env (REACT_APP_BACKEND_URL)
 │   └── src/
 │       ├── pages/
 │       │   ├── Dashboard.jsx
-│       │   ├── Cases.jsx (com modal de resolução com título)
-│       │   ├── CaseDetails.jsx (com modal de resolução com título)
-│       │   ├── KnowledgeBase.jsx (NOVO)
+│       │   ├── Cases.jsx (com paginação e modal de resolução)
+│       │   ├── CaseDetails.jsx (com anexos e modal de resolução)
+│       │   ├── KnowledgeBase.jsx
+│       │   ├── TimeReport.jsx
 │       │   ├── Settings.jsx
 │       │   └── UserManagement.jsx
 │       └── components/
-│           └── Layout.jsx (menu com Base de Conhecimento)
+│           └── Layout.jsx
 └── memory/
     └── PRD.md
 ```
@@ -92,12 +112,15 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 ## Endpoints Principais
 - `POST /api/auth/login` - Autenticação
 - `GET /api/dashboard/stats` - Estatísticas do dashboard
-- `GET /api/cases` - Listar casos
+- `GET /api/cases` - Listar casos (suporta ?page=X&per_page=Y)
 - `GET/PUT /api/cases/{id}` - Detalhes/atualizar caso
-- `GET /api/cases/{id}/similar` - Buscar casos similares resolvidos (NOVO)
+- `GET /api/cases/{id}/similar` - Buscar casos similares resolvidos
+- `POST /api/cases/{id}/attachments` - Upload de anexo
+- `DELETE /api/cases/{id}/attachments/{att_id}` - Remover anexo
 - `POST /api/cases/{id}/comments` - Adicionar comentário
 - `GET /api/knowledge-base` - Buscar notas de resolução
 - `GET /api/knowledge-base/stats` - Estatísticas da base
+- `GET /api/reports/time-metrics` - Relatório de tempo
 - `POST /api/users/create` - Criar usuário (admin)
 - `POST /api/webhooks/jira` - Webhook do Jira
 
@@ -110,16 +133,16 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 - [ ] Proteger Webhook do Jira com token secreto
 
 ### P1 (Média Prioridade)
-- [ ] Paginação na lista de casos
 - [ ] Notificações por email
 
 ### P2 (Baixa Prioridade)
-- [ ] Anexos de arquivos nos casos
 - [ ] Rastreamento de SLA
 - [ ] Modo escuro
+- [ ] Melhorias na busca da Base de Conhecimento (tags automáticas)
 
 ## Notas Técnicas
 - **Jira Project Key**: S2GSS (tickets antigos usam SGSS)
 - **Webhook URL**: https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira
 - **Mapeamento de Status**: Normalizado (lowercase, sem pontos) para evitar erros
 - **ObjectId MongoDB**: Sempre excluir `_id` das respostas JSON
+- **Uploads**: Arquivos servidos via `/api/uploads/`, armazenados em `/app/backend/uploads/`
