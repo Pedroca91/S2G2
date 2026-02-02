@@ -140,6 +140,16 @@ class Notification(BaseModel):
     read: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+class StatusChange(BaseModel):
+    """Registro de mudança de status"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    from_status: Optional[str] = None
+    to_status: str
+    changed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    changed_by: Optional[str] = None
+    changed_by_id: Optional[str] = None
+    duration_seconds: Optional[int] = None  # Tempo no status anterior
+
 class Case(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -163,6 +173,7 @@ class Case(BaseModel):
     solved_by: Optional[str] = None  # Nome de quem resolveu
     solved_by_id: Optional[str] = None  # ID de quem resolveu
     solved_at: Optional[datetime] = None  # Data da resolução
+    status_history: List[dict] = []  # Histórico de mudanças de status
 
 class CaseCreate(BaseModel):
     jira_id: Optional[str] = None
