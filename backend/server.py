@@ -190,8 +190,10 @@ class CaseUpdate(BaseModel):
     opened_date: Optional[datetime] = None
     closed_date: Optional[datetime] = None
     solution: Optional[str] = None  # Notas de resolução
+    solution_title: Optional[str] = None  # Título da solução
     solved_by: Optional[str] = None  # Nome de quem resolveu
     solved_by_id: Optional[str] = None  # ID de quem resolveu
+    solved_at: Optional[datetime] = None  # Data da resolução
 
 class Activity(BaseModel):
     model_config = ConfigDict(extra="ignore")
