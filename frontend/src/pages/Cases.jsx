@@ -1170,6 +1170,21 @@ export const Cases = () => {
               </div>
             )}
             <div>
+              <Label htmlFor="resolution_title_list">Título da Solução *</Label>
+              <Input
+                id="resolution_title_list"
+                value={resolutionTitle}
+                onChange={(e) => setResolutionTitle(e.target.value)}
+                placeholder="Ex: Correção de boleto com código de barras inválido"
+                className="mt-2"
+                required
+                data-testid="resolution-title-input-list"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Um título claro facilita encontrar esta solução na Base de Conhecimento
+              </p>
+            </div>
+            <div>
               <Label htmlFor="resolution_notes_list">Como o caso foi resolvido? *</Label>
               <Textarea
                 id="resolution_notes_list"
@@ -1193,7 +1208,7 @@ export const Cases = () => {
               <Button 
                 type="submit"
                 className="bg-green-600 hover:bg-green-700"
-                disabled={!resolutionNotes.trim()}
+                disabled={!resolutionNotes.trim() || !resolutionTitle.trim()}
                 data-testid="submit-resolution-btn-list"
               >
                 <CheckCircle className="mr-2 h-4 w-4" />
