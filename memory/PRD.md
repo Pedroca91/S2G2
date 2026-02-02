@@ -45,17 +45,21 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 
 ### Rastreamento de Tempo (02/02/2026)
 - [x] Campo `status_history` para registrar mudanças de status
-- [x] Seção "Tempo do Caso" na página de detalhes
+- [x] Seção "Tempo do Caso" na página de detalhes (recolhível)
 - [x] Tempo total desde abertura
 - [x] Tempo em cada status
 - [x] Histórico com linha do tempo (quem alterou, quando)
 - [x] Endpoint `/api/cases/{id}/time-metrics` para métricas individuais
 - [x] Endpoint `/api/reports/time-metrics` para relatório agregado
 - [x] PDF com página de "Métricas de Tempo"
-  - Tempo médio de resolução
-  - Tempo médio por status
-  - Distribuição por faixa de tempo
-  - Casos mais rápidos e mais lentos
+- [x] **Nova página "Relatório de Tempo"** no menu lateral
+  - Filtros: data, seguradora, categoria
+  - Cards: casos analisados, tempo médio, mais rápido, mais lento
+  - Gráfico: Tempo médio por status
+  - Gráfico: Distribuição por faixa de tempo
+  - Tabela detalhada com todos os casos
+  - Exportar para Excel/CSV
+  - Paginação
 
 ### Outras
 - [x] Página de Configurações (Perfil, Segurança, Notificações)
