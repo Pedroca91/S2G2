@@ -1470,7 +1470,12 @@ async def get_detailed_chart_data(
                 waiting = await db.cases.count_documents({
                     **base_query,
                     'created_at': month_query['created_at'],
-                    'status': {'$in': ['Aguardando resposta', 'Aguardando Configuração']}
+                    'status': 'Aguardando resposta'
+                })
+                waiting_config = await db.cases.count_documents({
+                    **base_query,
+                    'created_at': month_query['created_at'],
+                    'status': 'Aguardando Configuração'
                 })
             else:
                 # Se status específico, contar apenas esse
@@ -1478,14 +1483,16 @@ async def get_detailed_chart_data(
                 completed = count if status == 'Concluído' else 0
                 pending = count if status == 'Pendente' else 0
                 in_development = count if status == 'Em Desenvolvimento' else 0
-                waiting = count if status in ['Aguardando resposta', 'Aguardando Configuração'] else 0
+                waiting = count if status == 'Aguardando resposta' else 0
+                waiting_config = count if status == 'Aguardando Configuração' else 0
             
             chart_data.append({
                 'date': current_month.strftime('%b/%y'),
                 'completed': completed,
                 'pending': pending,
                 'in_development': in_development,
-                'waiting': waiting
+                'waiting': waiting,
+                'waiting_config': waiting_config
             })
             
             # Próximo mês
