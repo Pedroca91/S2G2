@@ -44,6 +44,8 @@ const CaseDetails = () => {
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [timeMetrics, setTimeMetrics] = useState(null);
   const [loadingMetrics, setLoadingMetrics] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [attachmentsSectionOpen, setAttachmentsSectionOpen] = useState(true);
   const [editFormData, setEditFormData] = useState({
     jira_id: '',
     title: '',
