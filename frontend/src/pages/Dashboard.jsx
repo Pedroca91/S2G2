@@ -541,7 +541,7 @@ export const Dashboard = () => {
       }
       
       pdf.save(`relatorio-safe2go-${today.replace(/\//g, '-')}.pdf`);
-      toast.success('PDF gerado com sucesso! (2 páginas compactas)');
+      toast.success('PDF gerado com sucesso! (inclui métricas de tempo)');
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       toast.error('Erro ao gerar PDF');
