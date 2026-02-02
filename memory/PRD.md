@@ -76,6 +76,7 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 - `GET /api/dashboard/stats` - Estatísticas do dashboard
 - `GET /api/cases` - Listar casos
 - `GET/PUT /api/cases/{id}` - Detalhes/atualizar caso
+- `GET /api/cases/{id}/similar` - Buscar casos similares resolvidos (NOVO)
 - `POST /api/cases/{id}/comments` - Adicionar comentário
 - `GET /api/knowledge-base` - Buscar notas de resolução
 - `GET /api/knowledge-base/stats` - Estatísticas da base
