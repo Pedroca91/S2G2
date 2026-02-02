@@ -1515,13 +1515,22 @@ async def jira_webhook(payload: dict):
         status_map = {
             'To Do': 'Pendente',
             'In Progress': 'Pendente',
+            'Em Atendimento': 'Em Desenvolvimento',
             'Done': 'Concluído',
             'Closed': 'Concluído',
-            'Aguardando Cliente': 'Aguardando resposta do cliente',
-            'Waiting for Customer': 'Aguardando resposta do cliente',
-            'Aguardando resposta': 'Aguardando resposta do cliente',
+            'Resolvido': 'Concluído',
+            'Resolved': 'Concluído',
+            'Concluído': 'Concluído',
+            'Aguardando Cliente': 'Aguardando resposta',
+            'Waiting for Customer': 'Aguardando resposta',
+            'Aguardando resposta': 'Aguardando resposta',
+            'Aguardando Suporte': 'Pendente',
+            'Aguardando Configuração': 'Aguardando Configuração',
+            'Pendentes S2G': 'Pendente',
         }
         status = status_map.get(status_jira, 'Pendente')
+        
+        print(f"📊 Status Jira: '{status_jira}' -> Safe2Go: '{status}'")
         
         # Detectar seguradora do responsável ou descrição
         combined_text = f"{responsible} {title} {description}".upper()
