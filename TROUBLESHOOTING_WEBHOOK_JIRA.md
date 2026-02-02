@@ -30,14 +30,14 @@ O **Jira não está conseguindo enviar requisições** para o nosso sistema.
 
 ✅ **URL correta que deve estar configurada no Jira:**
 ```
-https://functional-check-1.preview.emergentagent.com/api/webhooks/jira
+https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira
 ```
 
 **Como testar se a URL está acessível:**
 
 ```bash
 # De um computador EXTERNO (não do servidor), execute:
-curl -X POST https://functional-check-1.preview.emergentagent.com/api/webhooks/jira \
+curl -X POST https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira \
   -H "Content-Type: application/json" \
   -d '{"webhookEvent":"jira:issue_created","issue":{"key":"TEST-123","fields":{"summary":"Teste","description":"Teste","status":{"name":"To Do"}}}}'
 ```
@@ -132,7 +132,7 @@ Se você está usando **Jira Server (auto-hospedado):**
 De um computador diferente (ou use https://reqbin.com/):
 
 ```bash
-curl -X POST https://functional-check-1.preview.emergentagent.com/api/webhooks/jira \
+curl -X POST https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira \
   -H "Content-Type: application/json" \
   -d '{
     "webhookEvent": "jira:issue_created",
@@ -203,7 +203,7 @@ Se não funcionar, o problema é de **conectividade externa**.
 Execute na ordem:
 
 - [ ] 1. Webhook está **habilitado** no Jira?
-- [ ] 2. URL está **correta**: `https://functional-check-1.preview.emergentagent.com/api/webhooks/jira`
+- [ ] 2. URL está **correta**: `https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira`
 - [ ] 3. Eventos **criado** e **atualizado** estão marcados?
 - [ ] 4. Filtro JQL está **vazio** ou **correto**?
 - [ ] 5. Endpoint está **acessível externamente** (teste com curl)?
@@ -222,7 +222,7 @@ Execute na ordem:
 1. No Jira, **delete** o webhook existente
 2. Crie um novo webhook do zero:
    - **Nome:** Safe2Go Webhook Novo
-   - **URL:** `https://functional-check-1.preview.emergentagent.com/api/webhooks/jira`
+   - **URL:** `https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira`
    - **Eventos:** Issue → criado, Issue → atualizado
    - **Status:** Habilitado
 3. Teste criando um novo issue

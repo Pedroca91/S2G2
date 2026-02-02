@@ -423,7 +423,7 @@ Analisar períodos passados para planejar ações futuras
 
 ## 🚀 ACESSO
 
-**URL:** https://functional-check-1.preview.emergentagent.com
+**URL:** https://helpdesk-portal-30.preview.emergentagent.com
 
 **Login Admin:**
 - Email: pedrohcarvalho1997@gmail.com

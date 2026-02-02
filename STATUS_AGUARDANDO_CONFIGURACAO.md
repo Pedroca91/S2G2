@@ -327,7 +327,7 @@ Caso Criado → Pendente
 
 ## 🌐 ACESSO
 
-**Sistema:** https://functional-check-1.preview.emergentagent.com
+**Sistema:** https://helpdesk-portal-30.preview.emergentagent.com
 
 **Login Admin:**
 - Email: pedrohcarvalho1997@gmail.com
