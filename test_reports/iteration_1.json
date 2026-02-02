@@ -1,0 +1,45 @@
+{
+  "summary": "Completed comprehensive testing of Resolution Notes (Notas de Resolução) feature. All backend API tests passed (9/9). Frontend E2E tests verified: modal appears when changing status to Concluído, resolution notes are saved and displayed correctly, cancel functionality works properly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_resolution_notes.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Code implementation is solid - Case model correctly includes solution, solved_by, solved_by_id fields",
+    "CaseUpdate model properly accepts resolution fields",
+    "Frontend CaseDetails.jsx correctly handles the resolution modal flow",
+    "data-testid attributes are properly implemented for testing"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_resolution_notes.py"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "admin_email": "pedrohcarvalho1997@gmail.com",
+    "admin_password": "S@muka91"
+  },
+  "seed_data_creation": "Created and cleaned up TEST_ResolutionNotes_* test cases during testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Resolution Notes feature is fully functional. Backend API accepts solution, solved_by, solved_by_id fields on PUT /api/cases/{id}. Frontend shows resolution modal when status changes to Concluído, and displays resolution notes section on completed cases.",
+  "features_tested": {
+    "modal_appears_on_status_change": "PASSED - Modal appears when changing status to Concluído",
+    "resolution_fields_saved": "PASSED - solution, solved_by, solved_by_id are saved correctly",
+    "resolution_section_displayed": "PASSED - Green section with resolution notes appears on completed cases",
+    "cancel_preserves_status": "PASSED - Canceling modal does not change case status",
+    "api_accepts_resolution_fields": "PASSED - PUT /api/cases/{id} accepts all resolution fields"
+  }
+}
