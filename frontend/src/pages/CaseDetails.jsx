@@ -35,6 +35,8 @@ const CaseDetails = () => {
   const [similarCases, setSimilarCases] = useState([]);
   const [loadingSimilar, setLoadingSimilar] = useState(false);
   const [expandedSimilar, setExpandedSimilar] = useState(null);
+  const [similarSectionOpen, setSimilarSectionOpen] = useState(false);
+  const [timeSectionOpen, setTimeSectionOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [resolutionDialogOpen, setResolutionDialogOpen] = useState(false);
   const [resolutionNotes, setResolutionNotes] = useState('');
