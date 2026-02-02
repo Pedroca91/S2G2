@@ -310,6 +310,13 @@ export const UserManagement = () => {
           </h1>
           <p className="page-subtitle">Aprovar cadastros e gerenciar acessos</p>
         </div>
+        <Button
+          onClick={() => setIsAddDialogOpen(true)}
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+        >
+          <UserPlus className="w-4 h-4 mr-2" />
+          Adicionar Usuário
+        </Button>
       </div>
 
       {/* Tabs */}
