@@ -425,9 +425,78 @@ const CaseDetails = () => {
                 </DialogContent>
               </Dialog>
             )}
+
+            {/* Modal de Notas de Resolução */}
+            <Dialog open={resolutionDialogOpen} onOpenChange={setResolutionDialogOpen}>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    Notas de Resolução
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleResolutionSubmit} className="space-y-4 mt-4">
+                  <p className="text-sm text-gray-600">
+                    Antes de concluir este caso, descreva como ele foi resolvido. Isso ajudará a criar uma base de conhecimento para resolver problemas semelhantes no futuro.
+                  </p>
+                  <div>
+                    <Label htmlFor="resolution_notes">Como o caso foi resolvido? *</Label>
+                    <Textarea
+                      id="resolution_notes"
+                      value={resolutionNotes}
+                      onChange={(e) => setResolutionNotes(e.target.value)}
+                      placeholder="Descreva a solução aplicada, passos seguidos, configurações alteradas, etc."
+                      rows={5}
+                      className="mt-2"
+                      required
+                      data-testid="resolution-notes-textarea"
+                    />
+                  </div>
+                  <div className="flex gap-2 justify-end pt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleResolutionCancel}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button 
+                      type="submit"
+                      className="bg-green-600 hover:bg-green-700"
+                      disabled={!resolutionNotes.trim()}
+                      data-testid="submit-resolution-btn"
+                    >
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Concluir Caso
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <Separator className="my-4" />
+
+          {/* Seção de Notas de Resolução (quando concluído) */}
+          {caseData.status === 'Concluído' && caseData.solution && (
+            <>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4" data-testid="resolution-info-section">
+                <div className="flex items-center gap-2 mb-3">
+                  <FileText className="h-5 w-5 text-green-600" />
+                  <h3 className="font-semibold text-green-800">Notas de Resolução</h3>
+                </div>
+                <p className="text-gray-700 whitespace-pre-wrap bg-white p-3 rounded border border-green-100">
+                  {caseData.solution}
+                </p>
+                {caseData.solved_by && (
+                  <p className="text-sm text-green-700 mt-2">
+                    <span className="font-medium">Resolvido por:</span> {caseData.solved_by}
+                  </p>
+                )}
+              </div>
+              <Separator className="my-4" />
+            </>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {caseData.seguradora && (
