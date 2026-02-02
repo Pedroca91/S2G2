@@ -39,6 +39,9 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer()
 
+# Servir arquivos de upload estáticos
+app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
+
 # WebSocket Connection Manager
 class ConnectionManager:
     def __init__(self):
