@@ -1403,11 +1403,14 @@ async def create_case(case: CaseCreate, current_user: dict = Depends(get_current
     await db.cases.insert_one(doc)
     return case_obj
 
-@api_router.get("/cases", response_model=List[Case])
+@api_router.get("/cases")
 async def get_cases(
     responsible: Optional[str] = None,
     status: Optional[str] = None,
     days: Optional[int] = None,
+    page: Optional[int] = None,
+    per_page: Optional[int] = None,
+    search: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
     query = {}
@@ -1424,7 +1427,27 @@ async def get_cases(
         date_limit = datetime.now(timezone.utc) - timedelta(days=days)
         query['created_at'] = {"$gte": date_limit.isoformat()}
     
-    cases = await db.cases.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    # Contar total para paginação
+    total_count = await db.cases.count_documents(query)
+    
+    # Buscar casos
+    cursor = db.cases.find(query, {"_id": 0}).sort("created_at", -1)
+    
+    # Aplicar paginação se fornecida
+    if page is not None and per_page is not None:
+        skip = (page - 1) * per_page
+        cursor = cursor.skip(skip).limit(per_page)
+        cases = await cursor.to_list(per_page)
+    else:
+        cases = await cursor.to_list(1000)
+    
+    # Filtrar por busca (se fornecido)
+    if search:
+        search_lower = search.lower()
+        cases = [c for c in cases if 
+                 search_lower in (c.get('title', '') or '').lower() or
+                 search_lower in (c.get('jira_id', '') or '').lower() or
+                 search_lower in (c.get('description', '') or '').lower()]
     
     # Convert ISO string timestamps back to datetime
     for case in cases:
@@ -1439,6 +1462,18 @@ async def get_cases(
             case['closed_date'] = datetime.fromisoformat(case['closed_date'])
         if isinstance(case.get('created_at', ''), str):
             case['created_at'] = datetime.fromisoformat(case['created_at'])
+    
+    # Se paginação está ativa, retornar com metadados
+    if page is not None and per_page is not None:
+        return {
+            'cases': cases,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': total_count,
+                'total_pages': (total_count + per_page - 1) // per_page
+            }
+        }
     
     return cases
 
