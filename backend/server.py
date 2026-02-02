@@ -845,6 +845,254 @@ async def get_knowledge_base_stats(current_user: dict = Depends(get_current_user
         'by_seguradora': [{'seguradora': item['_id'] or 'Não especificada', 'count': item['count']} for item in by_seguradora]
     }
 
+@api_router.get("/cases/{case_id}/time-metrics")
+async def get_case_time_metrics(case_id: str, current_user: dict = Depends(get_current_user)):
+    """Obter métricas de tempo de um caso específico"""
+    case = await db.cases.find_one({'id': case_id}, {'_id': 0})
+    if not case:
+        raise HTTPException(status_code=404, detail="Caso não encontrado")
+    
+    # Função para formatar duração
+    def format_duration(seconds):
+        if seconds is None:
+            return "N/A"
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        if hours > 0:
+            return f"{hours}h {minutes}min"
+        return f"{minutes}min"
+    
+    # Calcular tempo total
+    created_at = case.get('created_at')
+    if isinstance(created_at, str):
+        created_at = datetime.fromisoformat(created_at)
+    
+    if case.get('status') == 'Concluído':
+        closed_at = case.get('closed_date') or case.get('solved_at')
+        if isinstance(closed_at, str):
+            closed_at = datetime.fromisoformat(closed_at)
+        if closed_at:
+            total_seconds = int((closed_at - created_at).total_seconds())
+        else:
+            total_seconds = int((datetime.now(timezone.utc) - created_at).total_seconds())
+    else:
+        total_seconds = int((datetime.now(timezone.utc) - created_at).total_seconds())
+    
+    # Processar histórico de status
+    status_history = case.get('status_history', [])
+    time_by_status = {}
+    timeline = []
+    
+    # Se não há histórico, criar entrada inicial
+    if not status_history:
+        # Caso sem histórico - tempo todo no status atual
+        initial_status = case.get('status', 'Pendente')
+        time_by_status[initial_status] = total_seconds
+        timeline.append({
+            'status': initial_status,
+            'started_at': created_at.isoformat() if hasattr(created_at, 'isoformat') else created_at,
+            'ended_at': None,
+            'duration_seconds': total_seconds,
+            'duration_formatted': format_duration(total_seconds),
+            'changed_by': None,
+            'is_current': True
+        })
+    else:
+        # Processar histórico
+        previous_status = None
+        previous_time = created_at
+        
+        for i, change in enumerate(status_history):
+            status = change.get('to_status')
+            from_status = change.get('from_status')
+            changed_at = change.get('changed_at')
+            if isinstance(changed_at, str):
+                changed_at = datetime.fromisoformat(changed_at)
+            
+            # Se é a primeira entrada, adicionar o status inicial
+            if i == 0 and from_status:
+                duration = change.get('duration_seconds', 0)
+                if from_status not in time_by_status:
+                    time_by_status[from_status] = 0
+                time_by_status[from_status] += duration or 0
+                
+                timeline.append({
+                    'status': from_status,
+                    'started_at': previous_time.isoformat() if hasattr(previous_time, 'isoformat') else previous_time,
+                    'ended_at': changed_at.isoformat() if hasattr(changed_at, 'isoformat') else changed_at,
+                    'duration_seconds': duration,
+                    'duration_formatted': format_duration(duration),
+                    'changed_by': change.get('changed_by'),
+                    'is_current': False
+                })
+            
+            previous_time = changed_at
+            previous_status = status
+        
+        # Adicionar status atual
+        if previous_status:
+            now = datetime.now(timezone.utc)
+            if case.get('status') == 'Concluído':
+                current_duration = 0  # Já foi contabilizado
+            else:
+                current_duration = int((now - previous_time).total_seconds())
+            
+            if previous_status not in time_by_status:
+                time_by_status[previous_status] = 0
+            time_by_status[previous_status] += current_duration
+            
+            timeline.append({
+                'status': previous_status,
+                'started_at': previous_time.isoformat() if hasattr(previous_time, 'isoformat') else previous_time,
+                'ended_at': None if case.get('status') != 'Concluído' else (case.get('closed_date') or case.get('solved_at')),
+                'duration_seconds': current_duration,
+                'duration_formatted': format_duration(current_duration),
+                'changed_by': None,
+                'is_current': case.get('status') != 'Concluído'
+            })
+    
+    # Formatar tempo por status
+    time_by_status_formatted = [
+        {
+            'status': status,
+            'duration_seconds': seconds,
+            'duration_formatted': format_duration(seconds)
+        }
+        for status, seconds in time_by_status.items()
+    ]
+    
+    return {
+        'case_id': case_id,
+        'jira_id': case.get('jira_id'),
+        'current_status': case.get('status'),
+        'created_at': case.get('created_at'),
+        'closed_at': case.get('closed_date') or case.get('solved_at'),
+        'total_time_seconds': total_seconds,
+        'total_time_formatted': format_duration(total_seconds),
+        'time_by_status': time_by_status_formatted,
+        'timeline': timeline
+    }
+
+@api_router.get("/reports/time-metrics")
+async def get_time_metrics_report(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    seguradora: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Obter métricas de tempo agregadas para relatório"""
+    
+    # Construir query
+    query = {'status': 'Concluído'}
+    
+    if start_date:
+        query['created_at'] = {'$gte': start_date}
+    if end_date:
+        if 'created_at' in query:
+            query['created_at']['$lte'] = end_date
+        else:
+            query['created_at'] = {'$lte': end_date}
+    if seguradora:
+        query['seguradora'] = seguradora
+    
+    cases = await db.cases.find(query, {'_id': 0}).to_list(1000)
+    
+    if not cases:
+        return {
+            'total_cases': 0,
+            'avg_resolution_time_seconds': 0,
+            'avg_resolution_time_formatted': 'N/A',
+            'fastest_case': None,
+            'slowest_case': None,
+            'time_by_status_avg': [],
+            'cases_by_resolution_time': []
+        }
+    
+    # Função para formatar duração
+    def format_duration(seconds):
+        if seconds is None or seconds == 0:
+            return "N/A"
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        if hours > 0:
+            return f"{hours}h {minutes}min"
+        return f"{minutes}min"
+    
+    # Calcular tempos de resolução
+    resolution_times = []
+    time_by_status = {}
+    
+    for case in cases:
+        created_at = case.get('created_at')
+        closed_at = case.get('closed_date') or case.get('solved_at')
+        
+        if isinstance(created_at, str):
+            created_at = datetime.fromisoformat(created_at)
+        if isinstance(closed_at, str):
+            closed_at = datetime.fromisoformat(closed_at)
+        
+        if created_at and closed_at:
+            resolution_seconds = int((closed_at - created_at).total_seconds())
+            resolution_times.append({
+                'case_id': case.get('id'),
+                'jira_id': case.get('jira_id'),
+                'title': case.get('title'),
+                'resolution_seconds': resolution_seconds,
+                'resolution_formatted': format_duration(resolution_seconds)
+            })
+        
+        # Agregar tempo por status
+        for change in case.get('status_history', []):
+            status = change.get('from_status')
+            duration = change.get('duration_seconds', 0)
+            if status and duration:
+                if status not in time_by_status:
+                    time_by_status[status] = []
+                time_by_status[status].append(duration)
+    
+    # Calcular médias
+    avg_resolution = sum(r['resolution_seconds'] for r in resolution_times) / len(resolution_times) if resolution_times else 0
+    
+    # Ordenar por tempo
+    resolution_times.sort(key=lambda x: x['resolution_seconds'])
+    
+    # Média por status
+    time_by_status_avg = [
+        {
+            'status': status,
+            'avg_seconds': int(sum(times) / len(times)) if times else 0,
+            'avg_formatted': format_duration(int(sum(times) / len(times)) if times else 0),
+            'count': len(times)
+        }
+        for status, times in time_by_status.items()
+    ]
+    
+    # Distribuição por faixas de tempo
+    time_ranges = [
+        {'range': '< 1h', 'min': 0, 'max': 3600, 'count': 0},
+        {'range': '1-4h', 'min': 3600, 'max': 14400, 'count': 0},
+        {'range': '4-8h', 'min': 14400, 'max': 28800, 'count': 0},
+        {'range': '8-24h', 'min': 28800, 'max': 86400, 'count': 0},
+        {'range': '> 24h', 'min': 86400, 'max': float('inf'), 'count': 0}
+    ]
+    
+    for r in resolution_times:
+        for tr in time_ranges:
+            if tr['min'] <= r['resolution_seconds'] < tr['max']:
+                tr['count'] += 1
+                break
+    
+    return {
+        'total_cases': len(cases),
+        'avg_resolution_time_seconds': int(avg_resolution),
+        'avg_resolution_time_formatted': format_duration(int(avg_resolution)),
+        'fastest_case': resolution_times[0] if resolution_times else None,
+        'slowest_case': resolution_times[-1] if resolution_times else None,
+        'time_by_status_avg': time_by_status_avg,
+        'time_distribution': [{'range': tr['range'], 'count': tr['count']} for tr in time_ranges],
+        'cases_by_resolution_time': resolution_times[:20]  # Top 20
+    }
+
 @api_router.get("/cases/{case_id}/similar")
 async def get_similar_cases(
     case_id: str,
