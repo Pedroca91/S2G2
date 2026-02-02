@@ -135,17 +135,21 @@ export const Dashboard = () => {
       toast.info('Gerando PDF...');
       
       const token = localStorage.getItem('token');
-      // Buscar dados de categorias e análise recorrente
-      const [categoryResponse, recurrentResponse] = await Promise.all([
+      // Buscar dados de categorias, análise recorrente e métricas de tempo
+      const [categoryResponse, recurrentResponse, timeMetricsResponse] = await Promise.all([
         axios.get(`${API}/cases/categories`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
         axios.get(`${API}/cases/analytics/recurrent`, {
           headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API}/reports/time-metrics`, {
+          headers: { Authorization: `Bearer ${token}` }
         })
       ]);
       const categoryData = categoryResponse.data;
       const recurrentData = recurrentResponse.data;
+      const timeMetrics = timeMetricsResponse.data;
       
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
