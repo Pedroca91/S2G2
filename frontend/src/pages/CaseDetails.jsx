@@ -961,6 +961,104 @@ const CaseDetails = () => {
               {caseData.description || 'Sem descrição'}
             </p>
           </div>
+
+          {/* Seção de Anexos */}
+          <div className="mt-6" data-testid="attachments-section">
+            <div 
+              className="flex items-center justify-between cursor-pointer mb-3"
+              onClick={() => setAttachmentsSectionOpen(!attachmentsSectionOpen)}
+            >
+              <div className="flex items-center gap-2">
+                <Paperclip className="h-5 w-5 text-gray-600" />
+                <h3 className="font-semibold text-gray-800">
+                  Anexos ({caseData.attachments?.length || 0})
+                </h3>
+              </div>
+              <Button variant="ghost" size="sm">
+                {attachmentsSectionOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+            </div>
+            
+            {attachmentsSectionOpen && (
+              <div className="bg-gray-50 rounded-lg p-4 border">
+                {/* Upload de arquivo */}
+                <div className="mb-4">
+                  <label className="flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-colors">
+                    <input
+                      type="file"
+                      className="hidden"
+                      onChange={(e) => handleFileUpload(e, 'case')}
+                      disabled={uploadingFile}
+                      data-testid="case-file-upload"
+                    />
+                    {uploadingFile ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                        <span className="text-gray-600">Enviando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-5 w-5 text-purple-600" />
+                        <span className="text-gray-600">Clique para anexar arquivo</span>
+                        <span className="text-xs text-gray-400">(máx. 10MB)</span>
+                      </>
+                    )}
+                  </label>
+                </div>
+
+                {/* Lista de anexos */}
+                {caseData.attachments?.length > 0 ? (
+                  <div className="space-y-2">
+                    {caseData.attachments.map((attachment) => (
+                      <div 
+                        key={attachment.id}
+                        className="flex items-center justify-between bg-white p-3 rounded-lg border hover:shadow-sm transition-shadow"
+                        data-testid={`attachment-${attachment.id}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {getFileIcon(attachment.file_type)}
+                          <div>
+                            <p className="text-sm font-medium text-gray-800 truncate max-w-[200px] sm:max-w-[300px]">
+                              {attachment.original_filename}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {formatFileSize(attachment.file_size)} • Enviado por {attachment.uploaded_by}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`${BACKEND_URL}${attachment.url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Download"
+                            data-testid={`download-${attachment.id}`}
+                          >
+                            <Download className="h-4 w-4" />
+                          </a>
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleDeleteAttachment(attachment.id)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Remover"
+                              data-testid={`delete-attachment-${attachment.id}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-2">
+                    Nenhum anexo adicionado
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <Card>
