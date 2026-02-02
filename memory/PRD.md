@@ -29,14 +29,16 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 - [x] Criação de tickets no Jira
 - [x] Sincronização bidirecional de comentários
 - [x] Webhook para receber atualizações do Jira
+- [x] Mapeamento de status normalizado (case-insensitive, remove pontos)
 
-### Notas de Resolução (02/02/2026)
-- [x] Modal solicita descrição da solução ao concluir caso
-- [x] Funciona na página de detalhes do caso (CaseDetails.jsx)
-- [x] Funciona no dropdown de status rápido na lista (Cases.jsx)
-- [x] Campos salvos: solution, solved_by, solved_by_id
-- [x] Seção verde exibe notas na página de detalhes do caso concluído
-- [x] Base de conhecimento para resolver problemas similares
+### Base de Conhecimento (02/02/2026)
+- [x] Nova página "Base de Conhecimento" no menu lateral
+- [x] Busca por palavras-chave (boleto, endosso, corretor, etc.)
+- [x] Filtros por categoria e seguradora
+- [x] Cards expansíveis com problema e solução
+- [x] Modal de resolução com campo de título obrigatório
+- [x] Campos: solution, solution_title, solved_by, solved_by_id, solved_at
+- [x] Estatísticas por categoria
 
 ### Outras
 - [x] Página de Configurações (Perfil, Segurança, Notificações)
@@ -50,27 +52,30 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 │   ├── .env (MONGO_URL, JIRA credentials)
 │   ├── server.py (FastAPI app)
 │   └── tests/
-│       └── test_resolution_notes.py
 ├── frontend/
 │   ├── .env (REACT_APP_BACKEND_URL)
 │   └── src/
 │       ├── pages/
 │       │   ├── Dashboard.jsx
-│       │   ├── Cases.jsx (com modal de resolução)
-│       │   ├── CaseDetails.jsx (com modal de resolução)
+│       │   ├── Cases.jsx (com modal de resolução com título)
+│       │   ├── CaseDetails.jsx (com modal de resolução com título)
+│       │   ├── KnowledgeBase.jsx (NOVO)
 │       │   ├── Settings.jsx
 │       │   └── UserManagement.jsx
 │       └── components/
+│           └── Layout.jsx (menu com Base de Conhecimento)
 └── memory/
     └── PRD.md
 ```
 
 ## Endpoints Principais
-- `POST /api/login` - Autenticação
+- `POST /api/auth/login` - Autenticação
 - `GET /api/dashboard/stats` - Estatísticas do dashboard
 - `GET /api/cases` - Listar casos
-- `GET/PUT /api/cases/{id}` - Detalhes/atualizar caso (aceita campos solution, solved_by, solved_by_id)
+- `GET/PUT /api/cases/{id}` - Detalhes/atualizar caso
 - `POST /api/cases/{id}/comments` - Adicionar comentário
+- `GET /api/knowledge-base` - Buscar notas de resolução
+- `GET /api/knowledge-base/stats` - Estatísticas da base
 - `POST /api/users/create` - Criar usuário (admin)
 - `POST /api/webhooks/jira` - Webhook do Jira
 
@@ -90,9 +95,9 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 - [ ] Anexos de arquivos nos casos
 - [ ] Rastreamento de SLA
 - [ ] Modo escuro
-- [ ] Página de Base de Conhecimento (pesquisa de soluções anteriores)
 
 ## Notas Técnicas
 - **Jira Project Key**: S2GSS (tickets antigos usam SGSS)
-- **Webhook não protegido**: O endpoint `/api/webhooks/jira` precisa de token secreto
+- **Webhook URL**: https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira
+- **Mapeamento de Status**: Normalizado (lowercase, sem pontos) para evitar erros
 - **ObjectId MongoDB**: Sempre excluir `_id` das respostas JSON
