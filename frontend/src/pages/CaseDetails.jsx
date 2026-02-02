@@ -35,6 +35,7 @@ const CaseDetails = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [resolutionDialogOpen, setResolutionDialogOpen] = useState(false);
   const [resolutionNotes, setResolutionNotes] = useState('');
+  const [resolutionTitle, setResolutionTitle] = useState('');
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [editFormData, setEditFormData] = useState({
     jira_id: '',
