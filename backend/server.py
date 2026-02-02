@@ -1189,18 +1189,67 @@ async def get_case(case_id: str):
     return case
 
 @api_router.put("/cases/{case_id}", response_model=Case)
-async def update_case(case_id: str, case_update: CaseUpdate):
+async def update_case(case_id: str, case_update: CaseUpdate, current_user: dict = Depends(get_current_user)):
     existing_case = await db.cases.find_one({"id": case_id}, {"_id": 0})
     if not existing_case:
         raise HTTPException(status_code=404, detail="Caso não encontrado")
     
     update_dict = {k: v for k, v in case_update.model_dump().items() if v is not None}
     
+    # Verificar se houve mudança de status
+    old_status = existing_case.get('status')
+    new_status = update_dict.get('status')
+    
+    if new_status and new_status != old_status:
+        # Registrar mudança de status no histórico
+        now = datetime.now(timezone.utc)
+        
+        # Calcular duração no status anterior
+        status_history = existing_case.get('status_history', [])
+        duration_seconds = None
+        
+        if status_history:
+            # Pegar a última entrada do histórico
+            last_change = status_history[-1]
+            last_change_time = datetime.fromisoformat(last_change['changed_at']) if isinstance(last_change['changed_at'], str) else last_change['changed_at']
+            duration_seconds = int((now - last_change_time).total_seconds())
+        else:
+            # Primeira mudança - calcular desde a criação
+            created_at = existing_case.get('created_at')
+            if created_at:
+                if isinstance(created_at, str):
+                    created_at = datetime.fromisoformat(created_at)
+                duration_seconds = int((now - created_at).total_seconds())
+        
+        # Criar registro de mudança
+        status_change = {
+            'id': str(uuid.uuid4()),
+            'from_status': old_status,
+            'to_status': new_status,
+            'changed_at': now.isoformat(),
+            'changed_by': current_user.get('name', 'Sistema'),
+            'changed_by_id': current_user.get('id'),
+            'duration_seconds': duration_seconds
+        }
+        
+        # Adicionar ao histórico
+        update_dict['status_history'] = status_history + [status_change]
+        
+        # Se concluído, registrar data de fechamento
+        if new_status == 'Concluído':
+            update_dict['closed_date'] = now.isoformat()
+            if not update_dict.get('solved_at'):
+                update_dict['solved_at'] = now.isoformat()
+    
     # Serialize datetime fields
     if 'opened_date' in update_dict and update_dict['opened_date']:
-        update_dict['opened_date'] = update_dict['opened_date'].isoformat()
+        update_dict['opened_date'] = update_dict['opened_date'].isoformat() if hasattr(update_dict['opened_date'], 'isoformat') else update_dict['opened_date']
     if 'closed_date' in update_dict and update_dict['closed_date']:
-        update_dict['closed_date'] = update_dict['closed_date'].isoformat()
+        update_dict['closed_date'] = update_dict['closed_date'].isoformat() if hasattr(update_dict['closed_date'], 'isoformat') else update_dict['closed_date']
+    if 'solved_at' in update_dict and update_dict['solved_at']:
+        update_dict['solved_at'] = update_dict['solved_at'].isoformat() if hasattr(update_dict['solved_at'], 'isoformat') else update_dict['solved_at']
+    
+    update_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
     
     if update_dict:
         await db.cases.update_one({"id": case_id}, {"$set": update_dict})
@@ -1208,10 +1257,8 @@ async def update_case(case_id: str, case_update: CaseUpdate):
     updated_case = await db.cases.find_one({"id": case_id}, {"_id": 0})
     
     # Convert back to datetime
-    # Handle opened_date if exists (backwards compatibility)
     if updated_case.get('opened_date') and isinstance(updated_case['opened_date'], str):
         updated_case['opened_date'] = datetime.fromisoformat(updated_case['opened_date'])
-    # Use created_at as opened_date if opened_date doesn't exist
     elif not updated_case.get('opened_date') and updated_case.get('created_at'):
         updated_case['opened_date'] = datetime.fromisoformat(updated_case['created_at']) if isinstance(updated_case['created_at'], str) else updated_case['created_at']
     
