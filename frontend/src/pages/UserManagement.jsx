@@ -508,6 +508,132 @@ export const UserManagement = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de Adicionar Usuário */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Adicionar Novo Usuário
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleAddUserSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Nome */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nome Completo *
+                </label>
+                <input
+                  type="text"
+                  value={addFormData.name}
+                  onChange={(e) => setAddFormData({ ...addFormData, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="João Silva"
+                  required
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={addFormData.email}
+                  onChange={(e) => setAddFormData({ ...addFormData, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="joao@empresa.com"
+                  required
+                />
+              </div>
+
+              {/* Senha */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Senha *
+                </label>
+                <input
+                  type="password"
+                  value={addFormData.password}
+                  onChange={(e) => setAddFormData({ ...addFormData, password: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Mínimo 6 caracteres"
+                  required
+                  minLength={6}
+                />
+              </div>
+
+              {/* Telefone */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefone
+                </label>
+                <input
+                  type="tel"
+                  value={addFormData.phone}
+                  onChange={(e) => setAddFormData({ ...addFormData, phone: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="(11) 99999-9999"
+                />
+              </div>
+
+              {/* Empresa/Seguradora */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Empresa/Seguradora
+                </label>
+                <select
+                  value={addFormData.company}
+                  onChange={(e) => setAddFormData({ ...addFormData, company: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  <option value="">Selecione...</option>
+                  <option value="Safe2Go">Safe2Go</option>
+                  <option value="AVLA">AVLA</option>
+                  <option value="ESSOR">ESSOR</option>
+                  <option value="DAYCOVAL">DAYCOVAL</option>
+                </select>
+              </div>
+
+              {/* Perfil */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Perfil *
+                </label>
+                <select
+                  value={addFormData.role}
+                  onChange={(e) => setAddFormData({ ...addFormData, role: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  required
+                >
+                  <option value="cliente">Cliente</option>
+                  <option value="administrador">Administrador</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                type="button"
+                onClick={() => setIsAddDialogOpen(false)}
+                variant="outline"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              >
+                Criar Usuário
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
