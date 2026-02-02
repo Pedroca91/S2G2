@@ -228,6 +228,9 @@ class ChartData(BaseModel):
     date: str
     completed: int
     pending: int
+    in_development: int = 0
+    waiting: int = 0
+    waiting_config: int = 0
 
 class RecurrentCaseAnalysis(BaseModel):
     category: str
