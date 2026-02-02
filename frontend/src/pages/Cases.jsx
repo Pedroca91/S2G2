@@ -972,7 +972,7 @@ export const Cases = () => {
               data-testid="search-input"
               placeholder="Buscar por título, ID ou responsável"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             />
           </div>
           <div>
@@ -980,7 +980,7 @@ export const Cases = () => {
               <Filter className="w-4 h-4" />
               Status
             </Label>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}>
               <SelectTrigger id="status-filter" data-testid="status-filter">
                 <SelectValue />
               </SelectTrigger>
@@ -999,7 +999,7 @@ export const Cases = () => {
               <Filter className="w-4 h-4" />
               Responsável
             </Label>
-            <Select value={responsibleFilter} onValueChange={setResponsibleFilter}>
+            <Select value={responsibleFilter} onValueChange={(v) => { setResponsibleFilter(v); setCurrentPage(1); }}>
               <SelectTrigger id="responsible-filter" data-testid="responsible-filter">
                 <SelectValue />
               </SelectTrigger>
@@ -1018,7 +1018,7 @@ export const Cases = () => {
               <Filter className="w-4 h-4" />
               Seguradora
             </Label>
-            <Select value={seguradoraFilter} onValueChange={setSeguradoraFilter}>
+            <Select value={seguradoraFilter} onValueChange={(v) => { setSeguradoraFilter(v); setCurrentPage(1); }}>
               <SelectTrigger id="seguradora-filter" data-testid="seguradora-filter">
                 <SelectValue />
               </SelectTrigger>
