@@ -22,7 +22,6 @@ export const Dashboard = () => {
     in_development_cases: 0,
     waiting_client_cases: 0,
     waiting_config_cases: 0,
-    jira_queue_count: 0, // Novo: Contador que replica fila do Jira
     completion_percentage: 0,
     cases_by_seguradora: {},
   });

@@ -211,7 +211,6 @@ class DashboardStats(BaseModel):
     in_development_cases: int
     waiting_client_cases: int
     waiting_config_cases: int
-    jira_queue_count: int  # Contador que replica fila "Pendentes S2G" do Jira
     completion_percentage: float
     cases_by_seguradora: dict = {}
 
