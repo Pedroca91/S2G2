@@ -71,12 +71,32 @@ const CaseDetails = () => {
         comments: commentsRes.data || [],
         loading: false
       }));
+
+      // Carregar casos similares se não estiver concluído
+      if (caseRes.data.status !== 'Concluído') {
+        loadSimilarCases(headers);
+      }
     } catch (error) {
       console.error('Erro ao carregar:', error);
       toast.error('Erro ao carregar caso');
       setState(prev => ({ ...prev, loading: false }));
     }
   }, [id]);
+
+  const loadSimilarCases = async (headers) => {
+    try {
+      setLoadingSimilar(true);
+      const token = localStorage.getItem('token');
+      const authHeaders = headers || { Authorization: `Bearer ${token}` };
+      
+      const response = await axios.get(`${API}/cases/${id}/similar`, { headers: authHeaders });
+      setSimilarCases(response.data || []);
+    } catch (error) {
+      console.error('Erro ao carregar casos similares:', error);
+    } finally {
+      setLoadingSimilar(false);
+    }
+  };
 
   useEffect(() => {
     loadData();
