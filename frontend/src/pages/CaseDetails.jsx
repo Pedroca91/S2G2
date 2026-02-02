@@ -12,7 +12,7 @@ import { Label } from '../components/ui/label';
 import { Separator } from '../components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { ArrowLeft, MessageSquare, Send, User, Building, AlertCircle, Eye, EyeOff, Calendar, Edit, CheckCircle, FileText, Lightbulb, ChevronDown, ChevronUp, ExternalLink, Clock, Timer } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Send, User, Building, AlertCircle, Eye, EyeOff, Calendar, Edit, CheckCircle, FileText, Lightbulb, ChevronDown, ChevronUp, ExternalLink, Clock, Timer, Paperclip, Upload, Download, Trash2, File, Image } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
