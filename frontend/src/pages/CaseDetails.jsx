@@ -687,7 +687,9 @@ const CaseDetails = () => {
                       )}
                     </div>
                   ))}
-                </div>
+                    </div>
+                  </div>
+                )}
               </div>
               <Separator className="my-4" />
             </>
