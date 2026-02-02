@@ -32,8 +32,10 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 
 ### Notas de Resolução (02/02/2026)
 - [x] Modal solicita descrição da solução ao concluir caso
-- [x] Campos: solution, solved_by, solved_by_id
-- [x] Seção verde exibe notas na página de detalhes
+- [x] Funciona na página de detalhes do caso (CaseDetails.jsx)
+- [x] Funciona no dropdown de status rápido na lista (Cases.jsx)
+- [x] Campos salvos: solution, solved_by, solved_by_id
+- [x] Seção verde exibe notas na página de detalhes do caso concluído
 - [x] Base de conhecimento para resolver problemas similares
 
 ### Outras
@@ -54,8 +56,8 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 │   └── src/
 │       ├── pages/
 │       │   ├── Dashboard.jsx
-│       │   ├── Cases.jsx
-│       │   ├── CaseDetails.jsx
+│       │   ├── Cases.jsx (com modal de resolução)
+│       │   ├── CaseDetails.jsx (com modal de resolução)
 │       │   ├── Settings.jsx
 │       │   └── UserManagement.jsx
 │       └── components/
@@ -67,7 +69,7 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 - `POST /api/login` - Autenticação
 - `GET /api/dashboard/stats` - Estatísticas do dashboard
 - `GET /api/cases` - Listar casos
-- `GET/PUT /api/cases/{id}` - Detalhes/atualizar caso
+- `GET/PUT /api/cases/{id}` - Detalhes/atualizar caso (aceita campos solution, solved_by, solved_by_id)
 - `POST /api/cases/{id}/comments` - Adicionar comentário
 - `POST /api/users/create` - Criar usuário (admin)
 - `POST /api/webhooks/jira` - Webhook do Jira
@@ -88,6 +90,7 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 - [ ] Anexos de arquivos nos casos
 - [ ] Rastreamento de SLA
 - [ ] Modo escuro
+- [ ] Página de Base de Conhecimento (pesquisa de soluções anteriores)
 
 ## Notas Técnicas
 - **Jira Project Key**: S2GSS (tickets antigos usam SGSS)
