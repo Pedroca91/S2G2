@@ -126,6 +126,75 @@ const CaseDetails = () => {
     loadData();
   }, [loadData]);
 
+  // Funções de Upload de Anexos
+  const handleFileUpload = async (event, type = 'case', commentId = null) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validar tamanho (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Arquivo muito grande. Máximo: 10MB');
+      return;
+    }
+
+    setUploadingFile(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const token = localStorage.getItem('token');
+      let url = `${API}/cases/${id}/attachments`;
+      
+      if (type === 'comment' && commentId) {
+        url = `${API}/cases/${id}/comments/${commentId}/attachments`;
+      }
+
+      const response = await axios.post(url, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      toast.success('Arquivo enviado com sucesso!');
+      loadData(); // Recarregar dados
+    } catch (error) {
+      console.error('Erro ao enviar arquivo:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao enviar arquivo');
+    } finally {
+      setUploadingFile(false);
+      event.target.value = ''; // Limpar input
+    }
+  };
+
+  const handleDeleteAttachment = async (attachmentId) => {
+    if (!window.confirm('Tem certeza que deseja remover este anexo?')) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API}/cases/${id}/attachments/${attachmentId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success('Anexo removido!');
+      loadData();
+    } catch (error) {
+      console.error('Erro ao remover anexo:', error);
+      toast.error('Erro ao remover anexo');
+    }
+  };
+
+  const getFileIcon = (fileType) => {
+    if (fileType?.startsWith('image/')) return <Image className="h-4 w-4 text-blue-500" />;
+    if (fileType?.includes('pdf')) return <FileText className="h-4 w-4 text-red-500" />;
+    return <File className="h-4 w-4 text-gray-500" />;
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   const openEditDialog = () => {
     if (state.caseData) {
       setEditFormData({
