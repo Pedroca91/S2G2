@@ -39,6 +39,9 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 - [x] Modal de resolução com campo de título obrigatório
 - [x] Campos: solution, solution_title, solved_by, solved_by_id, solved_at
 - [x] Estatísticas por categoria
+- [x] **Sugestão de casos similares** na página de detalhes do chamado
+- [x] Algoritmo de similaridade (categoria, seguradora, palavras-chave)
+- [x] Cards expansíveis mostrando a solução aplicada em casos parecidos
 
 ### Outras
 - [x] Página de Configurações (Perfil, Segurança, Notificações)
