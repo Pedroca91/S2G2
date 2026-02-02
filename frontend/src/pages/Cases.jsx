@@ -88,17 +88,40 @@ export const Cases = () => {
   }, []);
 
   useEffect(() => {
-    filterCases();
-  }, [cases, searchTerm, statusFilter, responsibleFilter, seguradoraFilter]);
+    if (!usePagination) {
+      filterCases();
+    }
+  }, [cases, searchTerm, statusFilter, responsibleFilter, seguradoraFilter, usePagination]);
+
+  useEffect(() => {
+    if (usePagination) {
+      fetchCases();
+    }
+  }, [currentPage, perPage]);
 
   const fetchCases = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API}/cases`, {
+      
+      let url = `${API}/cases`;
+      if (usePagination) {
+        url += `?page=${currentPage}&per_page=${perPage}`;
+      }
+      
+      const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setCases(response.data);
+      
+      if (usePagination && response.data.pagination) {
+        setCases(response.data.cases);
+        setFilteredCases(response.data.cases);
+        setTotalCases(response.data.pagination.total);
+      } else {
+        const casesData = Array.isArray(response.data) ? response.data : response.data.cases || [];
+        setCases(casesData);
+        setTotalCases(casesData.length);
+      }
     } catch (error) {
       console.error('Erro ao carregar casos:', error);
       toast.error('Erro ao carregar casos');
@@ -114,9 +137,9 @@ export const Cases = () => {
     if (searchTerm) {
       filtered = filtered.filter(
         (c) =>
-          c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.jira_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.responsible.toLowerCase().includes(searchTerm.toLowerCase())
+          (c.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (c.jira_id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (c.responsible || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
