@@ -107,6 +107,16 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/knowledge-base"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <KnowledgeBase />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <Toaster position="top-right" richColors />
