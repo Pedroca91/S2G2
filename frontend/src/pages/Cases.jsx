@@ -158,11 +158,31 @@ export const Cases = () => {
   };
 
   const handleStatusChange = async (caseId, newStatus) => {
+    // Se está mudando para Concluído, mostrar modal de resolução
+    const currentCase = cases.find(c => c.id === caseId);
+    if (newStatus === 'Concluído' && currentCase?.status !== 'Concluído' && !currentCase?.solution) {
+      setPendingStatusChange({ caseId, newStatus, caseTitle: currentCase?.title });
+      setResolutionDialogOpen(true);
+      return;
+    }
+    
+    await submitStatusChange(caseId, newStatus);
+  };
+
+  const submitStatusChange = async (caseId, newStatus, solutionData = null) => {
     try {
       const token = localStorage.getItem('token');
+      const updateData = { status: newStatus };
+      
+      if (solutionData) {
+        updateData.solution = solutionData.solution;
+        updateData.solved_by = solutionData.solved_by;
+        updateData.solved_by_id = solutionData.solved_by_id;
+      }
+      
       await axios.put(
         `${API}/cases/${caseId}`,
-        { status: newStatus },
+        updateData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success('Status atualizado com sucesso!');
@@ -171,6 +191,33 @@ export const Cases = () => {
       console.error('Erro ao atualizar status:', error);
       toast.error('Erro ao atualizar status');
     }
+  };
+
+  const handleResolutionSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!resolutionNotes.trim()) {
+      toast.error('Por favor, descreva como o caso foi resolvido');
+      return;
+    }
+    
+    const solutionData = {
+      solution: resolutionNotes,
+      solved_by: user?.name || 'Usuário',
+      solved_by_id: user?.id || null
+    };
+    
+    await submitStatusChange(pendingStatusChange.caseId, pendingStatusChange.newStatus, solutionData);
+    
+    setResolutionDialogOpen(false);
+    setResolutionNotes('');
+    setPendingStatusChange(null);
+  };
+
+  const handleResolutionCancel = () => {
+    setResolutionDialogOpen(false);
+    setResolutionNotes('');
+    setPendingStatusChange(null);
   };
 
   // Função para selecionar/desselecionar chamado
