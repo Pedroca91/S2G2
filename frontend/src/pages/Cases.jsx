@@ -1042,6 +1042,53 @@ export const Cases = () => {
         </div>
       )}
 
+      {/* Controles de Paginação - Topo */}
+      {usePagination && totalCases > 0 && (
+        <div className="flex items-center justify-between mb-4 bg-white p-3 rounded-lg border" data-testid="pagination-controls-top">
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-600">
+              Mostrando {Math.min((currentPage - 1) * perPage + 1, totalCases)} - {Math.min(currentPage * perPage, totalCases)} de {totalCases} chamados
+            </span>
+            <Select value={String(perPage)} onValueChange={(v) => { setPerPage(Number(v)); setCurrentPage(1); }}>
+              <SelectTrigger className="w-[100px]" data-testid="per-page-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5 / pág</SelectItem>
+                <SelectItem value="10">10 / pág</SelectItem>
+                <SelectItem value="20">20 / pág</SelectItem>
+                <SelectItem value="50">50 / pág</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              data-testid="prev-page-btn"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Anterior
+            </Button>
+            <span className="text-sm font-medium px-3">
+              Página {currentPage} de {Math.ceil(totalCases / perPage) || 1}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.min(Math.ceil(totalCases / perPage), p + 1))}
+              disabled={currentPage >= Math.ceil(totalCases / perPage)}
+              data-testid="next-page-btn"
+            >
+              Próxima
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Cases List */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
@@ -1177,6 +1224,72 @@ export const Cases = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Controles de Paginação - Rodapé */}
+      {usePagination && totalCases > perPage && (
+        <div className="flex items-center justify-center gap-2 mt-6" data-testid="pagination-controls-bottom">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+          >
+            Primeira
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          
+          {/* Números de página */}
+          {Array.from({ length: Math.min(5, Math.ceil(totalCases / perPage)) }, (_, i) => {
+            const totalPages = Math.ceil(totalCases / perPage);
+            let pageNum;
+            if (totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            return (
+              <Button
+                key={pageNum}
+                variant={currentPage === pageNum ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCurrentPage(pageNum)}
+                className={currentPage === pageNum ? "bg-purple-600" : ""}
+                data-testid={`page-${pageNum}-btn`}
+              >
+                {pageNum}
+              </Button>
+            );
+          })}
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.min(Math.ceil(totalCases / perPage), p + 1))}
+            disabled={currentPage >= Math.ceil(totalCases / perPage)}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(Math.ceil(totalCases / perPage))}
+            disabled={currentPage >= Math.ceil(totalCases / perPage)}
+          >
+            Última
+          </Button>
         </div>
       )}
 
