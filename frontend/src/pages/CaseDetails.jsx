@@ -97,21 +97,69 @@ const CaseDetails = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     
+    // Se o status está mudando para "Concluído" e ainda não tem notas de resolução
+    const isChangingToConcluido = editFormData.status === 'Concluído' && state.caseData?.status !== 'Concluído';
+    const hasExistingSolution = state.caseData?.solution;
+    
+    if (isChangingToConcluido && !hasExistingSolution) {
+      setPendingStatusChange(editFormData);
+      setResolutionDialogOpen(true);
+      return;
+    }
+    
+    await submitCaseUpdate(editFormData);
+  };
+
+  const submitCaseUpdate = async (formData, solutionData = null) => {
     try {
       const token = localStorage.getItem('token');
+      const updateData = { ...formData };
+      
+      if (solutionData) {
+        updateData.solution = solutionData.solution;
+        updateData.solved_by = solutionData.solved_by;
+        updateData.solved_by_id = solutionData.solved_by_id;
+      }
+      
       await axios.put(
         `${API}/cases/${id}`,
-        editFormData,
+        updateData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       toast.success('Caso atualizado com sucesso!');
       setEditDialogOpen(false);
+      setResolutionDialogOpen(false);
+      setResolutionNotes('');
+      setPendingStatusChange(null);
       loadData();
     } catch (error) {
       console.error('Erro:', error);
       toast.error('Erro ao atualizar caso');
     }
+  };
+
+  const handleResolutionSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!resolutionNotes.trim()) {
+      toast.error('Por favor, descreva como o caso foi resolvido');
+      return;
+    }
+    
+    const solutionData = {
+      solution: resolutionNotes,
+      solved_by: user?.name || 'Usuário',
+      solved_by_id: user?.id || null
+    };
+    
+    await submitCaseUpdate(pendingStatusChange, solutionData);
+  };
+
+  const handleResolutionCancel = () => {
+    setResolutionDialogOpen(false);
+    setResolutionNotes('');
+    setPendingStatusChange(null);
   };
 
   const handleSubmit = async (e) => {
