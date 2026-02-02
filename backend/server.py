@@ -508,7 +508,52 @@ async def update_user(
     # Buscar usuário atualizado
     updated_user = await db.users.find_one({'id': user_id}, {'_id': 0})
     
+    logger.info(f"Usuário {updated_user['email']} atualizado por {current_user['email']}")
+    
     return User(**updated_user)
+
+@api_router.post("/users/create", response_model=User)
+async def create_user_direct(
+    user_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Criar usuário diretamente (admin-only)"""
+    if current_user.get('role') != 'administrador':
+        raise HTTPException(status_code=403, detail="Acesso negado. Apenas administradores.")
+    
+    # Verificar se email já existe
+    existing_user = await db.users.find_one({'email': user_data['email']})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email já cadastrado")
+    
+    # Hash da senha
+    hashed_password = hash_password(user_data['password'])
+    
+    # Criar novo usuário
+    new_user = {
+        'id': str(uuid.uuid4()),
+        'name': user_data['name'],
+        'email': user_data['email'],
+        'password': hashed_password,
+        'phone': user_data.get('phone', ''),
+        'company': user_data.get('company', ''),
+        'role': user_data.get('role', 'cliente'),
+        'status': user_data.get('status', 'aprovado'),
+        'created_at': datetime.now(timezone.utc).isoformat(),
+        'approved_at': datetime.now(timezone.utc).isoformat(),
+        'approved_by': current_user['id']
+    }
+    
+    await db.users.insert_one(new_user)
+    
+    logger.info(f"Usuário {new_user['email']} criado por {current_user['email']}")
+    
+    # Retornar sem a senha
+    new_user_response = {k: v for k, v in new_user.items() if k != 'password'}
+    new_user_response['created_at'] = datetime.fromisoformat(new_user_response['created_at'])
+    new_user_response['approved_at'] = datetime.fromisoformat(new_user_response['approved_at'])
+    
+    return User(**new_user_response)
 
 @api_router.delete("/users/{user_id}")
 async def delete_user(
