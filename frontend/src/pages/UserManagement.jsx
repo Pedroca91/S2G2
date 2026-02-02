@@ -15,6 +15,25 @@ export const UserManagement = () => {
   const [pendingUsers, setPendingUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('pending');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    role: 'cliente',
+    status: 'aprovado'
+  });
+  const [addFormData, setAddFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+    company: '',
+    role: 'cliente'
+  });
 
   useEffect(() => {
     fetchUsers();
