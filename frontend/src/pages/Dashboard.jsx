@@ -731,17 +731,41 @@ export const Dashboard = () => {
                 type="monotone"
                 dataKey="completed"
                 stroke="#10b981"
-                strokeWidth={3}
+                strokeWidth={2}
                 name="Concluídos"
-                dot={{ fill: '#10b981', r: 5 }}
+                dot={{ fill: '#10b981', r: 4 }}
               />
               <Line
                 type="monotone"
                 dataKey="pending"
                 stroke="#f59e0b"
-                strokeWidth={3}
+                strokeWidth={2}
                 name="Pendentes"
-                dot={{ fill: '#f59e0b', r: 5 }}
+                dot={{ fill: '#f59e0b', r: 4 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="in_development"
+                stroke="#3b82f6"
+                strokeWidth={2}
+                name="Em Desenvolvimento"
+                dot={{ fill: '#3b82f6', r: 4 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="waiting"
+                stroke="#f97316"
+                strokeWidth={2}
+                name="Aguardando Resposta"
+                dot={{ fill: '#f97316', r: 4 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="waiting_config"
+                stroke="#06b6d4"
+                strokeWidth={2}
+                name="Aguardando Config."
+                dot={{ fill: '#06b6d4', r: 4 }}
               />
             </LineChart>
           </ResponsiveContainer>
