@@ -8,6 +8,7 @@ import SupportPanel from './pages/SupportPanel';
 import RecurrentAnalysis from './pages/RecurrentAnalysis';
 import UserManagement from './pages/UserManagement';
 import Settings from './pages/Settings';
+import KnowledgeBase from './pages/KnowledgeBase';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ErrorBoundary from './components/ErrorBoundary';
