@@ -510,6 +510,11 @@ const CaseDetails = () => {
                   <FileText className="h-5 w-5 text-green-600" />
                   <h3 className="font-semibold text-green-800">Notas de Resolução</h3>
                 </div>
+                {caseData.solution_title && (
+                  <h4 className="text-lg font-medium text-green-900 mb-2">
+                    {caseData.solution_title}
+                  </h4>
+                )}
                 <p className="text-gray-700 whitespace-pre-wrap bg-white p-3 rounded border border-green-100">
                   {caseData.solution}
                 </p>
