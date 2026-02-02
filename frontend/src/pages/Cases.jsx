@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Plus, Search, Trash2, Filter, Eye, Info, Download, Upload, FileText, CheckCircle } from 'lucide-react';
+import { Plus, Search, Trash2, Filter, Eye, Info, Download, Upload, FileText, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -36,6 +36,13 @@ export const Cases = () => {
   const [selectMode, setSelectMode] = useState(false);
   const [ocrProcessing, setOcrProcessing] = useState(false);
   const fileInputRef = useRef(null);
+  
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [totalCases, setTotalCases] = useState(0);
+  const [usePagination, setUsePagination] = useState(true);
+  
   const [formData, setFormData] = useState({
     jira_id: '',
     title: '',
