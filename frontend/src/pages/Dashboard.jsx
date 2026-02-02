@@ -375,6 +375,157 @@ export const Dashboard = () => {
         }
       }
       
+      // ============= PÁGINA 3 - MÉTRICAS DE TEMPO =============
+      if (timeMetrics && timeMetrics.total_cases > 0) {
+        pdf.addPage();
+        
+        // Header
+        pdf.setFillColor(59, 130, 246);
+        pdf.rect(0, 0, pageWidth, 25, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Métricas de Tempo', pageWidth / 2, 14, { align: 'center' });
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Análise de tempo de resolução dos casos', pageWidth / 2, 20, { align: 'center' });
+        
+        let timeYPos = 35;
+        
+        // Estatísticas Gerais de Tempo
+        pdf.setTextColor(30, 41, 59);
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Resumo Geral', 20, timeYPos);
+        timeYPos += 8;
+        
+        // Cards de estatísticas
+        pdf.setFillColor(240, 249, 255);
+        pdf.rect(20, timeYPos, 55, 22, 'F');
+        pdf.rect(80, timeYPos, 55, 22, 'F');
+        pdf.rect(140, timeYPos, 55, 22, 'F');
+        
+        pdf.setFontSize(8);
+        pdf.setTextColor(100, 116, 139);
+        pdf.text('Casos Analisados', 25, timeYPos + 6);
+        pdf.text('Tempo Médio', 85, timeYPos + 6);
+        pdf.text('Total Concluídos', 145, timeYPos + 6);
+        
+        pdf.setFontSize(14);
+        pdf.setTextColor(30, 41, 59);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(String(timeMetrics.total_cases), 25, timeYPos + 16);
+        pdf.text(timeMetrics.avg_resolution_time_formatted || 'N/A', 85, timeYPos + 16);
+        pdf.text(String(timeMetrics.total_cases), 145, timeYPos + 16);
+        
+        timeYPos += 30;
+        
+        // Tempo Médio por Status
+        if (timeMetrics.time_by_status_avg && timeMetrics.time_by_status_avg.length > 0) {
+          pdf.setFontSize(11);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(30, 41, 59);
+          pdf.text('Tempo Médio por Status', 20, timeYPos);
+          timeYPos += 8;
+          
+          const statusColors = {
+            'Pendente': [245, 158, 11],
+            'Em Desenvolvimento': [59, 130, 246],
+            'Aguardando resposta': [249, 115, 22],
+            'Aguardando Configuração': [6, 182, 212]
+          };
+          
+          timeMetrics.time_by_status_avg.forEach((item) => {
+            const color = statusColors[item.status] || [100, 116, 139];
+            pdf.setFillColor(...color);
+            pdf.rect(20, timeYPos - 3, 4, 4, 'F');
+            
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(30, 41, 59);
+            pdf.text(`${item.status}: ${item.avg_formatted} (${item.count} casos)`, 28, timeYPos);
+            timeYPos += 7;
+          });
+          
+          timeYPos += 5;
+        }
+        
+        // Distribuição por Faixa de Tempo
+        if (timeMetrics.time_distribution && timeMetrics.time_distribution.length > 0) {
+          pdf.setFontSize(11);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(30, 41, 59);
+          pdf.text('Distribuição por Tempo de Resolução', 20, timeYPos);
+          timeYPos += 8;
+          
+          const distColors = [
+            [34, 197, 94],   // < 1h - verde
+            [132, 204, 22],  // 1-4h - verde claro
+            [245, 158, 11],  // 4-8h - amarelo
+            [249, 115, 22],  // 8-24h - laranja
+            [239, 68, 68]    // > 24h - vermelho
+          ];
+          
+          const maxDistCount = Math.max(...timeMetrics.time_distribution.map(d => d.count));
+          const barMaxWidth = 100;
+          
+          timeMetrics.time_distribution.forEach((item, idx) => {
+            const barWidth = maxDistCount > 0 ? (item.count / maxDistCount) * barMaxWidth : 0;
+            const color = distColors[idx] || [100, 116, 139];
+            
+            pdf.setFontSize(8);
+            pdf.setTextColor(30, 41, 59);
+            pdf.text(item.range, 20, timeYPos + 2);
+            
+            pdf.setFillColor(...color);
+            pdf.rect(50, timeYPos - 2, barWidth, 5, 'F');
+            
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(String(item.count), 155, timeYPos + 2);
+            
+            timeYPos += 8;
+          });
+          
+          timeYPos += 5;
+        }
+        
+        // Casos mais rápidos e mais lentos
+        if (timeMetrics.fastest_case || timeMetrics.slowest_case) {
+          pdf.setFontSize(11);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(30, 41, 59);
+          pdf.text('Destaques', 20, timeYPos);
+          timeYPos += 8;
+          
+          if (timeMetrics.fastest_case) {
+            pdf.setFillColor(220, 252, 231);
+            pdf.rect(20, timeYPos - 3, pageWidth - 40, 12, 'F');
+            pdf.setFontSize(8);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(22, 163, 74);
+            pdf.text('Resolução Mais Rápida:', 25, timeYPos + 2);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(30, 41, 59);
+            const fastText = `${timeMetrics.fastest_case.jira_id} - ${timeMetrics.fastest_case.resolution_formatted}`;
+            pdf.text(fastText, 70, timeYPos + 2);
+            timeYPos += 15;
+          }
+          
+          if (timeMetrics.slowest_case) {
+            pdf.setFillColor(254, 226, 226);
+            pdf.rect(20, timeYPos - 3, pageWidth - 40, 12, 'F');
+            pdf.setFontSize(8);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(220, 38, 38);
+            pdf.text('Resolução Mais Lenta:', 25, timeYPos + 2);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(30, 41, 59);
+            const slowText = `${timeMetrics.slowest_case.jira_id} - ${timeMetrics.slowest_case.resolution_formatted}`;
+            pdf.text(slowText, 70, timeYPos + 2);
+          }
+        }
+      }
+      
       // Footer
       const totalPages = pdf.internal.pages.length - 1;
       for (let i = 1; i <= totalPages; i++) {
