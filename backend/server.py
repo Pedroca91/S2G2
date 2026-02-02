@@ -746,6 +746,91 @@ async def mark_all_notifications_read(current_user: dict = Depends(get_current_u
     
     return {"message": "Todas as notificações marcadas como lidas"}
 
+# Knowledge Base - Resolution Notes Routes
+@api_router.get("/knowledge-base")
+async def get_knowledge_base(
+    search: Optional[str] = None,
+    category: Optional[str] = None,
+    seguradora: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Buscar notas de resolução (Base de Conhecimento)"""
+    # Apenas casos concluídos com solução
+    query = {
+        'status': 'Concluído',
+        'solution': {'$ne': None, '$exists': True}
+    }
+    
+    # Filtrar por categoria
+    if category and category != 'all':
+        query['category'] = category
+    
+    # Filtrar por seguradora
+    if seguradora and seguradora != 'all':
+        query['seguradora'] = seguradora
+    
+    cases = await db.cases.find(query, {'_id': 0}).sort('solved_at', -1).to_list(500)
+    
+    # Filtrar por busca de texto
+    if search:
+        search_lower = search.lower()
+        filtered_cases = []
+        for case in cases:
+            searchable_text = f"{case.get('title', '')} {case.get('description', '')} {case.get('solution', '')} {case.get('solution_title', '')} {case.get('category', '')} {case.get('jira_id', '')}".lower()
+            if search_lower in searchable_text:
+                filtered_cases.append(case)
+        cases = filtered_cases
+    
+    # Formatar resposta
+    result = []
+    for case in cases:
+        result.append({
+            'id': case.get('id'),
+            'jira_id': case.get('jira_id'),
+            'title': case.get('title'),
+            'description': case.get('description'),
+            'category': case.get('category'),
+            'seguradora': case.get('seguradora'),
+            'solution': case.get('solution'),
+            'solution_title': case.get('solution_title'),
+            'solved_by': case.get('solved_by'),
+            'solved_at': case.get('solved_at') or case.get('updated_at'),
+            'keywords': case.get('keywords', [])
+        })
+    
+    return result
+
+@api_router.get("/knowledge-base/stats")
+async def get_knowledge_base_stats(current_user: dict = Depends(get_current_user)):
+    """Estatísticas da base de conhecimento"""
+    # Total de notas de resolução
+    total = await db.cases.count_documents({
+        'status': 'Concluído',
+        'solution': {'$ne': None, '$exists': True}
+    })
+    
+    # Por categoria
+    pipeline = [
+        {'$match': {'status': 'Concluído', 'solution': {'$ne': None, '$exists': True}}},
+        {'$group': {'_id': '$category', 'count': {'$sum': 1}}},
+        {'$sort': {'count': -1}}
+    ]
+    by_category = await db.cases.aggregate(pipeline).to_list(100)
+    
+    # Por seguradora
+    pipeline_seg = [
+        {'$match': {'status': 'Concluído', 'solution': {'$ne': None, '$exists': True}}},
+        {'$group': {'_id': '$seguradora', 'count': {'$sum': 1}}},
+        {'$sort': {'count': -1}}
+    ]
+    by_seguradora = await db.cases.aggregate(pipeline_seg).to_list(100)
+    
+    return {
+        'total': total,
+        'by_category': [{'category': item['_id'] or 'Outros', 'count': item['count']} for item in by_category],
+        'by_seguradora': [{'seguradora': item['_id'] or 'Não especificada', 'count': item['count']} for item in by_seguradora]
+    }
+
 # Cases CRUD
 @api_router.post("/cases", response_model=Case)
 async def create_case(case: CaseCreate, current_user: dict = Depends(get_current_user)):
