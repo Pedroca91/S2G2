@@ -132,6 +132,7 @@ const CaseDetails = () => {
       setEditDialogOpen(false);
       setResolutionDialogOpen(false);
       setResolutionNotes('');
+      setResolutionTitle('');
       setPendingStatusChange(null);
       loadData();
     } catch (error) {
@@ -148,10 +149,17 @@ const CaseDetails = () => {
       return;
     }
     
+    if (!resolutionTitle.trim()) {
+      toast.error('Por favor, informe um título para a solução');
+      return;
+    }
+    
     const solutionData = {
       solution: resolutionNotes,
+      solution_title: resolutionTitle,
       solved_by: user?.name || 'Usuário',
-      solved_by_id: user?.id || null
+      solved_by_id: user?.id || null,
+      solved_at: new Date().toISOString()
     };
     
     await submitCaseUpdate(pendingStatusChange, solutionData);
@@ -160,6 +168,7 @@ const CaseDetails = () => {
   const handleResolutionCancel = () => {
     setResolutionDialogOpen(false);
     setResolutionNotes('');
+    setResolutionTitle('');
     setPendingStatusChange(null);
   };
 
