@@ -123,7 +123,7 @@ Otimizar o relatório PDF do Dashboard para ter **APENAS 2 PÁGINAS** com todas 
 
 ## 🧪 Como Testar
 
-1. **Acesse o Dashboard**: https://helpdesk-portal-30.preview.emergentagent.com/
+1. **Acesse o Dashboard**: https://s2g-ticketing.preview.emergentagent.com/
 2. **Faça login** como administrador
 3. **Clique no botão "Gerar Relatório PDF"**
 4. **Verifique**:

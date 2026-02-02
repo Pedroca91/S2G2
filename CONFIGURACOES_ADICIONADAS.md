@@ -112,7 +112,7 @@ Preferências de notificações:
 ## 🚀 COMO ACESSAR
 
 1. **Login no Sistema:**
-   - URL: https://helpdesk-portal-30.preview.emergentagent.com
+   - URL: https://s2g-ticketing.preview.emergentagent.com
    - Admin: pedrohcarvalho1997@gmail.com / S@muka91
    - Cliente: carlos.oliveira@avla.com.br / senha123
 
@@ -227,7 +227,7 @@ Body: {
 
 ## 🔗 LINKS ÚTEIS
 
-- **Sistema:** https://helpdesk-portal-30.preview.emergentagent.com
+- **Sistema:** https://s2g-ticketing.preview.emergentagent.com
 - **Rota:** `/settings`
 - **Código:** `/app/frontend/src/pages/Settings.jsx`
 

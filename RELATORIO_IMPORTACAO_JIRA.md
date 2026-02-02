@@ -110,7 +110,7 @@
 
 ## 🌐 ACESSO AO SISTEMA
 
-**URL:** https://helpdesk-portal-30.preview.emergentagent.com
+**URL:** https://s2g-ticketing.preview.emergentagent.com
 
 **Login Admin:**
 - Email: pedrohcarvalho1997@gmail.com

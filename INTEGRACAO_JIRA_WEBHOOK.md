@@ -4,12 +4,12 @@
 
 A URL do webhook no Jira está **INCORRETA**. Está apontando para:
 ```
-❌ https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira
+❌ https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira
 ```
 
 Mas deveria ser:
 ```
-✅ https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira
+✅ https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira
 ```
 
 ---
@@ -28,7 +28,7 @@ Mas deveria ser:
 ### **Passo 3: Atualizar a URL**
 1. No campo **URL**, altere para:
    ```
-   https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira
+   https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira
    ```
 
 2. Mantenha as outras configurações:
@@ -49,7 +49,7 @@ Mas deveria ser:
 Você pode testar se o endpoint está funcionando com este comando:
 
 ```bash
-curl -X POST https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira \
+curl -X POST https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira \
   -H "Content-Type: application/json" \
   -d '{
     "webhookEvent": "jira:issue_created",
@@ -230,7 +230,7 @@ async def jira_webhook(payload: dict):
 
 2. **Testar endpoint manualmente:**
    ```bash
-   curl -X POST https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira \
+   curl -X POST https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira \
      -H "Content-Type: application/json" \
      -d '{"webhookEvent":"jira:issue_created","issue":{"key":"TEST"}}'
    ```
@@ -281,10 +281,10 @@ async def jira_webhook(payload: dict):
 
 | Recurso | URL |
 |---------|-----|
-| **Sistema Safe2Go** | https://helpdesk-portal-30.preview.emergentagent.com |
-| **Webhook Endpoint** | https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira |
-| **Dashboard** | https://helpdesk-portal-30.preview.emergentagent.com/ |
-| **API Docs** | https://helpdesk-portal-30.preview.emergentagent.com/docs |
+| **Sistema Safe2Go** | https://s2g-ticketing.preview.emergentagent.com |
+| **Webhook Endpoint** | https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira |
+| **Dashboard** | https://s2g-ticketing.preview.emergentagent.com/ |
+| **API Docs** | https://s2g-ticketing.preview.emergentagent.com/docs |
 
 ---
 

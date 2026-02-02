@@ -62,7 +62,7 @@
 
 ## 🌐 VISUALIZAR NO SISTEMA
 
-**URL:** https://helpdesk-portal-30.preview.emergentagent.com  
+**URL:** https://s2g-ticketing.preview.emergentagent.com  
 **Login:** pedrohcarvalho1997@gmail.com / S@muka91
 
 ### Como visualizar os casos:

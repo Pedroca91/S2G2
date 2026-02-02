@@ -1,35 +1,51 @@
 <analysis>**original_problem_statement:**
-The user initially asked the agent to open the system and verify that everything was working correctly (Abra esse sitema para mim e veja se esta tudo funcionando corretamente). After the initial system check and setup, the user made a series of feature requests and bug reports throughout the session:
-1.  Add a Settings page to the frontend navigation.
-2.  Add a new status, Aguardando Configuração (Awaiting Configuration), with a clickable card on the main dashboard.
-3.  Add a date range filter to the Dashboard to filter all stats and graphs.
-4.  Add status filters to the existing dashboard graphs.
-5.  Add a third, wider graph below the existing ones, with a toggle to switch between a Monthly and Weekly view.
-6.  Investigate and fix the Jira integration, including ticket creation and comment synchronization.
-7.  Add the ability for an administrator to create new users directly from the UI.
-8.  Investigate why the number of pending tickets in a Jira queue did not match the count on the Safe2Go dashboard (The user later decided to accept the difference and not change the implementation).
-9.  Add a Resolution Notes modal that appears when a case is marked as Concluído (Completed), to build a knowledge base.
+The user's initial problem statement from the previous session involved adding various features and fixing bugs in the Safe2Go helpdesk application. Throughout this session, the user continued to request new features and report issues:
+
+1.  **Initial Task**: Implement a Resolution Notes feature, which was in progress from the last session.
+2.  **Bug Report**: The Resolution Notes modal was not appearing on the main cases list page ().
+3.  **Bug Report**: Case status was not updating in the app when changed to Resolvido (Resolved) in Jira. The agent diagnosed this as an incorrect webhook URL and an incomplete status mapping.
+4.  **Bug Report**: Case status was not updating for Aguardando cliente. (Waiting for customer) from Jira. The agent fixed this by making the status mapping more robust (case-insensitive and ignoring punctuation).
+5.  **Feature Request**: Create a Knowledge Base page in the side menu. This page should list all resolution notes and be searchable by keywords (e.g., boleto). The resolution notes modal should be updated to include a Title field.
+6.  **Feature Request**: When viewing a case, the system should automatically suggest similar, previously resolved cases from the knowledge base.
+7.  **Bug Report**: The dashboard charts were only showing two statuses (Concluído and Pendente) instead of all of them.
+8.  **Feature Request**: Implement time tracking for cases. This should include the total resolution time, the time spent in each status, and a history of status changes. This information should also be added to the PDF report generated from the dashboard.
+9.  **Feature Request**: Make the Similar Cases and Time Tracking sections on the case details page collapsible to make the UI cleaner.
+10. **Feature Request**: Add a way to filter resolution time metrics by a date range. The user chose to have this implemented as a new, dedicated Time Report page.
+11. **Feature Request**: Implement file attachments for cases and comments.
+12. **Feature Request**: Implement pagination on the main cases list page.
 
 **User's preferred language**:
 The user's primary language is **Portuguese (pt-br)**. The next agent MUST respond in Portuguese.
 
 **what currently exists?**
-The project is a full-stack Safe2Go Helpdesk application using a React frontend, FastAPI backend, and MongoDB database. The system is fully operational and was populated with initial data. Key functionalities include a dashboard with statistics, case management, user management, and a robust, bidirectional integration with Jira for creating tickets and synchronizing comments. Several features were added and bugs were fixed in this session, including a new Settings page, new case statuses, advanced dashboard filters, and an admin feature to add users.
+The project is a mature full-stack Safe2Go Helpdesk application with a React frontend, FastAPI backend, and MongoDB database. It features a dashboard with statistics and filterable charts, comprehensive case management, user management, and a bidirectional Jira integration.
+
+In this session, the following major features were completed:
+-   A full Resolution Notes workflow, creating a searchable Knowledge Base.
+-   An AI-powered Similar Cases suggestion engine on the case details page.
+-   A detailed time-tracking system that records the time a case spends in each status.
+-   A new Time Report page with advanced filtering and data visualization for performance metrics.
+-   Numerous UI/UX improvements, including collapsible sections and fixing graph data.
+-   Critical bug fixes to the Jira webhook synchronization logic.
 
 **Last working item**:
--   **Last item agent was working**: The agent started implementing the user's request for a Resolution Notes feature. The goal is to show a modal requesting a summary of the solution when a case's status is changed to Concluído (Completed). The agent was in the initial phase of modifying the backend to support this.
+-   **Last item agent was working**: The agent was working on two features requested by the user simultaneously: **File Attachments** and **Pagination**.
+    -   For **File Attachments**, the backend was updated:  was modified to include models for , static file serving was configured, and endpoints for uploading files to cases and comments were created.
+    -   For **Pagination**, the backend endpoint  was updated to accept  and  parameters. On the frontend, the agent started modifying  by adding state for pagination (, , ).
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
 -   **User Testing Done**: N
--   **Which testing method agent to use?**: both. The backend requires testing of the new model fields and the update logic. The frontend requires testing of the UI flow (modal appearing, form submission). A combination of backend testing via script/curl and frontend testing with the screenshot tool or frontend testing agent is recommended.
+-   **Which testing method agent to use?**: both. The backend needs testing for the new file upload and pagination endpoints. The frontend needs testing to ensure the pagination controls work correctly and that the UI for uploading and displaying attachments is functional and intuitive.
 
 **All Pending/In progress Issue list**:
-There are no pending issues. All reported problems were resolved during the session.
+There are no pending issues.
 
 **In progress Task List**:
--   **Task 1: Implement Resolution Notes on Case Completion (P0)**
-    -   **Where to resume**: The agent had just identified the  Pydantic model in  (around line 143). The next step is to edit this file to add the new fields required for the solution.
-    -   **What will be achieved with this?**: This will create a knowledge base of solutions for past tickets, allowing support staff to resolve similar issues more quickly in the future.
+-   **Task 1: Complete File Attachments and Pagination Implementation (P0)**
+    -   **Where to resume**:
+        1.  **Pagination (Frontend)**: Resume in . The state variables have been added. The next step is to update the  function to pass the  and  parameters to the API call and handle the paginated response (including ). After that, implement the UI components for pagination controls (e.g., page numbers, next/previous buttons).
+        2.  **File Attachments (Frontend)**: No frontend work has been started for this. The agent needs to modify  and the comments section to add UI elements for uploading files (e.g., a button and file input) and for displaying lists of attachments with download links.
+    -   **What will be achieved with this?**: The application will be more scalable by loading cases in pages, and more functional by allowing users to attach relevant files like screenshots and logs to cases and comments.
     -   **Status**: IN PROGRESS
     -   **Should Test frontend/backend/both after fix?**: both
     -   **Blocked on something**: No
@@ -37,31 +53,23 @@ There are no pending issues. All reported problems were resolved during the sess
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
     -   **(P0) Secure Jira Webhook:** Add a secret token to the  endpoint to prevent unauthorized access. This involves updating  and .
-    -   **(P1) Implement Pagination:** Add pagination to the cases list () and the corresponding backend endpoint () to improve performance as the number of tickets grows.
 -   **Future Tasks**:
     -   **(P1) Email Notifications:** Implement sending emails for important events (e.g., new comment, case assignment).
-    -   **(P2) File Attachments:** Allow users to attach files (images, logs) to cases and comments.
-    -   **(P2) SLA (Service Level Agreement) Tracking:** Add functionality to track and display SLA metrics for cases.
+    -   **(P2) SLA (Service Level Agreement) Tracking:** Add functionality to track and display SLA metrics for cases, potentially with automated alerts.
     -   **(P2) Dark Mode:** Implement a dark theme for the application.
+    -   **(P2) Knowledge Base Search Enhancement:** Add automatic tagging or keyword extraction to improve search results in the knowledge base.
 
 **Completed work in this session**
--   **Initial System Setup**: Installed all dependencies, started services, and populated the database with admin, client, and case data using helper scripts.
--   **Settings Page Feature**: Created a new  page accessible from the sidebar, containing Profile, Security, and Notifications tabs. (Files: , , ).
--   **Awaiting Configuration Status Feature**: Added a new case status, a corresponding clickable card on the Dashboard, and updated all status dropdowns. (Files: , , ).
--   **Dashboard Filters**:
-    -   Implemented a date range filter for all dashboard stats and charts.
-    -   Added status-based filters to the charts and a new, larger chart with a monthly/weekly view toggle.
-    (File: , ).
--   **Jira Integration Overhaul**:
-    -   Fixed incorrect webhook URL.
-    -   Implemented bidirectional comment synchronization.
-    -   Resolved multiple bugs, including project key parsing ( vs ), comment data mapping, timezone-aware comment sorting, and  validation errors.
-    (File: , ).
--   **Add User Feature**: Implemented a modal form in the User Management page for admins to create new users. (Files: , ).
--   **Not Specified Filter Fix**: Corrected the dashboard logic to correctly filter cases with no assigned insurance company. (File: ).
+-   **Resolution Notes & Knowledge Base**: Implemented the full feature. A modal prompts for a title and solution when a case is completed. A new Base de Conhecimento page was created to search and view these solutions. (Files: , , , ).
+-   **Jira Webhook Sync Fixes**: Corrected status mapping for Resolvido and made the mapping logic robust to handle variations like Aguardando cliente. (with a period), ensuring reliable synchronization from Jira to the app. (File: ).
+-   **Similar Cases Suggestion**: When viewing a case, the system now displays a list of similarly resolved cases from the knowledge base, with a similarity score, to help agents find solutions faster. (Files: , ).
+-   **Dashboard Graph Fix**: Updated the dashboard charts to correctly display all five case statuses (Concluído, Pendente, Em Desenvolvimento, Aguardando resposta, Aguardando Configuração) instead of just two. (Files: , ).
+-   **Case Time Tracking**: Implemented a system to track the time a case spends in each status and its total resolution time. A visual timeline was added to the case details page. (Files: , ).
+-   **UI/UX Improvement**: Made the Similar Cases and Time Tracking sections on the case details page collapsible for a cleaner interface. (File: ).
+-   **Dedicated Time Report Page**: Created a new Relatório de Tempo page with advanced filters (date, company, category) and visualizations for case resolution metrics, including an Export to Excel feature. (Files: , , ).
 
 **Earlier issues found/mentioned but not fixed**
-There are no issues that were mentioned and not fixed. A discrepancy in ticket counts between Jira and Safe2Go was investigated, diagnosed as a difference in filter logic (JQL vs. simple status count), and the user agreed to leave it as is.
+None. All issues raised by the user during the session were addressed and fixed.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork**: None
@@ -72,89 +80,79 @@ There are no issues that were mentioned and not fixed. A discrepancy in ticket c
 
 
 **Key Technical Concepts**
--   **Frontend**: React, Tailwind CSS, Radix UI (for UI components), Recharts (for charts),  (for API calls),  (for notifications).
--   **Backend**: FastAPI (Python web framework), Pydantic (for data validation),  (for JWT),  (for password hashing).
+-   **Frontend**: React, Tailwind CSS, Recharts, , ,  (for PDF reports).
+-   **Backend**: FastAPI, Pydantic, , ,  (async MongoDB driver).
 -   **Database**: MongoDB.
--   **Architecture**: A full-stack application with separate  and  directories. Services are managed via backend                          RUNNING   pid 48, uptime 0:00:05
-code-server                      STOPPED   Not started
-frontend                         STOPPED   Feb 02 04:24 PM
-mongodb                          RUNNING   pid 50, uptime 0:00:05
-nginx-code-proxy                 RUNNING   pid 47, uptime 0:00:05
-supervisor> . Real-time updates are handled via WebSockets.
--   **Integrations**: Jira REST API and Webhooks.
+-   **File Handling**: The backend is now configured to handle multipart/form-data for file uploads, storing files in a static  directory.
+-   **Pagination**: Backend logic was added to limit and skip documents in MongoDB queries. Frontend state management is being built to handle paged data.
 
 **key DB schema**
--   **users**: uid=0(root) gid=0(root) groups=0(root) (UUID), , ,  (hashed),  ('admin' or 'client'), , , , .
--   **cases**: uid=0(root) gid=0(root) groups=0(root) (UUID),  (string, e.g., S2GSS-10847), , , , , , , , ,  (List of embedded Comment documents).
--   **(Embedded) comments**: uid=0(root) gid=0(root) groups=0(root) (UUID), , , , , , .
+-   **users**: uid=0(root) gid=0(root) groups=0(root), , , , , , , , .
+-   **cases**: uid=0(root) gid=0(root) groups=0(root), , , , , , , , ,  (List),  (new),  (new),  (new),  (new),  (new),  (new, List of ),  (new, List of ).
+-   **comments**: uid=0(root) gid=0(root) groups=0(root), , , , , ,  (new, List of ).
+-   **(Embedded) StatusChange**: , , , , .
+-   **(Embedded) Attachment**: , , , , .
 
 **changes in tech stack**
-- No changes to the core tech stack. The  and  libraries were added to the backend.
+- No changes to the core tech stack.
 
 **All files of reference**
--   : The main FastAPI application file. Updated extensively to add new endpoints, fix bugs, and enhance Jira integration.
--   : The main dashboard component. Updated to add new cards, filters, and graphs.
--   : The case list page. Updated to fix a filter and handle the new status.
--   : The single case view page. Updated to handle the new status and display comments.
--   : The user list page. Updated to add the Add User functionality.
--   : A new file created for the user settings page.
--   : Updated to store Jira API credentials (, , ).
+-   : Heavily modified to add endpoints for the Knowledge Base, Similar Cases, Time Reports, File Uploads, and Pagination.
+-   : Modified for the resolution modal. Currently being modified for pagination.
+-   : Heavily modified to add the Resolution Notes display, Similar Cases section, and Time Tracking timeline, all made collapsible.
+-   : Modified to fix the charts to show all statuses and to add time metrics to the PDF export.
+-   : New file for the searchable resolution notes feature.
+-   : New file for the dedicated time metrics reporting page.
+-   : Updated with routes for the new pages.
+-   : Updated to add the new pages to the navigation menu.
+-   : Created and updated to track project progress.
 
-**Areas that need refactoring**
--   The Jira webhook endpoint  in  is unsecured and should be protected with a secret token to prevent unauthorized POST requests.
--   The case list in  fetches all cases at once. It should be refactored to use pagination for better performance as the dataset grows.
+**Areas that need refactoring**:
+-   The Jira webhook endpoint  in  is still unsecured and should be protected with a secret token. This is a recurring priority.
+-   The pagination feature, once completed, will address the previous need to refactor the  page for performance.
 
 **key api endpoints**
--   : User authentication.
--   : Provides statistics for the dashboard cards.
--   : Provides data for the daily/weekly charts.
--   : Provides data for the new monthly/weekly chart.
--   : Manages fetching and creating cases.
--   : Manages fetching and updating a single case.
--   : Manages comments for a case.
--   : Manages fetching users.
--   : (New) Admin-only endpoint to create a new user.
--   : Receives incoming webhooks from Jira for synchronization.
+-   : (Updated) Now supports pagination with .
+-   : (New)  endpoint to search for resolved cases.
+-   : (New)  endpoint to find cases similar to the given one.
+-   : (New)  endpoint that provides aggregated time tracking data for cases within a specified date range.
+-   : (New)  endpoint to upload attachments to a case.
+-   : (New)  endpoint to upload attachments to a comment.
+-   : (New) Static route to serve uploaded files.
 
 **Critical Info for New Agent**
--   **Jira Project Key**: The active Jira project key is ****. The database contains older tickets with the  prefix. The backend logic handles this, but it's important to be aware of the two formats.
--   **Jira Credentials**: The necessary Jira API credentials have been provided by the user and are stored in . The connection is active.
--   **Unsecured Webhook**: The Jira webhook endpoint is currently open. A top priority for improvement is to add a secret token for validation.
--   **User Interaction**: The user is very collaborative, provides detailed requests, screenshots, and timely feedback. Continue to communicate clearly and ask for confirmation.
+-   **Jira Webhook URL**: The user has been instructed to update the Jira webhook URL to point to the current preview environment. Remind the user that this URL is dynamic and will change if the environment is forked or restarted, requiring manual updates in Jira until a permanent production URL is established.
+-   **Data-testid**: The agent added many new UI elements but may not have added  attributes to all of them. This is important for future automated testing.
+-   **Old Data**: Cases created before the time-tracking feature was implemented will not have  data. The frontend handles this gracefully, but it's important to know for testing and debugging.
 
 **documents and test reports created in this job**
 -   
 -   
--   
--   
--   
--   
--   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **Request:** Add a resolution notes modal when completing a case. (Status: In Progress)
-2.  **Question:** Any tips for the system? (Status: Completed, agent provided a list)
-3.  **Statement:** Do not create a new card for Jira queue count, leave it as is. (Status: Completed, agent reverted changes)
-4.  **Feedback:** Sent a screenshot of the JQL filter from Jira, stating it cannot be changed. (Status: Completed, agent analyzed it)
-5.  **Question:** Why do the ticket counts in Jira not match the system? (Status: Completed, agent explained the difference in filtering)
-6.  **Request:** I want to add a new user but can't find where. (Status: Completed, feature was implemented)
-7.  **Statement:** Agora esta ok (Now it's ok). (Status: Completed, user confirmed a fix)
-8.  **Feedback:** Sent a screenshot showing the Não especificada filter on the dashboard was not working as expected. (Status: Completed, bug was fixed)
-9.  **Feedback:** Sent a screenshot showing that comment sorting was still incorrect. (Status: Completed, bug was fixed)
-10. **Feedback:** Sent a screenshot showing that the comment list reloaded with an error after a new comment was synced. (Status: Completed, bug was fixed)
+1.  **Request**: Implement file attachments and pagination. (Status: In Progress)
+2.  **Request**: Provide a way to filter and see resolution time metrics for a given date range. (Status: Completed, with a new Time Report page)
+3.  **Confirmation**: User chose Option 2 (a dedicated report page) for the time metrics feature. (Status: Completed)
+4.  **Request**: Make the Similar Cases and Time Tracking sections collapsible on the case details page. (Status: Completed)
+5.  **Question**: Asked how the time tracking metrics would be implemented and appear in the PDF report. (Status: Completed, agent provided a detailed plan)
+6.  **Confirmation**: User approved the plan for implementing time tracking. (Status: Completed)
+7.  **Bug Report**: The dashboard graphs were not showing all case statuses. (Status: Completed, bug was fixed)
+8.  **Request**: Implement a feature to suggest similar resolved cases when viewing a ticket. (Status: Completed)
+9.  **Request**: Create a Knowledge Base from resolution notes with search functionality and add a title field to the resolution note. (Status: Completed)
+10. **Bug Report**: Jira status updates for Concluído were not syncing to the platform. (Status: Completed, bug was fixed)
 
 **Project Health Check:**
--   **Broken**: None. All services are running and functionalities implemented are working as per the last user confirmation.
--   **Mocked**: None. The Jira integration is live.
+-   **Broken**: None. Services are running. The in-progress features (pagination, attachments) have not been deployed to the frontend yet but the backend is ready.
+-   **Mocked**: None.
 
 **3rd Party Integrations**
--   **Jira**: Synchronizes tickets and comments via REST API and Webhooks. Requires User API Key (), which has been provided and is configured in .
+-   **Jira**: Synchronizes tickets and comments via REST API and Webhooks. Requires a User API Key, which is configured in .
 
 **Testing status**
--   **Testing agent used after significant changes**: NO
+-   **Testing agent used after significant changes**: YES, for the Resolution Notes feature. The agent returned a 100% success rate.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: []
--   **Known regressions**: None at the moment. Several regressions appeared during development (e.g., comment sorting, data validation) but were identified and fixed within the session.
+-   **Known regressions**: None.
 
 **Credentials to test flow:**
 -   **Safe2Go Admin Login:**
@@ -162,7 +160,8 @@ supervisor> . Real-time updates are handled via WebSockets.
     -   Password: 
 -   **Jira Instance (for creating test tickets):**
     -   URL: 
-    -   Credentials for API are in .
 
 **What agent forgot to execute**
-The agent was in the middle of implementing the Resolution Notes feature. It correctly identified the  model in  but did not execute the  command to add the , , and  fields before the session ended. The next agent should start by editing that file.</analysis>
+The agent was in the middle of implementing two large features. While the backend work is mostly done, the frontend implementation is incomplete.
+-   **Pagination**: The agent has not yet implemented the UI controls (e.g., page numbers, next/prev buttons) in  or updated the  function to use the new pagination state.
+-   **File Attachments**: The agent has not started any frontend work. It still needs to add UI for uploading files and displaying attachments in both  and the comments section.</analysis>

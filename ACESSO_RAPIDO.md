@@ -1,7 +1,7 @@
 # 🚀 ACESSO RÁPIDO - Sistema Safe2Go Helpdesk
 
 ## 🌐 URL do Sistema
-**https://helpdesk-portal-30.preview.emergentagent.com**
+**https://s2g-ticketing.preview.emergentagent.com**
 
 ---
 
@@ -77,7 +77,7 @@
 
 ## 🎯 PRIMEIRO ACESSO - PASSO A PASSO
 
-1. Acesse: https://helpdesk-portal-30.preview.emergentagent.com
+1. Acesse: https://s2g-ticketing.preview.emergentagent.com
 2. Digite o email: `pedrohcarvalho1997@gmail.com`
 3. Digite a senha: `S@muka91`
 4. Clique em "Entrar"

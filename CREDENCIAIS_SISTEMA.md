@@ -1,7 +1,7 @@
 # 🔐 CREDENCIAIS DO SISTEMA SAFE2GO HELPDESK
 
 ## 🌐 Acesso ao Sistema
-**URL:** https://helpdesk-portal-30.preview.emergentagent.com
+**URL:** https://s2g-ticketing.preview.emergentagent.com
 
 ---
 
@@ -117,7 +117,7 @@
 ## 🔌 INTEGRAÇÕES
 
 ### Webhook Jira
-**Endpoint:** `https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira`  
+**Endpoint:** `https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira`  
 **Método:** POST  
 **Autenticação:** Não requerida  
 

@@ -120,6 +120,6 @@ Sistema de gerenciamento de helpdesk para a Safe2Go, permitindo gestão de casos
 
 ## Notas Técnicas
 - **Jira Project Key**: S2GSS (tickets antigos usam SGSS)
-- **Webhook URL**: https://helpdesk-portal-30.preview.emergentagent.com/api/webhooks/jira
+- **Webhook URL**: https://s2g-ticketing.preview.emergentagent.com/api/webhooks/jira
 - **Mapeamento de Status**: Normalizado (lowercase, sem pontos) para evitar erros
 - **ObjectId MongoDB**: Sempre excluir `_id` das respostas JSON
