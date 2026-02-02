@@ -831,6 +831,110 @@ async def get_knowledge_base_stats(current_user: dict = Depends(get_current_user
         'by_seguradora': [{'seguradora': item['_id'] or 'Não especificada', 'count': item['count']} for item in by_seguradora]
     }
 
+@api_router.get("/cases/{case_id}/similar")
+async def get_similar_cases(
+    case_id: str,
+    limit: int = 5,
+    current_user: dict = Depends(get_current_user)
+):
+    """Buscar casos similares resolvidos para sugerir soluções"""
+    import re
+    
+    # Buscar o caso atual
+    current_case = await db.cases.find_one({'id': case_id}, {'_id': 0})
+    if not current_case:
+        raise HTTPException(status_code=404, detail="Caso não encontrado")
+    
+    # Não mostrar sugestões para casos já concluídos
+    if current_case.get('status') == 'Concluído':
+        return []
+    
+    # Buscar casos concluídos com solução
+    resolved_cases = await db.cases.find({
+        'status': 'Concluído',
+        'solution': {'$ne': None, '$exists': True},
+        'id': {'$ne': case_id}  # Excluir o próprio caso
+    }, {'_id': 0}).to_list(500)
+    
+    if not resolved_cases:
+        return []
+    
+    # Extrair palavras-chave do caso atual
+    current_title = current_case.get('title', '').lower()
+    current_desc = current_case.get('description', '').lower()
+    current_category = current_case.get('category', '')
+    current_seguradora = current_case.get('seguradora', '')
+    current_keywords = [kw.lower() for kw in current_case.get('keywords', [])]
+    
+    # Palavras a ignorar (stop words em português)
+    stop_words = {'de', 'da', 'do', 'das', 'dos', 'em', 'no', 'na', 'nos', 'nas', 
+                  'um', 'uma', 'uns', 'umas', 'o', 'a', 'os', 'as', 'e', 'é', 
+                  'para', 'por', 'com', 'sem', 'que', 'se', 'não', 'mas', 'ou',
+                  'ao', 'aos', 'à', 'às', 'pelo', 'pela', 'pelos', 'pelas'}
+    
+    # Extrair palavras significativas do título e descrição
+    def extract_keywords(text):
+        words = re.findall(r'\b\w{3,}\b', text.lower())
+        return set(w for w in words if w not in stop_words)
+    
+    current_words = extract_keywords(f"{current_title} {current_desc}")
+    
+    # Calcular score de similaridade para cada caso resolvido
+    scored_cases = []
+    for case in resolved_cases:
+        score = 0
+        
+        # Score por categoria igual (peso alto)
+        if case.get('category') and case.get('category') == current_category:
+            score += 30
+        
+        # Score por seguradora igual (peso médio)
+        if case.get('seguradora') and case.get('seguradora') == current_seguradora:
+            score += 20
+        
+        # Score por palavras em comum no título e descrição
+        case_text = f"{case.get('title', '')} {case.get('description', '')} {case.get('solution', '')}"
+        case_words = extract_keywords(case_text)
+        common_words = current_words.intersection(case_words)
+        score += len(common_words) * 5
+        
+        # Score por keywords em comum
+        case_keywords = set(kw.lower() for kw in case.get('keywords', []))
+        common_keywords = set(current_keywords).intersection(case_keywords)
+        score += len(common_keywords) * 10
+        
+        # Só incluir se tiver score mínimo
+        if score >= 10:
+            scored_cases.append({
+                'case': case,
+                'score': score,
+                'common_words': list(common_words)[:5]  # Mostrar até 5 palavras em comum
+            })
+    
+    # Ordenar por score e pegar os top N
+    scored_cases.sort(key=lambda x: x['score'], reverse=True)
+    top_cases = scored_cases[:limit]
+    
+    # Formatar resposta
+    result = []
+    for item in top_cases:
+        case = item['case']
+        result.append({
+            'id': case.get('id'),
+            'jira_id': case.get('jira_id'),
+            'title': case.get('title'),
+            'category': case.get('category'),
+            'seguradora': case.get('seguradora'),
+            'solution_title': case.get('solution_title'),
+            'solution': case.get('solution'),
+            'solved_by': case.get('solved_by'),
+            'solved_at': case.get('solved_at') or case.get('updated_at'),
+            'similarity_score': item['score'],
+            'matching_keywords': item['common_words']
+        })
+    
+    return result
+
 # Cases CRUD
 @api_router.post("/cases", response_model=Case)
 async def create_case(case: CaseCreate, current_user: dict = Depends(get_current_user)):
