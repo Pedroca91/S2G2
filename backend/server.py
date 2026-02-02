@@ -129,10 +129,23 @@ class Comment(BaseModel):
     content: str
     is_internal: bool = False  # True = observação interna (só ADM), False = resposta ao cliente
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    attachments: List[dict] = []  # Lista de anexos
 
 class CommentCreate(BaseModel):
     content: str
     is_internal: bool = False
+
+class Attachment(BaseModel):
+    """Modelo de anexo de arquivo"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    filename: str
+    original_filename: str
+    file_type: str
+    file_size: int
+    uploaded_by: Optional[str] = None
+    uploaded_by_id: Optional[str] = None
+    uploaded_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    url: str
 
 class Notification(BaseModel):
     model_config = ConfigDict(extra="ignore")
