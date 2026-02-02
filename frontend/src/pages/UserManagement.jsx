@@ -172,11 +172,6 @@ export const UserManagement = () => {
       toast.error(error.response?.data?.detail || 'Erro ao criar usuário');
     }
   };
-    } catch (error) {
-      console.error('Erro ao atualizar usuário:', error);
-      toast.error(error.response?.data?.detail || 'Erro ao atualizar usuário');
-    }
-  };
 
   const UserCard = ({ user, showActions = true }) => {
     const statusColors = {
