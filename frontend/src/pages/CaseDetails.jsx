@@ -1104,6 +1104,29 @@ const CaseDetails = () => {
                       )}
                     </div>
                     <p className="text-gray-700 whitespace-pre-wrap ml-10">{comment.content}</p>
+                    
+                    {/* Anexos do comentário */}
+                    {comment.attachments?.length > 0 && (
+                      <div className="ml-10 mt-3 space-y-1">
+                        <p className="text-xs font-medium text-gray-500 mb-1">
+                          <Paperclip className="h-3 w-3 inline mr-1" />
+                          Anexos:
+                        </p>
+                        {comment.attachments.map((att) => (
+                          <a
+                            key={att.id}
+                            href={`${BACKEND_URL}${att.url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded mr-2"
+                          >
+                            {getFileIcon(att.file_type)}
+                            {att.original_filename}
+                            <Download className="h-3 w-3" />
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))
               )}
