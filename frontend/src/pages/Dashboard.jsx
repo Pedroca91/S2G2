@@ -688,8 +688,11 @@ export const Dashboard = () => {
                 }}
               />
               <Legend />
-              <Bar dataKey="completed" fill="#10b981" name="Concluídos" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="pending" fill="#f59e0b" name="Pendentes" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="completed" fill="#10b981" name="Concluídos" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="pending" fill="#f59e0b" name="Pendentes" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="in_development" fill="#3b82f6" name="Em Desenvolvimento" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="waiting" fill="#f97316" name="Aguardando Resposta" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="waiting_config" fill="#06b6d4" name="Aguardando Config." radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
