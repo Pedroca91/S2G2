@@ -158,9 +158,11 @@ class Case(BaseModel):
     closed_date: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    solution: Optional[str] = None  # NOVO: Como o caso foi resolvido
-    solved_by: Optional[str] = None  # NOVO: Nome de quem resolveu
-    solved_by_id: Optional[str] = None  # NOVO: ID de quem resolveu
+    solution: Optional[str] = None  # Como o caso foi resolvido
+    solution_title: Optional[str] = None  # Título da solução para busca
+    solved_by: Optional[str] = None  # Nome de quem resolveu
+    solved_by_id: Optional[str] = None  # ID de quem resolveu
+    solved_at: Optional[datetime] = None  # Data da resolução
 
 class CaseCreate(BaseModel):
     jira_id: Optional[str] = None
