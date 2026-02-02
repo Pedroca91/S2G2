@@ -97,7 +97,7 @@ export const Cases = () => {
     if (usePagination) {
       fetchCases();
     }
-  }, [currentPage, perPage]);
+  }, [currentPage, perPage, statusFilter, responsibleFilter, seguradoraFilter, searchTerm]);
 
   const fetchCases = async () => {
     try {
@@ -105,8 +105,26 @@ export const Cases = () => {
       const token = localStorage.getItem('token');
       
       let url = `${API}/cases`;
+      const params = new URLSearchParams();
+      
       if (usePagination) {
-        url += `?page=${currentPage}&per_page=${perPage}`;
+        params.append('page', currentPage);
+        params.append('per_page', perPage);
+      }
+      
+      // Adicionar filtros à requisição
+      if (statusFilter && statusFilter !== 'all') {
+        params.append('status', statusFilter);
+      }
+      if (responsibleFilter && responsibleFilter !== 'all') {
+        params.append('responsible', responsibleFilter);
+      }
+      if (searchTerm) {
+        params.append('search', searchTerm);
+      }
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
       }
       
       const response = await axios.get(url, {
@@ -120,6 +138,7 @@ export const Cases = () => {
       } else {
         const casesData = Array.isArray(response.data) ? response.data : response.data.cases || [];
         setCases(casesData);
+        setFilteredCases(casesData);
         setTotalCases(casesData.length);
       }
     } catch (error) {
