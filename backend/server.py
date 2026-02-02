@@ -1511,26 +1511,32 @@ async def jira_webhook(payload: dict):
         responsible = assignee.get('displayName', 'Equipe Suporte') if assignee else 'Equipe Suporte'
         
         # Mapear status do Jira para nosso sistema
-        status_jira = fields.get('status', {}).get('name', 'To Do')
-        status_map = {
-            'To Do': 'Pendente',
-            'In Progress': 'Pendente',
-            'Em Atendimento': 'Em Desenvolvimento',
-            'Done': 'Concluído',
-            'Closed': 'Concluído',
-            'Resolvido': 'Concluído',
-            'Resolved': 'Concluído',
-            'Concluído': 'Concluído',
-            'Aguardando Cliente': 'Aguardando resposta',
-            'Waiting for Customer': 'Aguardando resposta',
-            'Aguardando resposta': 'Aguardando resposta',
-            'Aguardando Suporte': 'Pendente',
-            'Aguardando Configuração': 'Aguardando Configuração',
-            'Pendentes S2G': 'Pendente',
-        }
-        status = status_map.get(status_jira, 'Pendente')
+        status_jira_raw = fields.get('status', {}).get('name', 'To Do')
+        # Normalizar: remover pontos, espaços extras e converter para lowercase para comparação
+        status_jira_normalized = status_jira_raw.strip().rstrip('.').lower()
         
-        print(f"📊 Status Jira: '{status_jira}' -> Safe2Go: '{status}'")
+        status_map = {
+            'to do': 'Pendente',
+            'in progress': 'Pendente',
+            'em atendimento': 'Em Desenvolvimento',
+            'done': 'Concluído',
+            'closed': 'Concluído',
+            'resolvido': 'Concluído',
+            'resolved': 'Concluído',
+            'concluído': 'Concluído',
+            'concluido': 'Concluído',
+            'aguardando cliente': 'Aguardando resposta',
+            'waiting for customer': 'Aguardando resposta',
+            'aguardando resposta': 'Aguardando resposta',
+            'aguardando suporte': 'Pendente',
+            'aguardando configuração': 'Aguardando Configuração',
+            'aguardando configuracao': 'Aguardando Configuração',
+            'pendentes s2g': 'Pendente',
+            'pendente': 'Pendente',
+        }
+        status = status_map.get(status_jira_normalized, 'Pendente')
+        
+        print(f"📊 Status Jira: '{status_jira_raw}' (normalizado: '{status_jira_normalized}') -> Safe2Go: '{status}'")
         
         # Detectar seguradora do responsável ou descrição
         combined_text = f"{responsible} {title} {description}".upper()
