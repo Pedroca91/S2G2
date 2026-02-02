@@ -40,6 +40,8 @@ const CaseDetails = () => {
   const [resolutionNotes, setResolutionNotes] = useState('');
   const [resolutionTitle, setResolutionTitle] = useState('');
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
+  const [timeMetrics, setTimeMetrics] = useState(null);
+  const [loadingMetrics, setLoadingMetrics] = useState(false);
   const [editFormData, setEditFormData] = useState({
     jira_id: '',
     title: '',
