@@ -45,6 +45,11 @@ export const Cases = () => {
     seguradora: '',
   });
 
+  // Estado para o modal de notas de resolução
+  const [resolutionDialogOpen, setResolutionDialogOpen] = useState(false);
+  const [resolutionNotes, setResolutionNotes] = useState('');
+  const [pendingStatusChange, setPendingStatusChange] = useState(null);
+
   useEffect(() => {
     fetchCases();
     
