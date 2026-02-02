@@ -450,6 +450,21 @@ const CaseDetails = () => {
                     Antes de concluir este caso, descreva como ele foi resolvido. Isso ajudará a criar uma base de conhecimento para resolver problemas semelhantes no futuro.
                   </p>
                   <div>
+                    <Label htmlFor="resolution_title">Título da Solução *</Label>
+                    <Input
+                      id="resolution_title"
+                      value={resolutionTitle}
+                      onChange={(e) => setResolutionTitle(e.target.value)}
+                      placeholder="Ex: Correção de boleto com código de barras inválido"
+                      className="mt-2"
+                      required
+                      data-testid="resolution-title-input"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Um título claro facilita encontrar esta solução na Base de Conhecimento
+                    </p>
+                  </div>
+                  <div>
                     <Label htmlFor="resolution_notes">Como o caso foi resolvido? *</Label>
                     <Textarea
                       id="resolution_notes"
@@ -473,7 +488,7 @@ const CaseDetails = () => {
                     <Button 
                       type="submit"
                       className="bg-green-600 hover:bg-green-700"
-                      disabled={!resolutionNotes.trim()}
+                      disabled={!resolutionNotes.trim() || !resolutionTitle.trim()}
                       data-testid="submit-resolution-btn"
                     >
                       <CheckCircle className="mr-2 h-4 w-4" />
