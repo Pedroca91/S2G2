@@ -99,18 +99,6 @@ export const UserManagement = () => {
     }
   };
 
-  // Estado e funções para edição de usuário
-  const [editingUser, setEditingUser] = useState(null);
-  const [editFormData, setEditFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    role: '',
-    status: ''
-  });
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
   const openEditDialog = (user) => {
     setEditingUser(user);
     setEditFormData({
@@ -119,7 +107,7 @@ export const UserManagement = () => {
       phone: user.phone || '',
       company: user.company || '',
       role: user.role || 'cliente',
-      status: user.status || 'pendente'
+      status: user.status || 'aprovado'
     });
     setIsEditDialogOpen(true);
   };
@@ -143,6 +131,47 @@ export const UserManagement = () => {
       toast.success('Usuário atualizado com sucesso!');
       setIsEditDialogOpen(false);
       fetchUsers();
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao atualizar usuário');
+    }
+  };
+
+  const handleAddUserSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!addFormData.name || !addFormData.email || !addFormData.password) {
+      toast.error('Nome, email e senha são obrigatórios');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${API}/users/create`,
+        {
+          ...addFormData,
+          status: 'aprovado'  // Criar já aprovado
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success('Usuário criado com sucesso!');
+      setIsAddDialogOpen(false);
+      setAddFormData({
+        name: '',
+        email: '',
+        password: '',
+        phone: '',
+        company: '',
+        role: 'cliente'
+      });
+      fetchUsers();
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao criar usuário');
+    }
+  };
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
       toast.error(error.response?.data?.detail || 'Erro ao atualizar usuário');
