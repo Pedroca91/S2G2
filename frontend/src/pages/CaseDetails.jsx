@@ -12,7 +12,7 @@ import { Label } from '../components/ui/label';
 import { Separator } from '../components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { ArrowLeft, MessageSquare, Send, User, Building, AlertCircle, Eye, EyeOff, Calendar, Edit, CheckCircle, FileText } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Send, User, Building, AlertCircle, Eye, EyeOff, Calendar, Edit, CheckCircle, FileText, Lightbulb, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -32,6 +32,9 @@ const CaseDetails = () => {
     submitting: false
   });
 
+  const [similarCases, setSimilarCases] = useState([]);
+  const [loadingSimilar, setLoadingSimilar] = useState(false);
+  const [expandedSimilar, setExpandedSimilar] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [resolutionDialogOpen, setResolutionDialogOpen] = useState(false);
   const [resolutionNotes, setResolutionNotes] = useState('');
