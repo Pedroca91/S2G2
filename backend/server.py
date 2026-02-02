@@ -1219,6 +1219,162 @@ async def get_similar_cases(
     
     return result
 
+# Upload de Arquivos
+ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.txt', '.log', '.zip', '.csv'}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+
+@api_router.post("/cases/{case_id}/attachments")
+async def upload_case_attachment(
+    case_id: str,
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Upload de anexo para um caso"""
+    # Verificar se o caso existe
+    case = await db.cases.find_one({'id': case_id}, {'_id': 0})
+    if not case:
+        raise HTTPException(status_code=404, detail="Caso não encontrado")
+    
+    # Verificar extensão
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail=f"Tipo de arquivo não permitido. Tipos aceitos: {', '.join(ALLOWED_EXTENSIONS)}")
+    
+    # Verificar tamanho
+    content = await file.read()
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail=f"Arquivo muito grande. Máximo: {MAX_FILE_SIZE // (1024*1024)}MB")
+    
+    # Gerar nome único
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    file_path = UPLOADS_DIR / unique_filename
+    
+    # Salvar arquivo
+    with open(file_path, 'wb') as f:
+        f.write(content)
+    
+    # Criar registro de anexo
+    attachment = {
+        'id': str(uuid.uuid4()),
+        'filename': unique_filename,
+        'original_filename': file.filename,
+        'file_type': file.content_type or 'application/octet-stream',
+        'file_size': len(content),
+        'uploaded_by': current_user.get('name'),
+        'uploaded_by_id': current_user.get('id'),
+        'uploaded_at': datetime.now(timezone.utc).isoformat(),
+        'url': f"/uploads/{unique_filename}"
+    }
+    
+    # Adicionar ao caso
+    attachments = case.get('attachments', [])
+    attachments.append(attachment)
+    
+    await db.cases.update_one(
+        {'id': case_id},
+        {'$set': {'attachments': attachments, 'updated_at': datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return attachment
+
+@api_router.delete("/cases/{case_id}/attachments/{attachment_id}")
+async def delete_case_attachment(
+    case_id: str,
+    attachment_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Remover anexo de um caso"""
+    case = await db.cases.find_one({'id': case_id}, {'_id': 0})
+    if not case:
+        raise HTTPException(status_code=404, detail="Caso não encontrado")
+    
+    attachments = case.get('attachments', [])
+    attachment_to_remove = None
+    
+    for att in attachments:
+        if att.get('id') == attachment_id:
+            attachment_to_remove = att
+            break
+    
+    if not attachment_to_remove:
+        raise HTTPException(status_code=404, detail="Anexo não encontrado")
+    
+    # Remover arquivo físico
+    try:
+        file_path = UPLOADS_DIR / attachment_to_remove['filename']
+        if file_path.exists():
+            file_path.unlink()
+    except Exception as e:
+        logger.error(f"Erro ao remover arquivo: {e}")
+    
+    # Remover do banco
+    attachments = [a for a in attachments if a.get('id') != attachment_id]
+    await db.cases.update_one(
+        {'id': case_id},
+        {'$set': {'attachments': attachments, 'updated_at': datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"message": "Anexo removido com sucesso"}
+
+@api_router.post("/cases/{case_id}/comments/{comment_id}/attachments")
+async def upload_comment_attachment(
+    case_id: str,
+    comment_id: str,
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Upload de anexo para um comentário"""
+    case = await db.cases.find_one({'id': case_id}, {'_id': 0})
+    if not case:
+        raise HTTPException(status_code=404, detail="Caso não encontrado")
+    
+    # Verificar extensão
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail=f"Tipo de arquivo não permitido")
+    
+    # Verificar tamanho
+    content = await file.read()
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail=f"Arquivo muito grande. Máximo: {MAX_FILE_SIZE // (1024*1024)}MB")
+    
+    # Gerar nome único
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    file_path = UPLOADS_DIR / unique_filename
+    
+    # Salvar arquivo
+    with open(file_path, 'wb') as f:
+        f.write(content)
+    
+    # Criar registro de anexo
+    attachment = {
+        'id': str(uuid.uuid4()),
+        'filename': unique_filename,
+        'original_filename': file.filename,
+        'file_type': file.content_type or 'application/octet-stream',
+        'file_size': len(content),
+        'uploaded_by': current_user.get('name'),
+        'uploaded_by_id': current_user.get('id'),
+        'uploaded_at': datetime.now(timezone.utc).isoformat(),
+        'url': f"/uploads/{unique_filename}"
+    }
+    
+    # Atualizar comentário
+    comments = case.get('comments', [])
+    for comment in comments:
+        if comment.get('id') == comment_id:
+            if 'attachments' not in comment:
+                comment['attachments'] = []
+            comment['attachments'].append(attachment)
+            break
+    
+    await db.cases.update_one(
+        {'id': case_id},
+        {'$set': {'comments': comments, 'updated_at': datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return attachment
+
 # Cases CRUD
 @api_router.post("/cases", response_model=Case)
 async def create_case(case: CaseCreate, current_user: dict = Depends(get_current_user)):
