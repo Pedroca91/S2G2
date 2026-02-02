@@ -192,6 +192,7 @@ class Case(BaseModel):
     solved_by_id: Optional[str] = None  # ID de quem resolveu
     solved_at: Optional[datetime] = None  # Data da resolução
     status_history: List[dict] = []  # Histórico de mudanças de status
+    attachments: List[dict] = []  # Anexos do caso
 
 class CaseCreate(BaseModel):
     jira_id: Optional[str] = None
