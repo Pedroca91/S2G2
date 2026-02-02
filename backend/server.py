@@ -187,6 +187,9 @@ class CaseUpdate(BaseModel):
     keywords: Optional[List[str]] = None
     opened_date: Optional[datetime] = None
     closed_date: Optional[datetime] = None
+    solution: Optional[str] = None  # Notas de resolução
+    solved_by: Optional[str] = None  # Nome de quem resolveu
+    solved_by_id: Optional[str] = None  # ID de quem resolveu
 
 class Activity(BaseModel):
     model_config = ConfigDict(extra="ignore")
