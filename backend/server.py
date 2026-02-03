@@ -2288,15 +2288,51 @@ async def jira_webhook(payload: dict):
         
         print(f"📊 Status Jira: '{status_jira_raw}' (normalizado: '{status_jira_normalized}') -> Safe2Go: '{status}'")
         
-        # Detectar seguradora do responsável ou descrição
-        combined_text = f"{responsible} {title} {description}".upper()
+        # Detectar seguradora - primeiro do campo organizations do Jira, depois do texto
         seguradora = None
-        if 'AVLA' in combined_text:
-            seguradora = 'AVLA'
-        elif 'ESSOR' in combined_text:
-            seguradora = 'ESSOR'
-        elif 'DAYCOVAL' in combined_text:
-            seguradora = 'DAYCOVAL'
+        
+        # 1. Tentar extrair do campo organizations do Jira (campo customizado ou padrão)
+        organizations = fields.get('organizations', []) or []
+        if not organizations:
+            # Tentar campo customizado comum para organizações
+            for key, value in fields.items():
+                if 'organization' in key.lower() and value:
+                    if isinstance(value, list):
+                        organizations = value
+                    elif isinstance(value, dict):
+                        organizations = [value]
+                    break
+        
+        # Extrair nome das organizações
+        for org in organizations:
+            org_name = ''
+            if isinstance(org, dict):
+                org_name = org.get('name', '') or org.get('value', '') or str(org)
+            elif isinstance(org, str):
+                org_name = org
+            
+            org_name_upper = org_name.upper()
+            if 'AVLA' in org_name_upper:
+                seguradora = 'AVLA'
+                break
+            elif 'ESSOR' in org_name_upper:
+                seguradora = 'ESSOR'
+                break
+            elif 'DAYCOVAL' in org_name_upper:
+                seguradora = 'DAYCOVAL'
+                break
+        
+        # 2. Se não encontrou nas organizações, tentar no texto (fallback)
+        if not seguradora:
+            combined_text = f"{responsible} {title} {description}".upper()
+            if 'AVLA' in combined_text:
+                seguradora = 'AVLA'
+            elif 'ESSOR' in combined_text:
+                seguradora = 'ESSOR'
+            elif 'DAYCOVAL' in combined_text:
+                seguradora = 'DAYCOVAL'
+        
+        print(f"🏢 Seguradora detectada: {seguradora}")
         
         # Categorizar automaticamente
         combined_lower = f"{title} {description}".lower()
